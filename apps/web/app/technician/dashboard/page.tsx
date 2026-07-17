@@ -17,13 +17,24 @@ const VERIFICATION_LABELS: Record<string, string> = {
   ARCHIVED: "Profil archivé",
 };
 
-export default async function TechnicianDashboardPage() {
+interface TechnicianDashboardPageProps {
+  searchParams: Promise<{ updated?: string }>;
+}
+
+export default async function TechnicianDashboardPage({ searchParams }: TechnicianDashboardPageProps) {
   // La couche layout (app/technician/layout.tsx) a déjà vérifié le rôle ;
   // ce composant peut donc supposer une session TECHNICIAN valide.
+  const { updated } = await searchParams;
   const session = await auth();
   const profile = await prisma.technicianProfile.findUnique({
     where: { userId: session!.user.id },
-    include: { primaryTrade: true, score: true },
+    include: {
+      primaryTrade: true,
+      country: true,
+      score: true,
+      secondaryTrades: { include: { trade: true } },
+      _count: { select: { skills: true } },
+    },
   });
 
   if (!profile) {
@@ -43,15 +54,21 @@ export default async function TechnicianDashboardPage() {
         </Badge>
       </div>
 
+      {updated === "1" && (
+        <p className="rounded-md bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
+          Vos informations ont été enregistrées.
+        </p>
+      )}
+
       {!onboardingComplete && (
         <Card className="border-amber-200 bg-amber-50">
           <p className="text-sm text-amber-900">
             Votre profil est incomplet. Renseignez votre métier principal, votre pays et vos
             compétences pour apparaître dans les résultats de recherche des entreprises.
           </p>
-          <Button className="mt-4" disabled>
-            Compléter mon profil (module à venir)
-          </Button>
+          <Link href="/technician/profile">
+            <Button className="mt-4">Compléter mon profil</Button>
+          </Link>
         </Card>
       )}
 
@@ -73,8 +90,27 @@ export default async function TechnicianDashboardPage() {
           <p className="mt-2 text-lg font-medium">
             {profile.primaryTrade?.nameFr ?? "Non renseigné"}
           </p>
-          <Link href="/technician/dashboard" className="mt-1 inline-block text-sm text-slate-600 hover:underline">
+          {profile.secondaryTrades.length > 0 && (
+            <p className="mt-1 text-sm text-slate-600">
+              Métiers secondaires : {profile.secondaryTrades.map((t) => t.trade.nameFr).join(", ")}
+            </p>
+          )}
+          <Link href="/technician/profile" className="mt-1 inline-block text-sm text-slate-600 hover:underline">
             {profile.primaryTrade ? "Modifier" : "Renseigner mon métier"}
+          </Link>
+        </Card>
+
+        <Card>
+          <h2 className="text-sm font-medium text-slate-500">Localisation</h2>
+          <p className="mt-2 text-lg font-medium">{profile.country?.nameFr ?? "Non renseigné"}</p>
+          <p className="mt-1 text-sm text-slate-600">{profile.city ?? "Ville non renseignée"}</p>
+        </Card>
+
+        <Card>
+          <h2 className="text-sm font-medium text-slate-500">Compétences déclarées</h2>
+          <p className="mt-2 text-3xl font-semibold">{profile._count.skills}</p>
+          <Link href="/technician/skills" className="mt-1 inline-block text-sm text-slate-600 hover:underline">
+            {profile._count.skills > 0 ? "Modifier mes compétences" : "Déclarer mes compétences"}
           </Link>
         </Card>
       </div>

@@ -161,7 +161,11 @@ Implémenté dans cette phase d'initialisation :
 - [x] Journal d'audit (amorce)
 - [x] Docker (Postgres local + image de production)
 - [x] Données de démonstration
+- [x] Onboarding technicien : métier principal/secondaires, pays, ville, expérience,
+      disponibilité, mobilité (`/technician/profile`)
+- [x] Déclaration de compétences avec auto-évaluation du niveau (`/technician/skills`)
+- [x] Référentiel métiers/compétences/pays (41 métiers, 30 compétences, 41 pays)
 
 À développer dans les prochains modules (voir le plan de développement du cadrage) :
-compétences, certifications et documents, expériences, workflow de vérification
+certifications et documents, expériences professionnelles, workflow de vérification
 administrative, moteur de score, recherche de techniciens, passeport PDF, i18n FR/EN.

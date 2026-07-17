@@ -110,6 +110,7 @@ model Trade {
 
 model Skill {
   id      String @id @default(uuid())
+  slug    String @unique
   tradeId String
   trade   Trade  @relation(fields: [tradeId], references: [id], onDelete: Cascade)
   nameFr  String

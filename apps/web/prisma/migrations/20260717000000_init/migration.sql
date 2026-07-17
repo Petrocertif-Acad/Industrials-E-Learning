@@ -85,6 +85,7 @@ CREATE TABLE "Trade" (
 -- CreateTable
 CREATE TABLE "Skill" (
     "id" TEXT NOT NULL,
+    "slug" TEXT NOT NULL,
     "tradeId" TEXT NOT NULL,
     "nameFr" TEXT NOT NULL,
     "nameEn" TEXT NOT NULL,
@@ -305,6 +306,9 @@ CREATE UNIQUE INDEX "Trade_slug_key" ON "Trade"("slug");
 
 -- CreateIndex
 CREATE INDEX "Trade_category_idx" ON "Trade"("category");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Skill_slug_key" ON "Skill"("slug");
 
 -- CreateIndex
 CREATE INDEX "Skill_tradeId_idx" ON "Skill"("tradeId");
