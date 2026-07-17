@@ -1,0 +1,37 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: atti
+      POSTGRES_PASSWORD: atti
+      POSTGRES_DB: atti
+    ports:
+      - "5432:5432"
+    volumes:
+      - atti_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U atti"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  web:
+    build:
+      context: ../apps/web
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://atti:atti@postgres:5432/atti?schema=public
+      AUTH_SECRET: ${AUTH_SECRET:?AUTH_SECRET must be set}
+      AUTH_URL: http://localhost:3000
+    ports:
+      - "3000:3000"
+    profiles:
+      - full
+
+volumes:
+  atti_postgres_data:

@@ -1,0 +1,458 @@
+// ATTI — African Technical Talent Index
+// Prisma schema — noyau MVP (voir README.md > Modèle de données pour le périmètre).
+// Les entités listées dans le cahier des charges mais hors périmètre MVP
+// (Assessment, JobOpportunity, TalentPool, Subscription, Payment, Training, ...)
+// seront ajoutées lors des phases correspondantes plutôt que d'être stubées ici.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ---------------------------------------------------------------------------
+// Comptes & rôles
+// ---------------------------------------------------------------------------
+
+enum UserRole {
+  TECHNICIAN
+  ORGANIZATION
+  ADMIN
+  // Rôles modélisés dès le MVP pour éviter une refonte du schéma, mais dont
+  // l'interface dédiée est reportée après la V1 (voir cadrage, section 3).
+  TRAINING_CENTER
+  CERTIFICATION_BODY
+  EVALUATOR
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  ARCHIVED
+}
+
+enum Locale {
+  FR
+  EN
+}
+
+model User {
+  id           String     @id @default(uuid())
+  email        String     @unique
+  passwordHash String
+  role         UserRole
+  status       UserStatus @default(ACTIVE)
+  locale       Locale     @default(FR)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  technicianProfile       TechnicianProfile?
+  organizationMemberships OrganizationMember[]
+  uploadedDocuments       Document[]           @relation("DocumentOwner")
+  verifiedDocuments       Document[]           @relation("DocumentVerifier")
+  auditLogEntries         AuditLog[]           @relation("AuditActor")
+
+  @@index([role])
+}
+
+// ---------------------------------------------------------------------------
+// Référentiels géographiques (simplifiés pour le MVP : Country normalisé,
+// région/ville en champs texte libres sur le profil pour éviter une
+// hiérarchie géographique complète non nécessaire au MVP)
+// ---------------------------------------------------------------------------
+
+model Country {
+  id      String @id @default(uuid())
+  isoCode String @unique @db.Char(2)
+  nameFr  String
+  nameEn  String
+
+  technicianProfiles TechnicianProfile[]
+  organizations      Organization[]
+}
+
+// ---------------------------------------------------------------------------
+// Taxonomie des métiers et compétences
+// ---------------------------------------------------------------------------
+
+enum TradeCategory {
+  WELDING
+  BOILERMAKING
+  PIPING
+  METAL_STRUCTURES
+  MECHANICAL_MANUFACTURING
+  INDUSTRIAL_MAINTENANCE
+  QUALITY_CONTROL
+  NON_DESTRUCTIVE_TESTING
+  SUPERVISION
+  OTHER
+}
+
+model Trade {
+  id            String        @id @default(uuid())
+  slug          String        @unique
+  nameFr        String
+  nameEn        String
+  category      TradeCategory
+  parentTradeId String?
+  parentTrade   Trade?        @relation("TradeHierarchy", fields: [parentTradeId], references: [id])
+  childTrades   Trade[]       @relation("TradeHierarchy")
+
+  skills                  Skill[]
+  primaryForTechnicians   TechnicianProfile[]        @relation("PrimaryTrade")
+  secondaryForTechnicians TechnicianSecondaryTrade[]
+
+  @@index([category])
+}
+
+model Skill {
+  id      String @id @default(uuid())
+  tradeId String
+  trade   Trade  @relation(fields: [tradeId], references: [id], onDelete: Cascade)
+  nameFr  String
+  nameEn  String
+
+  technicianSkills TechnicianSkill[]
+
+  @@index([tradeId])
+}
+
+enum SkillLevel {
+  NOT_ASSESSED
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  EXPERT
+}
+
+model TechnicianSkill {
+  id                     String            @id @default(uuid())
+  technicianId           String
+  technician             TechnicianProfile @relation(fields: [technicianId], references: [id], onDelete: Cascade)
+  skillId                String
+  skill                  Skill             @relation(fields: [skillId], references: [id])
+  selfLevel              SkillLevel        @default(NOT_ASSESSED)
+  verifiedLevel          SkillLevel?
+  reliabilityCoefficient Decimal           @default(0.4) @db.Decimal(3, 2)
+  updatedAt              DateTime          @updatedAt
+
+  @@unique([technicianId, skillId])
+}
+
+model TechnicianSecondaryTrade {
+  technicianId String
+  technician   TechnicianProfile @relation(fields: [technicianId], references: [id], onDelete: Cascade)
+  tradeId      String
+  trade        Trade             @relation(fields: [tradeId], references: [id])
+
+  @@id([technicianId, tradeId])
+}
+
+// ---------------------------------------------------------------------------
+// Profil technicien
+// ---------------------------------------------------------------------------
+
+enum AvailabilityStatus {
+  AVAILABLE
+  AVAILABLE_SOON
+  UNAVAILABLE
+}
+
+enum MobilityScope {
+  LOCAL
+  NATIONAL
+  INTERNATIONAL
+}
+
+enum ProfileVerificationStatus {
+  INCOMPLETE
+  DECLARED
+  IDENTITY_VERIFIED
+  DOCUMENTS_PENDING
+  PARTIALLY_VERIFIED
+  PROFESSIONALLY_VERIFIED
+  PREMIUM_VERIFIED
+  SUSPENDED
+  ARCHIVED
+}
+
+enum ProfileVisibility {
+  PUBLIC_LIMITED
+  PUBLIC_FULL
+}
+
+model TechnicianProfile {
+  id                 String                    @id @default(uuid())
+  userId             String                    @unique
+  user               User                      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  firstName          String
+  lastName           String
+  photoUrl           String?
+  headline           String?
+  bio                String?
+  // Nullable : renseignés lors de l'onboarding, pas à la création du compte.
+  primaryTradeId     String?
+  primaryTrade       Trade?                    @relation("PrimaryTrade", fields: [primaryTradeId], references: [id])
+  countryId          String?
+  country            Country?                  @relation(fields: [countryId], references: [id])
+  city               String?
+  yearsExperience    Int                       @default(0)
+  availability       AvailabilityStatus        @default(UNAVAILABLE)
+  mobilityScope      MobilityScope             @default(LOCAL)
+  verificationStatus ProfileVerificationStatus @default(INCOMPLETE)
+  visibility         ProfileVisibility         @default(PUBLIC_LIMITED)
+  createdAt          DateTime                  @default(now())
+  updatedAt          DateTime                  @updatedAt
+
+  secondaryTrades TechnicianSecondaryTrade[]
+  skills          TechnicianSkill[]
+  certifications  TechnicianCertification[]
+  workExperiences WorkExperience[]
+  languages       TechnicianLanguage[]
+  documents       Document[]                 @relation("DocumentSubject")
+  score           Score?
+  scoreHistory    ScoreHistory[]
+
+  @@index([primaryTradeId])
+  @@index([countryId])
+  @@index([verificationStatus])
+}
+
+enum LanguageProficiency {
+  BASIC
+  CONVERSATIONAL
+  FLUENT
+  NATIVE
+}
+
+model TechnicianLanguage {
+  technicianId String
+  technician   TechnicianProfile   @relation(fields: [technicianId], references: [id], onDelete: Cascade)
+  languageCode String              @db.VarChar(5) // ex: fr, en, ar
+  proficiency  LanguageProficiency
+
+  @@id([technicianId, languageCode])
+}
+
+// ---------------------------------------------------------------------------
+// Certifications
+// ---------------------------------------------------------------------------
+
+enum DocumentVerificationStatus {
+  DECLARED
+  UNDER_REVIEW
+  VERIFIED
+  REJECTED
+  EXPIRED
+}
+
+model Certification {
+  id          String        @id @default(uuid())
+  name        String
+  issuingBody String
+  standardRef String?
+  category    TradeCategory
+
+  technicianCertifications TechnicianCertification[]
+}
+
+model TechnicianCertification {
+  id                     String                     @id @default(uuid())
+  technicianId           String
+  technician             TechnicianProfile          @relation(fields: [technicianId], references: [id], onDelete: Cascade)
+  certificationId        String
+  certification          Certification              @relation(fields: [certificationId], references: [id])
+  documentId             String?                    @unique
+  document               Document?                  @relation(fields: [documentId], references: [id])
+  issueDate              DateTime?
+  expiryDate             DateTime?
+  verificationStatus     DocumentVerificationStatus @default(DECLARED)
+  reliabilityCoefficient Decimal                    @default(0.4) @db.Decimal(3, 2)
+
+  // Variables spécifiques au soudage, laissées nullables pour rester
+  // pertinentes aux autres métiers sans dupliquer le modèle (voir cadrage
+  // section 4). À généraliser en attributs dynamiques si d'autres métiers
+  // techniques nécessitent un niveau de détail comparable.
+  weldingProcess     String?
+  materialType       String?
+  materialGroup      String?
+  qualifiedThickness String?
+  qualifiedDiameter  String?
+  weldingPosition    String?
+  jointType          String?
+  fillerMetal        String?
+  shieldingGas       String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([technicianId])
+  @@index([certificationId])
+  @@index([expiryDate])
+}
+
+// ---------------------------------------------------------------------------
+// Expériences professionnelles
+// ---------------------------------------------------------------------------
+
+model WorkExperience {
+  id                 String                     @id @default(uuid())
+  technicianId       String
+  technician         TechnicianProfile          @relation(fields: [technicianId], references: [id], onDelete: Cascade)
+  projectName        String
+  employer           String
+  client             String?
+  country            String
+  sector             String?
+  role               String
+  startDate          DateTime
+  endDate            DateTime?
+  description        String?
+  equipmentUsed      String?
+  materialsWorked    String?
+  processesApplied   String?
+  standardsUsed      String?
+  responsibilities   String?
+  referenceContact   String?
+  verificationStatus DocumentVerificationStatus @default(DECLARED)
+  documentId         String?                    @unique
+  document           Document?                  @relation(fields: [documentId], references: [id])
+
+  @@index([technicianId])
+}
+
+// ---------------------------------------------------------------------------
+// Documents (stockage compatible S3, jamais d'URL publique permanente)
+// ---------------------------------------------------------------------------
+
+enum DocumentType {
+  IDENTITY
+  CERTIFICATION_PROOF
+  EXPERIENCE_PROOF
+  PROFILE_PHOTO
+  OTHER
+}
+
+model Document {
+  id                 String                     @id @default(uuid())
+  ownerId            String
+  owner              User                       @relation("DocumentOwner", fields: [ownerId], references: [id])
+  technicianId       String?
+  technician         TechnicianProfile?         @relation("DocumentSubject", fields: [technicianId], references: [id])
+  type               DocumentType
+  storageKey         String // clé d'objet dans le stockage S3-compatible, jamais l'URL publique
+  fileName           String
+  mimeType           String
+  sizeBytes          Int
+  verificationStatus DocumentVerificationStatus @default(UNDER_REVIEW)
+  verifiedById       String?
+  verifiedBy         User?                      @relation("DocumentVerifier", fields: [verifiedById], references: [id])
+  verifiedAt         DateTime?
+  uploadedAt         DateTime                   @default(now())
+
+  technicianCertification TechnicianCertification?
+  workExperience          WorkExperience?
+
+  @@index([ownerId])
+  @@index([verificationStatus])
+}
+
+// ---------------------------------------------------------------------------
+// Score & classement (méthode explicable, voir cadrage section 6)
+// ---------------------------------------------------------------------------
+
+model Score {
+  id                      String            @id @default(uuid())
+  technicianId            String            @unique
+  technician              TechnicianProfile @relation(fields: [technicianId], references: [id], onDelete: Cascade)
+  technicalScore          Decimal           @default(0) @db.Decimal(5, 2)
+  certificationScore      Decimal           @default(0) @db.Decimal(5, 2)
+  experienceScore         Decimal           @default(0) @db.Decimal(5, 2)
+  safetyScore             Decimal           @default(0) @db.Decimal(5, 2)
+  employabilityScore      Decimal           @default(0) @db.Decimal(5, 2)
+  continuousTrainingScore Decimal           @default(0) @db.Decimal(5, 2)
+  mobilityScore           Decimal           @default(0) @db.Decimal(5, 2)
+  verificationScore       Decimal           @default(0) @db.Decimal(5, 2)
+  totalScore              Decimal           @default(0) @db.Decimal(5, 2)
+  calculationDetails      Json? // méthode, données utilisées, éléments manquants
+  calculatedAt            DateTime          @default(now())
+}
+
+model ScoreHistory {
+  id           String            @id @default(uuid())
+  technicianId String
+  technician   TechnicianProfile @relation(fields: [technicianId], references: [id], onDelete: Cascade)
+  totalScore   Decimal           @db.Decimal(5, 2)
+  subScores    Json
+  snapshotAt   DateTime          @default(now())
+
+  @@index([technicianId, snapshotAt])
+}
+
+// ---------------------------------------------------------------------------
+// Organisations (entreprises — les autres types sont modélisés via UserRole
+// mais l'interface dédiée arrive après le MVP)
+// ---------------------------------------------------------------------------
+
+enum OrganizationType {
+  COMPANY
+  TRAINING_CENTER
+  CERTIFICATION_BODY
+}
+
+enum OrganizationVerificationStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+model Organization {
+  id                 String                         @id @default(uuid())
+  name               String
+  type               OrganizationType               @default(COMPANY)
+  countryId          String
+  country            Country                        @relation(fields: [countryId], references: [id])
+  description        String?
+  website            String?
+  verificationStatus OrganizationVerificationStatus @default(PENDING)
+  createdAt          DateTime                       @default(now())
+
+  members OrganizationMember[]
+}
+
+enum OrganizationRole {
+  OWNER
+  MEMBER
+}
+
+model OrganizationMember {
+  id             String           @id @default(uuid())
+  userId         String
+  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organizationId String
+  organization   Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  role           OrganizationRole @default(MEMBER)
+
+  @@unique([userId, organizationId])
+}
+
+// ---------------------------------------------------------------------------
+// Journal d'audit
+// ---------------------------------------------------------------------------
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  actorId    String?
+  actor      User?    @relation("AuditActor", fields: [actorId], references: [id])
+  action     String
+  targetType String
+  targetId   String
+  metadata   Json?
+  createdAt  DateTime @default(now())
+
+  @@index([targetType, targetId])
+  @@index([actorId])
+}
