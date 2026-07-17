@@ -6,6 +6,7 @@ const NAV_ITEMS = [
   { href: "/technician/dashboard", label: "Tableau de bord" },
   { href: "/technician/profile", label: "Mon profil" },
   { href: "/technician/skills", label: "Compétences" },
+  { href: "/technician/experiences", label: "Expériences" },
 ];
 
 export default async function TechnicianLayout({ children }: { children: React.ReactNode }) {

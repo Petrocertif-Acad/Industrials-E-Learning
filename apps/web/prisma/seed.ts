@@ -320,6 +320,29 @@ async function main() {
         materialType: "Acier inoxydable",
       },
     });
+
+    await prisma.workExperience.upsert({
+      where: { id: "00000000-0000-0000-0000-000000000040" },
+      update: {},
+      create: {
+        id: "00000000-0000-0000-0000-000000000040",
+        technicianId,
+        projectName: "Extension unité de raffinage (démonstration)",
+        employer: "Industrials Demo SARL (démonstration)",
+        client: "Client pétrolier (démonstration)",
+        countryId: countryIdByIsoCode.get("AE")!,
+        sector: "Pétrole et gaz",
+        role: "Soudeur GTAW",
+        startDate: new Date("2023-02-01"),
+        endDate: new Date("2023-11-30"),
+        description: "Soudage de tuyauteries inox sur une extension d'unité de raffinage.",
+        equipmentUsed: "Poste TIG, tourets orbitaux",
+        materialsWorked: "Acier inoxydable 316L",
+        processesApplied: "GTAW",
+        standardsUsed: "ISO 9606-1",
+        verificationStatus: "DECLARED",
+      },
+    });
   }
 
   // Entreprise de démonstration

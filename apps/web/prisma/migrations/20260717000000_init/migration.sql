@@ -189,7 +189,7 @@ CREATE TABLE "WorkExperience" (
     "projectName" TEXT NOT NULL,
     "employer" TEXT NOT NULL,
     "client" TEXT,
-    "country" TEXT NOT NULL,
+    "countryId" TEXT NOT NULL,
     "sector" TEXT,
     "role" TEXT NOT NULL,
     "startDate" TIMESTAMP(3) NOT NULL,
@@ -347,6 +347,9 @@ CREATE UNIQUE INDEX "WorkExperience_documentId_key" ON "WorkExperience"("documen
 CREATE INDEX "WorkExperience_technicianId_idx" ON "WorkExperience"("technicianId");
 
 -- CreateIndex
+CREATE INDEX "WorkExperience_countryId_idx" ON "WorkExperience"("countryId");
+
+-- CreateIndex
 CREATE INDEX "Document_ownerId_idx" ON "Document"("ownerId");
 
 -- CreateIndex
@@ -408,6 +411,9 @@ ALTER TABLE "TechnicianCertification" ADD CONSTRAINT "TechnicianCertification_do
 
 -- AddForeignKey
 ALTER TABLE "WorkExperience" ADD CONSTRAINT "WorkExperience_technicianId_fkey" FOREIGN KEY ("technicianId") REFERENCES "TechnicianProfile"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "WorkExperience" ADD CONSTRAINT "WorkExperience_countryId_fkey" FOREIGN KEY ("countryId") REFERENCES "Country"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "WorkExperience" ADD CONSTRAINT "WorkExperience_documentId_fkey" FOREIGN KEY ("documentId") REFERENCES "Document"("id") ON DELETE SET NULL ON UPDATE CASCADE;

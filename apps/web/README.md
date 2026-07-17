@@ -165,7 +165,9 @@ Implémenté dans cette phase d'initialisation :
       disponibilité, mobilité (`/technician/profile`)
 - [x] Déclaration de compétences avec auto-évaluation du niveau (`/technician/skills`)
 - [x] Référentiel métiers/compétences/pays (41 métiers, 30 compétences, 41 pays)
+- [x] Expériences professionnelles : ajout, modification, suppression
+      (`/technician/experiences`), pays normalisé via le référentiel `Country`
 
 À développer dans les prochains modules (voir le plan de développement du cadrage) :
-certifications et documents, expériences professionnelles, workflow de vérification
-administrative, moteur de score, recherche de techniciens, passeport PDF, i18n FR/EN.
+certifications et documents, workflow de vérification administrative, moteur de score,
+recherche de techniciens, passeport PDF, i18n FR/EN.

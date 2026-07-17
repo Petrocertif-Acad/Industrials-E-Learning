@@ -4,15 +4,12 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db/prisma";
 import { requireUser } from "@/lib/permissions";
+import { getOwnTechnicianProfile } from "@/lib/technician";
 import { profileBasicsSchema, technicianSkillsSchema } from "@/lib/validation/technician-profile";
 
 export interface ProfileBasicsFormState {
   error?: string;
   fieldErrors?: Record<string, string[]>;
-}
-
-async function getOwnTechnicianProfile(userId: string) {
-  return prisma.technicianProfile.findUnique({ where: { userId } });
 }
 
 export async function updateProfileBasicsAction(

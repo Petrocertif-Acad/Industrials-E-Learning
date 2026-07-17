@@ -72,6 +72,7 @@ model Country {
 
   technicianProfiles TechnicianProfile[]
   organizations      Organization[]
+  workExperiences    WorkExperience[]
 }
 
 // ---------------------------------------------------------------------------
@@ -306,7 +307,8 @@ model WorkExperience {
   projectName        String
   employer           String
   client             String?
-  country            String
+  countryId          String
+  country            Country                    @relation(fields: [countryId], references: [id])
   sector             String?
   role               String
   startDate          DateTime
@@ -323,6 +325,7 @@ model WorkExperience {
   document           Document?                  @relation(fields: [documentId], references: [id])
 
   @@index([technicianId])
+  @@index([countryId])
 }
 
 // ---------------------------------------------------------------------------
