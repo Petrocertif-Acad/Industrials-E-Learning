@@ -255,7 +255,7 @@ model Certification {
   id          String        @id @default(uuid())
   name        String
   issuingBody String
-  standardRef String?
+  standardRef String?       @unique
   category    TradeCategory
 
   technicianCertifications TechnicianCertification[]

@@ -23,7 +23,10 @@ const VERIFICATION_TONE: Record<string, "neutral" | "success" | "warning" | "dan
 };
 
 function formatDate(date: Date) {
-  return date.toLocaleDateString("fr-FR", { year: "numeric", month: "short" });
+  // Les dates de mission n'ont pas de composante horaire : elles sont stockées
+  // à minuit UTC. Formater dans le fuseau du serveur ferait glisser
+  // l'affichage d'un jour selon son décalage horaire (ex. UTC-5 en soirée).
+  return date.toLocaleDateString("fr-FR", { year: "numeric", month: "short", timeZone: "UTC" });
 }
 
 interface TechnicianExperiencesPageProps {

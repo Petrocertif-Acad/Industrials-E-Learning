@@ -329,6 +329,9 @@ CREATE INDEX "TechnicianProfile_countryId_idx" ON "TechnicianProfile"("countryId
 CREATE INDEX "TechnicianProfile_verificationStatus_idx" ON "TechnicianProfile"("verificationStatus");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Certification_standardRef_key" ON "Certification"("standardRef");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "TechnicianCertification_documentId_key" ON "TechnicianCertification"("documentId");
 
 -- CreateIndex

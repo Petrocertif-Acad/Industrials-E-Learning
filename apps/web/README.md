@@ -47,8 +47,8 @@ MVP et la feuille de route détaillée.
 # 1. Copier le fichier d'environnement et ajuster si besoin
 cp .env.example .env
 
-# 2. Démarrer PostgreSQL en local (depuis la racine du dépôt)
-docker compose -f docker/docker-compose.yml up -d postgres
+# 2. Démarrer PostgreSQL et le stockage documentaire MinIO en local (depuis la racine du dépôt)
+docker compose -f docker/docker-compose.yml up -d postgres minio minio-init
 
 # 3. Installer les dépendances
 npm install
@@ -109,7 +109,8 @@ apps/web/
 │   ├── technician/               # Espace technicien (protégé, rôle TECHNICIAN)
 │   ├── organization/             # Espace entreprise (protégé, rôle ORGANIZATION)
 │   ├── admin/                    # Administration (protégé, rôle ADMIN)
-│   └── api/auth/[...nextauth]/   # Route handler Auth.js
+│   ├── api/auth/[...nextauth]/   # Route handler Auth.js
+│   └── api/documents/[id]/download/ # Accès contrôlé aux documents (lien signé S3)
 ├── auth.ts                      # Configuration Auth.js (Credentials + callbacks RBAC)
 ├── components/
 │   ├── ui/                      # Design system minimal (Button, Input, Badge, Card…)
@@ -118,6 +119,7 @@ apps/web/
 │   ├── db/prisma.ts             # Client Prisma singleton (adaptateur pg)
 │   ├── actions/                 # Server Actions (mutations)
 │   ├── permissions/              # RBAC — vérifications d'accès côté serveur
+│   ├── storage/s3.ts              # Client S3/MinIO, upload, liens signés
 │   ├── validation/                # Schémas Zod
 │   └── generated/prisma/          # Client Prisma généré (ignoré par git)
 ├── prisma/
@@ -145,10 +147,14 @@ modules correspondants plutôt que d'être stubées par anticipation.
 - Mots de passe hachés avec bcrypt (12 rounds), jamais stockés en clair.
 - Toute page protégée vérifie le rôle **côté serveur** (`requireRole` / `requireUser`),
   indépendamment de l'affichage conditionnel côté client.
-- Aucune URL publique permanente n'est prévue pour les documents privés (le champ
-  `Document.storageKey` est une clé d'objet interne, pas une URL — la génération de liens
-  signés temporaires sera ajoutée avec le module de gestion documentaire).
-- Le journal d'audit (`AuditLog`) trace les actions sensibles (ex. `user.registered`).
+- Aucune URL publique permanente n'est exposée pour les documents privés : le champ
+  `Document.storageKey` est une clé d'objet interne, jamais une URL. Tout accès passe par
+  `/api/documents/[id]/download`, qui vérifie l'autorisation (propriétaire ou admin) puis
+  génère un lien signé S3 expirant après 5 minutes (voir `lib/storage/s3.ts`).
+- Les fichiers téléversés sont validés côté serveur (type MIME, taille max 10 Mo) —
+  jamais uniquement côté client.
+- Le journal d'audit (`AuditLog`) trace les actions sensibles (ex. `user.registered`,
+  `technician_certification.created`).
 
 ## Statut d'avancement (MVP)
 
@@ -167,7 +173,12 @@ Implémenté dans cette phase d'initialisation :
 - [x] Référentiel métiers/compétences/pays (41 métiers, 30 compétences, 41 pays)
 - [x] Expériences professionnelles : ajout, modification, suppression
       (`/technician/experiences`), pays normalisé via le référentiel `Country`
+- [x] Qualifications, certifications et documents : catalogue de 12 certifications
+      réelles (ISO 9606, ASME IX, AWS D1.1, API 1104, CSWIP 3.1, ISO 9712…),
+      téléversement de justificatifs vers un stockage compatible S3 (MinIO en local),
+      téléchargement exclusivement via lien signé à courte durée de vie
+      (`/api/documents/[id]/download`), jamais d'URL publique permanente
 
 À développer dans les prochains modules (voir le plan de développement du cadrage) :
-certifications et documents, workflow de vérification administrative, moteur de score,
-recherche de techniciens, passeport PDF, i18n FR/EN.
+workflow de vérification administrative, moteur de score, recherche de techniciens,
+passeport PDF, i18n FR/EN.

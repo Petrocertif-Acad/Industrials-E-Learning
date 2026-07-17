@@ -7,6 +7,7 @@ const NAV_ITEMS = [
   { href: "/technician/profile", label: "Mon profil" },
   { href: "/technician/skills", label: "Compétences" },
   { href: "/technician/experiences", label: "Expériences" },
+  { href: "/technician/certifications", label: "Certifications" },
 ];
 
 export default async function TechnicianLayout({ children }: { children: React.ReactNode }) {

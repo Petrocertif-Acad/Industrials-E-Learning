@@ -33,7 +33,7 @@ export default async function TechnicianDashboardPage({ searchParams }: Technici
       country: true,
       score: true,
       secondaryTrades: { include: { trade: true } },
-      _count: { select: { skills: true, workExperiences: true } },
+      _count: { select: { skills: true, workExperiences: true, certifications: true } },
     },
   });
 
@@ -122,6 +122,17 @@ export default async function TechnicianDashboardPage({ searchParams }: Technici
             className="mt-1 inline-block text-sm text-slate-600 hover:underline"
           >
             {profile._count.workExperiences > 0 ? "Voir mes expériences" : "Ajouter une expérience"}
+          </Link>
+        </Card>
+
+        <Card>
+          <h2 className="text-sm font-medium text-slate-500">Certifications</h2>
+          <p className="mt-2 text-3xl font-semibold">{profile._count.certifications}</p>
+          <Link
+            href="/technician/certifications"
+            className="mt-1 inline-block text-sm text-slate-600 hover:underline"
+          >
+            {profile._count.certifications > 0 ? "Voir mes certifications" : "Ajouter une certification"}
           </Link>
         </Card>
       </div>

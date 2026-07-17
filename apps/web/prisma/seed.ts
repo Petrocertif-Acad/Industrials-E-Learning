@@ -174,6 +174,33 @@ const SKILLS: SkillSeed[] = [
   { slug: "dimensional-control", tradeSlug: "boilermaking", nameFr: "Contrôle dimensionnel", nameEn: "Dimensional control" },
 ];
 
+interface CertificationSeed {
+  standardRef: string;
+  name: string;
+  issuingBody: string;
+  category: TradeCategory;
+}
+
+// Référentiel de qualifications et certifications réellement existantes dans
+// l'industrie (voir cadrage, règle : ne jamais inventer de fausse norme).
+// Un technicien ne peut associer à son profil qu'une certification de ce
+// catalogue ; l'ajout de nouvelles entrées est une fonction d'administration
+// future.
+const CERTIFICATIONS: CertificationSeed[] = [
+  { standardRef: "ISO 9606-1", name: "Épreuve de qualification des soudeurs — Aciers", issuingBody: "Organisme de certification accrédité", category: "WELDING" },
+  { standardRef: "ISO 9606-2", name: "Épreuve de qualification des soudeurs — Aluminium et alliages", issuingBody: "Organisme de certification accrédité", category: "WELDING" },
+  { standardRef: "ASME Section IX", name: "Qualification des modes opératoires et des soudeurs", issuingBody: "ASME", category: "WELDING" },
+  { standardRef: "AWS D1.1", name: "Code de soudage des structures — Acier", issuingBody: "American Welding Society", category: "WELDING" },
+  { standardRef: "EN ISO 3834-2", name: "Exigences de qualité pour le soudage par fusion", issuingBody: "Organisme de certification accrédité", category: "WELDING" },
+  { standardRef: "API 1104", name: "Soudage des pipelines et installations connexes", issuingBody: "American Petroleum Institute", category: "PIPING" },
+  { standardRef: "ASME B31.3", name: "Tuyauterie de procédé", issuingBody: "ASME", category: "PIPING" },
+  { standardRef: "CSWIP 3.1", name: "Inspecteur soudeur certifié", issuingBody: "TWI Certification", category: "QUALITY_CONTROL" },
+  { standardRef: "AWS CWI", name: "Certified Welding Inspector", issuingBody: "American Welding Society", category: "QUALITY_CONTROL" },
+  { standardRef: "ISO 9712", name: "Qualification et certification du personnel CND", issuingBody: "Organisme de certification accrédité", category: "NON_DESTRUCTIVE_TESTING" },
+  { standardRef: "ASNT SNT-TC-1A", name: "Qualification du personnel CND — Niveau II", issuingBody: "American Society for Nondestructive Testing", category: "NON_DESTRUCTIVE_TESTING" },
+  { standardRef: "PCN Level 2", name: "Personnel Certification in Non-destructive Testing — Niveau 2", issuingBody: "BINDT", category: "NON_DESTRUCTIVE_TESTING" },
+];
+
 async function seedCountries() {
   const countryIdByIsoCode = new Map<string, string>();
   for (const country of COUNTRIES) {
@@ -227,27 +254,34 @@ async function seedSkills(tradeIdBySlug: Map<string, string>) {
   return skillIdBySlug;
 }
 
+async function seedCertifications() {
+  const certificationIdByStandardRef = new Map<string, string>();
+  for (const certification of CERTIFICATIONS) {
+    const record = await prisma.certification.upsert({
+      where: { standardRef: certification.standardRef },
+      update: {
+        name: certification.name,
+        issuingBody: certification.issuingBody,
+        category: certification.category,
+      },
+      create: certification,
+    });
+    certificationIdByStandardRef.set(certification.standardRef, record.id);
+  }
+  return certificationIdByStandardRef;
+}
+
 async function main() {
   const DEMO_PASSWORD_HASH = await bcrypt.hash("Demo1234!", 12);
 
   const countryIdByIsoCode = await seedCountries();
   const tradeIdBySlug = await seedTrades();
   const skillIdBySlug = await seedSkills(tradeIdBySlug);
+  const certificationIdByStandardRef = await seedCertifications();
 
   const moroccoId = countryIdByIsoCode.get("MA")!;
   const weldingGtawId = tradeIdBySlug.get("welder-gtaw")!;
-
-  const gtawCertification = await prisma.certification.upsert({
-    where: { id: "00000000-0000-0000-0000-000000000010" },
-    update: {},
-    create: {
-      id: "00000000-0000-0000-0000-000000000010",
-      name: "Qualification de soudeur ISO 9606-1",
-      issuingBody: "Organisme de certification (démonstration)",
-      standardRef: "ISO 9606-1",
-      category: "WELDING",
-    },
-  });
+  const gtawCertificationId = certificationIdByStandardRef.get("ISO 9606-1")!;
 
   // Compte administrateur de démonstration
   await prisma.user.upsert({
@@ -312,7 +346,7 @@ async function main() {
       create: {
         id: "00000000-0000-0000-0000-000000000020",
         technicianId,
-        certificationId: gtawCertification.id,
+        certificationId: gtawCertificationId,
         issueDate: new Date("2022-03-01"),
         expiryDate: new Date("2026-03-01"),
         verificationStatus: "DECLARED",
@@ -375,7 +409,9 @@ async function main() {
     create: { userId: orgUser.id, organizationId: demoOrg.id, role: "OWNER" },
   });
 
-  console.log(`Référentiels : ${COUNTRIES.length} pays, ${TRADES.length} métiers, ${SKILLS.length} compétences.`);
+  console.log(
+    `Référentiels : ${COUNTRIES.length} pays, ${TRADES.length} métiers, ${SKILLS.length} compétences, ${CERTIFICATIONS.length} certifications.`
+  );
   console.log("Seed terminé. Comptes de démonstration (mot de passe: Demo1234!) :");
   console.log("  - demo.admin@atti.example (ADMIN)");
   console.log("  - demo.technicien@atti.example (TECHNICIAN)");
