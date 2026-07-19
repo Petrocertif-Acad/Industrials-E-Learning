@@ -341,10 +341,10 @@ async function main() {
     }
 
     await prisma.technicianCertification.upsert({
-      where: { id: "00000000-0000-0000-0000-000000000020" },
+      where: { id: "00000000-0000-4000-8000-000000000020" },
       update: {},
       create: {
-        id: "00000000-0000-0000-0000-000000000020",
+        id: "00000000-0000-4000-8000-000000000020",
         technicianId,
         certificationId: gtawCertificationId,
         issueDate: new Date("2022-03-01"),
@@ -356,10 +356,10 @@ async function main() {
     });
 
     await prisma.workExperience.upsert({
-      where: { id: "00000000-0000-0000-0000-000000000040" },
+      where: { id: "00000000-0000-4000-8000-000000000040" },
       update: {},
       create: {
-        id: "00000000-0000-0000-0000-000000000040",
+        id: "00000000-0000-4000-8000-000000000040",
         technicianId,
         projectName: "Extension unité de raffinage (démonstration)",
         employer: "Industrials Demo SARL (démonstration)",
@@ -381,10 +381,10 @@ async function main() {
 
   // Entreprise de démonstration
   const demoOrg = await prisma.organization.upsert({
-    where: { id: "00000000-0000-0000-0000-000000000030" },
+    where: { id: "00000000-0000-4000-8000-000000000030" },
     update: {},
     create: {
-      id: "00000000-0000-0000-0000-000000000030",
+      id: "00000000-0000-4000-8000-000000000030",
       name: "Industrials Demo SARL (démonstration)",
       type: "COMPANY",
       countryId: moroccoId,

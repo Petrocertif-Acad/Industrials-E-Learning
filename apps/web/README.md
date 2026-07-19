@@ -178,7 +178,9 @@ Implémenté dans cette phase d'initialisation :
       téléversement de justificatifs vers un stockage compatible S3 (MinIO en local),
       téléchargement exclusivement via lien signé à courte durée de vie
       (`/api/documents/[id]/download`), jamais d'URL publique permanente
+- [x] Workflow de vérification administrative : file d'attente des certifications et
+      expériences déclarées (`/admin/verifications`), validation ou rejet par un
+      administrateur avec propagation au document lié et au journal d'audit
 
 À développer dans les prochains modules (voir le plan de développement du cadrage) :
-workflow de vérification administrative, moteur de score, recherche de techniciens,
-passeport PDF, i18n FR/EN.
+moteur de score, recherche de techniciens, passeport PDF, i18n FR/EN.
