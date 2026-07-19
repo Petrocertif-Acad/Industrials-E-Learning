@@ -9,6 +9,7 @@ export const profileBasicsSchema = z
     yearsExperience: z.coerce.number().int().min(0).max(60),
     availability: z.enum(["AVAILABLE", "AVAILABLE_SOON", "UNAVAILABLE"]),
     mobilityScope: z.enum(["LOCAL", "NATIONAL", "INTERNATIONAL"]),
+    visibility: z.enum(["PUBLIC_LIMITED", "PUBLIC_FULL"]),
   })
   .refine((data) => !data.secondaryTradeIds.includes(data.primaryTradeId), {
     message: "Un métier secondaire ne peut pas être identique au métier principal.",

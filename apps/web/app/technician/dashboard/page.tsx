@@ -4,18 +4,7 @@ import { prisma } from "@/lib/db/prisma";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-
-const VERIFICATION_LABELS: Record<string, string> = {
-  INCOMPLETE: "Profil incomplet",
-  DECLARED: "Profil déclaré",
-  IDENTITY_VERIFIED: "Identité vérifiée",
-  DOCUMENTS_PENDING: "Documents en cours de vérification",
-  PARTIALLY_VERIFIED: "Profil partiellement vérifié",
-  PROFESSIONALLY_VERIFIED: "Profil professionnel vérifié",
-  PREMIUM_VERIFIED: "Profil premium vérifié",
-  SUSPENDED: "Profil suspendu",
-  ARCHIVED: "Profil archivé",
-};
+import { PROFILE_VERIFICATION_LABELS, PROFILE_VERIFICATION_TONE } from "@/lib/verification-labels";
 
 interface TechnicianDashboardPageProps {
   searchParams: Promise<{ updated?: string }>;
@@ -45,13 +34,25 @@ export default async function TechnicianDashboardPage({ searchParams }: Technici
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-semibold tracking-tight">
           Bonjour {profile.firstName}
         </h1>
-        <Badge tone={onboardingComplete ? "success" : "warning"}>
-          {VERIFICATION_LABELS[profile.verificationStatus]}
-        </Badge>
+        <div className="flex items-center gap-3">
+          <Badge tone={PROFILE_VERIFICATION_TONE[profile.verificationStatus]}>
+            {PROFILE_VERIFICATION_LABELS[profile.verificationStatus]}
+          </Badge>
+          {onboardingComplete && (
+            <Link
+              href={`/technicians/${profile.id}`}
+              target="_blank"
+              rel="noreferrer"
+              className="text-sm font-medium text-slate-700 underline decoration-slate-300 underline-offset-4 hover:text-slate-900"
+            >
+              Voir mon profil public ↗
+            </Link>
+          )}
+        </div>
       </div>
 
       {updated === "1" && (

@@ -5,22 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DeleteExperienceButton } from "@/components/features/experience/delete-experience-button";
-
-const VERIFICATION_LABELS: Record<string, string> = {
-  DECLARED: "Déclarée",
-  UNDER_REVIEW: "En cours de vérification",
-  VERIFIED: "Vérifiée",
-  REJECTED: "Rejetée",
-  EXPIRED: "Expirée",
-};
-
-const VERIFICATION_TONE: Record<string, "neutral" | "success" | "warning" | "danger"> = {
-  DECLARED: "neutral",
-  UNDER_REVIEW: "warning",
-  VERIFIED: "success",
-  REJECTED: "danger",
-  EXPIRED: "danger",
-};
+import { DOCUMENT_VERIFICATION_LABELS, DOCUMENT_VERIFICATION_TONE } from "@/lib/verification-labels";
 
 function formatDate(date: Date) {
   // Les dates de mission n'ont pas de composante horaire : elles sont stockées
@@ -96,8 +81,8 @@ export default async function TechnicianExperiencesPage({ searchParams }: Techni
                     {experience.endDate ? formatDate(experience.endDate) : "en cours"}
                   </p>
                 </div>
-                <Badge tone={VERIFICATION_TONE[experience.verificationStatus]}>
-                  {VERIFICATION_LABELS[experience.verificationStatus]}
+                <Badge tone={DOCUMENT_VERIFICATION_TONE[experience.verificationStatus]}>
+                  {DOCUMENT_VERIFICATION_LABELS[experience.verificationStatus]}
                 </Badge>
               </div>
 

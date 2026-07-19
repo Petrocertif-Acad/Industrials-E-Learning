@@ -181,6 +181,17 @@ Implémenté dans cette phase d'initialisation :
 - [x] Workflow de vérification administrative : file d'attente des certifications et
       expériences déclarées (`/admin/verifications`), validation ou rejet par un
       administrateur avec propagation au document lié et au journal d'audit
+- [x] Profil public technicien (`/technicians/[id]`) : vue en lecture seule destinée aux
+      entreprises, avec bandeau de confiance (score, taux de vérification), visibilité
+      limitée/complète contrôlée par le technicien (`TechnicianProfile.visibility`)
+- [x] Redesign de `/technician/profile` : sections regroupées, indicateur de complétude,
+      contrôle de visibilité, navigation à onglet actif
 
 À développer dans les prochains modules (voir le plan de développement du cadrage) :
 moteur de score, recherche de techniciens, passeport PDF, i18n FR/EN.
+
+## Branding
+
+Le logo (`apps/web/public/logo.png`) n'est pas encore présent dans le dépôt — le composant
+`components/ui/logo.tsx` le référence déjà (utilisé dans l'accueil, la navigation
+technicien et le profil public) ; déposez le fichier à ce chemin pour qu'il s'affiche.

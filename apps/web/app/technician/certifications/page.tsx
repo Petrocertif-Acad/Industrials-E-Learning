@@ -5,22 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DeleteCertificationButton } from "@/components/features/certification/delete-certification-button";
-
-const VERIFICATION_LABELS: Record<string, string> = {
-  DECLARED: "Déclarée",
-  UNDER_REVIEW: "En cours de vérification",
-  VERIFIED: "Vérifiée",
-  REJECTED: "Rejetée",
-  EXPIRED: "Expirée",
-};
-
-const VERIFICATION_TONE: Record<string, "neutral" | "success" | "warning" | "danger"> = {
-  DECLARED: "neutral",
-  UNDER_REVIEW: "warning",
-  VERIFIED: "success",
-  REJECTED: "danger",
-  EXPIRED: "danger",
-};
+import { DOCUMENT_VERIFICATION_LABELS, DOCUMENT_VERIFICATION_TONE } from "@/lib/verification-labels";
 
 const EXPIRY_WARNING_WINDOW_DAYS = 60;
 
@@ -108,8 +93,8 @@ export default async function TechnicianCertificationsPage({ searchParams }: Tec
                     </p>
                   </div>
                   <div className="flex flex-col items-end gap-2">
-                    <Badge tone={VERIFICATION_TONE[entry.verificationStatus]}>
-                      {VERIFICATION_LABELS[entry.verificationStatus]}
+                    <Badge tone={DOCUMENT_VERIFICATION_TONE[entry.verificationStatus]}>
+                      {DOCUMENT_VERIFICATION_LABELS[entry.verificationStatus]}
                     </Badge>
                     {expiryBadge && <Badge tone={expiryBadge.tone}>{expiryBadge.label}</Badge>}
                   </div>

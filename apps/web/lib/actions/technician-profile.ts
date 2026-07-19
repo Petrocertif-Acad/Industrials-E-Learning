@@ -36,14 +36,23 @@ export async function updateProfileBasicsAction(
     yearsExperience: formData.get("yearsExperience"),
     availability: formData.get("availability"),
     mobilityScope: formData.get("mobilityScope"),
+    visibility: formData.get("visibility"),
   });
 
   if (!parsed.success) {
     return { fieldErrors: parsed.error.flatten().fieldErrors };
   }
 
-  const { primaryTradeId, secondaryTradeIds: secondaryIds, countryId, city, yearsExperience, availability, mobilityScope } =
-    parsed.data;
+  const {
+    primaryTradeId,
+    secondaryTradeIds: secondaryIds,
+    countryId,
+    city,
+    yearsExperience,
+    availability,
+    mobilityScope,
+    visibility,
+  } = parsed.data;
 
   const nextVerificationStatus =
     profile.verificationStatus === "INCOMPLETE" ? "DECLARED" : profile.verificationStatus;
@@ -58,6 +67,7 @@ export async function updateProfileBasicsAction(
         yearsExperience,
         availability,
         mobilityScope,
+        visibility,
         verificationStatus: nextVerificationStatus,
       },
     }),

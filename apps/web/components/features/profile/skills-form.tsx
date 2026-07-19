@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
 import { updateTechnicianSkillsAction, type SkillsFormState } from "@/lib/actions/technician-profile";
+import { SKILL_LEVEL_LABELS } from "@/lib/skill-levels";
 
 interface SkillOption {
   id: string;
@@ -18,12 +19,7 @@ interface SkillsFormProps {
 
 const initialState: SkillsFormState = {};
 
-const LEVEL_LABELS: Record<string, string> = {
-  BEGINNER: "Débutant",
-  INTERMEDIATE: "Intermédiaire",
-  ADVANCED: "Avancé",
-  EXPERT: "Expert",
-};
+const SELECTABLE_LEVELS = ["BEGINNER", "INTERMEDIATE", "ADVANCED", "EXPERT"] as const;
 
 function groupSkillsByTrade(skills: SkillOption[]) {
   const groups = new Map<string, SkillOption[]>();
@@ -66,9 +62,9 @@ export function SkillsForm({ skills, currentLevels }: SkillsFormProps) {
                     defaultValue={currentLevels[skill.id] ?? "BEGINNER"}
                     className="sm:w-48"
                   >
-                    {Object.entries(LEVEL_LABELS).map(([value, label]) => (
+                    {SELECTABLE_LEVELS.map((value) => (
                       <option key={value} value={value}>
-                        {label}
+                        {SKILL_LEVEL_LABELS[value]}
                       </option>
                     ))}
                   </Select>
