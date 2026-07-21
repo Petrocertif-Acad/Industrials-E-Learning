@@ -4,7 +4,12 @@ import { prisma } from "@/lib/db/prisma";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Avatar } from "@/components/ui/avatar";
 import { PROFILE_VERIFICATION_LABELS, PROFILE_VERIFICATION_TONE } from "@/lib/verification-labels";
+import { AVAILABILITY_LABELS, AVAILABILITY_TONE, MOBILITY_LABELS } from "@/lib/availability-labels";
+
+const SECONDARY_LINK_CLASSNAME =
+  "rounded text-sm text-slate-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-600 focus-visible:ring-offset-2";
 
 interface TechnicianDashboardPageProps {
   searchParams: Promise<{ updated?: string }>;
@@ -21,7 +26,6 @@ export default async function TechnicianDashboardPage({ searchParams }: Technici
       primaryTrade: true,
       country: true,
       score: true,
-      secondaryTrades: { include: { trade: true } },
       _count: { select: { skills: true, workExperiences: true, certifications: true } },
     },
   });
@@ -34,26 +38,44 @@ export default async function TechnicianDashboardPage({ searchParams }: Technici
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-semibold tracking-tight">
-          Bonjour {profile.firstName}
-        </h1>
-        <div className="flex items-center gap-3">
-          <Badge tone={PROFILE_VERIFICATION_TONE[profile.verificationStatus]}>
-            {PROFILE_VERIFICATION_LABELS[profile.verificationStatus]}
-          </Badge>
-          {onboardingComplete && (
-            <Link
-              href={`/technicians/${profile.id}`}
-              target="_blank"
-              rel="noreferrer"
-              className="rounded text-sm font-medium text-slate-700 underline decoration-slate-300 underline-offset-4 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-600 focus-visible:ring-offset-2"
-            >
-              Voir mon profil public ↗
+      {/* Bloc identité & confiance */}
+      <Card className="flex flex-col gap-6 border-slate-200 bg-slate-50 sm:flex-row sm:items-start">
+        <Avatar firstName={profile.firstName} lastName={profile.lastName} size="lg" />
+        <div className="flex-1">
+          <div className="flex flex-wrap items-center gap-3">
+            <h1 className="text-2xl font-semibold tracking-tight">Bonjour {profile.firstName}</h1>
+            <Badge tone={PROFILE_VERIFICATION_TONE[profile.verificationStatus]}>
+              {PROFILE_VERIFICATION_LABELS[profile.verificationStatus]}
+            </Badge>
+          </div>
+          <p className="mt-1 text-lg text-slate-700">
+            {profile.primaryTrade?.nameFr ?? "Métier non renseigné"}
+          </p>
+          <p className="mt-1 text-sm text-slate-500">
+            {profile.country?.nameFr ?? "Localisation non renseignée"}
+            {profile.city ? ` · ${profile.city}` : ""}
+          </p>
+          <div className="mt-4 flex flex-wrap gap-2">
+            <Badge tone={AVAILABILITY_TONE[profile.availability]}>{AVAILABILITY_LABELS[profile.availability]}</Badge>
+            <Badge tone="neutral">{MOBILITY_LABELS[profile.mobilityScope]}</Badge>
+          </div>
+          <div className="mt-4 flex flex-wrap items-center gap-4">
+            <Link href="/technician/profile" className={SECONDARY_LINK_CLASSNAME}>
+              Modifier mon profil
             </Link>
-          )}
+            {onboardingComplete && (
+              <Link
+                href={`/technicians/${profile.id}`}
+                target="_blank"
+                rel="noreferrer"
+                className={SECONDARY_LINK_CLASSNAME}
+              >
+                Voir mon profil public ↗
+              </Link>
+            )}
+          </div>
         </div>
-      </div>
+      </Card>
 
       {updated === "1" && (
         <p className="rounded-md bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
@@ -87,30 +109,9 @@ export default async function TechnicianDashboardPage({ searchParams }: Technici
         </Card>
 
         <Card>
-          <h2 className="text-sm font-medium text-slate-500">Métier principal</h2>
-          <p className="mt-2 text-lg font-medium">
-            {profile.primaryTrade?.nameFr ?? "Non renseigné"}
-          </p>
-          {profile.secondaryTrades.length > 0 && (
-            <p className="mt-1 text-sm text-slate-600">
-              Métiers secondaires : {profile.secondaryTrades.map((t) => t.trade.nameFr).join(", ")}
-            </p>
-          )}
-          <Link href="/technician/profile" className="mt-1 inline-block rounded text-sm text-slate-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-600 focus-visible:ring-offset-2">
-            {profile.primaryTrade ? "Modifier" : "Renseigner mon métier"}
-          </Link>
-        </Card>
-
-        <Card>
-          <h2 className="text-sm font-medium text-slate-500">Localisation</h2>
-          <p className="mt-2 text-lg font-medium">{profile.country?.nameFr ?? "Non renseigné"}</p>
-          <p className="mt-1 text-sm text-slate-600">{profile.city ?? "Ville non renseignée"}</p>
-        </Card>
-
-        <Card>
           <h2 className="text-sm font-medium text-slate-500">Compétences déclarées</h2>
           <p className="mt-2 text-3xl font-semibold">{profile._count.skills}</p>
-          <Link href="/technician/skills" className="mt-1 inline-block rounded text-sm text-slate-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-600 focus-visible:ring-offset-2">
+          <Link href="/technician/skills" className={`mt-1 inline-block ${SECONDARY_LINK_CLASSNAME}`}>
             {profile._count.skills > 0 ? "Modifier mes compétences" : "Déclarer mes compétences"}
           </Link>
         </Card>
@@ -118,10 +119,7 @@ export default async function TechnicianDashboardPage({ searchParams }: Technici
         <Card>
           <h2 className="text-sm font-medium text-slate-500">Expériences professionnelles</h2>
           <p className="mt-2 text-3xl font-semibold">{profile._count.workExperiences}</p>
-          <Link
-            href="/technician/experiences"
-            className="mt-1 inline-block rounded text-sm text-slate-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-600 focus-visible:ring-offset-2"
-          >
+          <Link href="/technician/experiences" className={`mt-1 inline-block ${SECONDARY_LINK_CLASSNAME}`}>
             {profile._count.workExperiences > 0 ? "Voir mes expériences" : "Ajouter une expérience"}
           </Link>
         </Card>
@@ -129,10 +127,7 @@ export default async function TechnicianDashboardPage({ searchParams }: Technici
         <Card>
           <h2 className="text-sm font-medium text-slate-500">Certifications</h2>
           <p className="mt-2 text-3xl font-semibold">{profile._count.certifications}</p>
-          <Link
-            href="/technician/certifications"
-            className="mt-1 inline-block rounded text-sm text-slate-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-600 focus-visible:ring-offset-2"
-          >
+          <Link href="/technician/certifications" className={`mt-1 inline-block ${SECONDARY_LINK_CLASSNAME}`}>
             {profile._count.certifications > 0 ? "Voir mes certifications" : "Ajouter une certification"}
           </Link>
         </Card>
