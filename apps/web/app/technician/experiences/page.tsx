@@ -93,7 +93,7 @@ export default async function TechnicianExperiencesPage({ searchParams }: Techni
               <div className="mt-4 flex items-center gap-4">
                 <Link
                   href={`/technician/experiences/${experience.id}/edit`}
-                  className="text-sm text-slate-700 hover:underline"
+                  className="rounded text-sm text-slate-700 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-600 focus-visible:ring-offset-2"
                 >
                   Modifier
                 </Link>

@@ -58,7 +58,7 @@ export default async function TechnicianProfilePage() {
             href={`/technicians/${profile.id}`}
             target="_blank"
             rel="noreferrer"
-            className="shrink-0 text-sm font-medium text-slate-700 underline decoration-slate-300 underline-offset-4 hover:text-slate-900"
+            className="shrink-0 rounded text-sm font-medium text-slate-700 underline decoration-slate-300 underline-offset-4 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-600 focus-visible:ring-offset-2"
           >
             Voir mon profil public ↗
           </Link>

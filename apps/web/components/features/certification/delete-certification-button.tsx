@@ -13,7 +13,10 @@ export function DeleteCertificationButton({ certificationRecordId }: { certifica
       }}
     >
       <input type="hidden" name="id" value={certificationRecordId} />
-      <button type="submit" className="text-sm text-red-600 hover:underline">
+      <button
+        type="submit"
+        className="rounded text-sm text-red-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-600 focus-visible:ring-offset-2"
+      >
         Supprimer
       </button>
     </form>

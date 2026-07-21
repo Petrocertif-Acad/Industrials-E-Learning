@@ -17,7 +17,7 @@ export default async function TechnicianLayout({ children }: { children: React.R
           <TechnicianNav />
         </div>
       </header>
-      <div className="mx-auto w-full max-w-5xl flex-1 px-6 py-10">{children}</div>
+      <main className="mx-auto w-full max-w-5xl flex-1 px-6 py-10">{children}</main>
     </div>
   );
 }

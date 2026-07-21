@@ -106,7 +106,7 @@ export default async function TechnicianCertificationsPage({ searchParams }: Tec
                       href={`/api/documents/${entry.document.id}/download`}
                       target="_blank"
                       rel="noreferrer"
-                      className="text-sm text-slate-700 hover:underline"
+                      className="rounded text-sm text-slate-700 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-600 focus-visible:ring-offset-2"
                     >
                       Voir le justificatif
                     </a>
@@ -115,7 +115,7 @@ export default async function TechnicianCertificationsPage({ searchParams }: Tec
                   )}
                   <Link
                     href={`/technician/certifications/${entry.id}/edit`}
-                    className="text-sm text-slate-700 hover:underline"
+                    className="rounded text-sm text-slate-700 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-600 focus-visible:ring-offset-2"
                   >
                     Modifier
                   </Link>

@@ -47,7 +47,7 @@ export default async function TechnicianDashboardPage({ searchParams }: Technici
               href={`/technicians/${profile.id}`}
               target="_blank"
               rel="noreferrer"
-              className="text-sm font-medium text-slate-700 underline decoration-slate-300 underline-offset-4 hover:text-slate-900"
+              className="rounded text-sm font-medium text-slate-700 underline decoration-slate-300 underline-offset-4 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-600 focus-visible:ring-offset-2"
             >
               Voir mon profil public ↗
             </Link>
@@ -96,7 +96,7 @@ export default async function TechnicianDashboardPage({ searchParams }: Technici
               Métiers secondaires : {profile.secondaryTrades.map((t) => t.trade.nameFr).join(", ")}
             </p>
           )}
-          <Link href="/technician/profile" className="mt-1 inline-block text-sm text-slate-600 hover:underline">
+          <Link href="/technician/profile" className="mt-1 inline-block rounded text-sm text-slate-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-600 focus-visible:ring-offset-2">
             {profile.primaryTrade ? "Modifier" : "Renseigner mon métier"}
           </Link>
         </Card>
@@ -110,7 +110,7 @@ export default async function TechnicianDashboardPage({ searchParams }: Technici
         <Card>
           <h2 className="text-sm font-medium text-slate-500">Compétences déclarées</h2>
           <p className="mt-2 text-3xl font-semibold">{profile._count.skills}</p>
-          <Link href="/technician/skills" className="mt-1 inline-block text-sm text-slate-600 hover:underline">
+          <Link href="/technician/skills" className="mt-1 inline-block rounded text-sm text-slate-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-600 focus-visible:ring-offset-2">
             {profile._count.skills > 0 ? "Modifier mes compétences" : "Déclarer mes compétences"}
           </Link>
         </Card>
@@ -120,7 +120,7 @@ export default async function TechnicianDashboardPage({ searchParams }: Technici
           <p className="mt-2 text-3xl font-semibold">{profile._count.workExperiences}</p>
           <Link
             href="/technician/experiences"
-            className="mt-1 inline-block text-sm text-slate-600 hover:underline"
+            className="mt-1 inline-block rounded text-sm text-slate-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-600 focus-visible:ring-offset-2"
           >
             {profile._count.workExperiences > 0 ? "Voir mes expériences" : "Ajouter une expérience"}
           </Link>
@@ -131,7 +131,7 @@ export default async function TechnicianDashboardPage({ searchParams }: Technici
           <p className="mt-2 text-3xl font-semibold">{profile._count.certifications}</p>
           <Link
             href="/technician/certifications"
-            className="mt-1 inline-block text-sm text-slate-600 hover:underline"
+            className="mt-1 inline-block rounded text-sm text-slate-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-600 focus-visible:ring-offset-2"
           >
             {profile._count.certifications > 0 ? "Voir mes certifications" : "Ajouter une certification"}
           </Link>
