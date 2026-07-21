@@ -263,10 +263,24 @@ Implémenté dans cette phase d'initialisation :
       de réinitialisation est affiché directement dans l'UI et journalisé
       côté serveur (`console.log`) au lieu d'être envoyé par email ; voir le
       `TODO(email)` dans `lib/actions/password-reset.ts`.
+- [x] Tests automatisés (Vitest) : `npm test` (ou `npm run test:watch`).
+      99 tests unitaires sur la logique pure — schémas de validation Zod
+      (cas valides et refus attendus, en particulier les `.refine()` :
+      dates incohérentes, mots de passe qui ne correspondent pas, métier
+      secondaire dupliqué), le moteur de score (`lib/score.ts`, Prisma
+      mocké via `vi.mock`, y compris les cas limites : certification
+      expirée malgré un statut VERIFIED, profil vide, profil maximal),
+      l'expiration des certifications, les libellés FR/EN, la génération
+      de token de réinitialisation. Pas de suite E2E persistée pour
+      l'instant — la vérification de bout en bout continue de se faire via
+      Playwright en ad hoc à chaque module (voir le suivi de ce dépôt) ;
+      formaliser quelques parcours critiques (connexion, inscription, RBAC)
+      en E2E persisté est un chantier naturel à mener avec la mise en place
+      de la CI/CD.
 
 À développer dans les prochains modules (voir le plan de développement du cadrage) :
-localisation des données de référence et du formatage des dates, évaluations
-pratiques, avis employeurs, formation continue.
+CI/CD, pages légales, évaluations pratiques, avis employeurs, formation
+continue, envoi d'email réel pour la réinitialisation de mot de passe.
 
 ## Branding
 
