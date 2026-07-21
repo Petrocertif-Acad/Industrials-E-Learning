@@ -1,7 +1,14 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db/prisma";
 import { getOwnOrganization } from "@/lib/organization";
+import {
+  getTechnicianProfileForDisplay,
+  canViewFullTechnicianProfile,
+  isTechnicianProfilePublishable,
+  isTechnicianProfileHidden,
+} from "@/lib/technician";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/avatar";
@@ -34,32 +41,18 @@ export default async function TechnicianProfileViewPage({ params }: TechnicianPr
   const { id } = await params;
   const session = await auth();
 
-  const profile = await prisma.technicianProfile.findUnique({
-    where: { id },
-    include: {
-      primaryTrade: true,
-      secondaryTrades: { include: { trade: true } },
-      country: true,
-      score: true,
-      skills: { include: { skill: { include: { trade: true } } }, orderBy: { updatedAt: "desc" } },
-      certifications: { include: { certification: true }, orderBy: { createdAt: "desc" } },
-      workExperiences: { include: { country: true }, orderBy: { startDate: "desc" } },
-      languages: true,
-    },
-  });
+  const profile = await getTechnicianProfileForDisplay(id);
 
-  const isOwner = session?.user?.id !== undefined && profile?.userId === session.user.id;
-  const isAdmin = session?.user?.role === "ADMIN";
-  const isPrivileged = isOwner || isAdmin;
-
-  const isPublishable = Boolean(profile?.primaryTradeId && profile?.countryId);
-  const isHidden = profile?.verificationStatus === "SUSPENDED" || profile?.verificationStatus === "ARCHIVED";
+  const isPrivileged =
+    (session?.user?.id !== undefined && profile?.userId === session.user.id) || session?.user?.role === "ADMIN";
+  const isPublishable = Boolean(profile && isTechnicianProfilePublishable(profile));
+  const isHidden = Boolean(profile && isTechnicianProfileHidden(profile));
 
   if (!profile || (!isPublishable && !isPrivileged) || (isHidden && !isPrivileged)) {
     notFound();
   }
 
-  const fullAccess = isPrivileged || profile.visibility === "PUBLIC_FULL";
+  const fullAccess = canViewFullTechnicianProfile(profile, session);
 
   const organization =
     session?.user?.role === "ORGANIZATION" ? await getOwnOrganization(session.user.id) : null;
@@ -105,6 +98,14 @@ export default async function TechnicianProfileViewPage({ params }: TechnicianPr
             {profile.score && <span className="text-base font-normal text-slate-500"> / 100</span>}
           </p>
           {!profile.score && <p className="mt-1 text-xs text-slate-500">Non encore calculé</p>}
+          {fullAccess && (
+            <Link
+              href={`/api/technicians/${profile.id}/passport`}
+              className="mt-3 inline-block rounded text-xs font-medium text-slate-700 underline decoration-slate-300 underline-offset-4 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-600 focus-visible:ring-offset-2"
+            >
+              Télécharger le passeport (PDF)
+            </Link>
+          )}
         </div>
       </Card>
 

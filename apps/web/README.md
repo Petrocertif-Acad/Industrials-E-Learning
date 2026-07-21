@@ -207,8 +207,14 @@ Implémenté dans cette phase d'initialisation :
       profil public ; `npm run scores:recalculate` pour recalculer une base
       existante après une évolution de la méthode
 
+- [x] Passeport professionnel PDF (`/api/technicians/[id]/passport`) : identité,
+      score et sous-scores, compétences, certifications (avec validité réelle),
+      expériences, langues, QR code de vérification vers le profil public ;
+      mêmes règles de visibilité que le profil public (propriétaire, admin, ou
+      visibilité complète)
+
 À développer dans les prochains modules (voir le plan de développement du cadrage) :
-passeport PDF, i18n FR/EN, évaluations pratiques, avis employeurs, formation continue.
+i18n FR/EN, évaluations pratiques, avis employeurs, formation continue.
 
 ## Branding
 

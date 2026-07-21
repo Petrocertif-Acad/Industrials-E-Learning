@@ -89,6 +89,11 @@ export default async function TechnicianDashboardPage({ searchParams }: Technici
                 Voir mon profil public ↗
               </Link>
             )}
+            {onboardingComplete && (
+              <Link href={`/api/technicians/${profile.id}/passport`} className={SECONDARY_LINK_CLASSNAME}>
+                Télécharger mon passeport (PDF)
+              </Link>
+            )}
           </div>
         </div>
       </Card>
