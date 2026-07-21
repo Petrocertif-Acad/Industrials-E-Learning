@@ -22,11 +22,36 @@
   },
   "LoginForm": {
     "registeredSuccess": "Account created successfully. Log in to continue.",
+    "resetSuccess": "Password updated. Log in with your new password.",
     "email": "Email address",
     "password": "Password",
+    "forgotPassword": "Forgot your password?",
     "submitPending": "Logging in…",
     "submit": "Log in",
     "invalidCredentials": "Incorrect email or password."
+  },
+  "ForgotPasswordPage": {
+    "title": "Forgot password",
+    "subtitle": "Enter your email address and we'll generate a reset link."
+  },
+  "ForgotPasswordForm": {
+    "email": "Email address",
+    "submitPending": "Sending…",
+    "submit": "Send reset link",
+    "submittedMessage": "If an account exists with this email address, a reset link has been generated.",
+    "devModeLabel": "Development mode — no email is sent yet",
+    "backToLogin": "Back to login"
+  },
+  "ResetPasswordPage": {
+    "title": "Reset password",
+    "subtitle": "Choose a new password.",
+    "missingToken": "Invalid reset link: the token is missing."
+  },
+  "ResetPasswordForm": {
+    "newPassword": "New password",
+    "confirmPassword": "Confirm password",
+    "submitPending": "Saving…",
+    "submit": "Reset password"
   },
   "RegisterPage": {
     "title": "Create my technician profile",

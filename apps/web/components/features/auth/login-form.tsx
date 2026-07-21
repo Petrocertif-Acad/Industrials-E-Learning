@@ -3,7 +3,7 @@
 import { useState, type FormEvent } from "react";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { useRouter } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,7 @@ export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const justRegistered = searchParams.get("registered") === "1";
+  const justReset = searchParams.get("reset") === "1";
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
@@ -45,6 +46,9 @@ export function LoginForm() {
       {justRegistered && (
         <p className="rounded-md bg-emerald-50 px-3 py-2 text-sm text-emerald-800">{t("registeredSuccess")}</p>
       )}
+      {justReset && (
+        <p className="rounded-md bg-emerald-50 px-3 py-2 text-sm text-emerald-800">{t("resetSuccess")}</p>
+      )}
 
       <div>
         <Label htmlFor="email">{t("email")}</Label>
@@ -52,7 +56,12 @@ export function LoginForm() {
       </div>
 
       <div>
-        <Label htmlFor="password">{t("password")}</Label>
+        <div className="flex items-center justify-between">
+          <Label htmlFor="password">{t("password")}</Label>
+          <Link href="/forgot-password" className="text-xs font-medium text-slate-600 hover:text-slate-900 hover:underline">
+            {t("forgotPassword")}
+          </Link>
+        </div>
         <Input id="password" name="password" type="password" required autoComplete="current-password" />
       </div>
 

@@ -22,11 +22,36 @@
   },
   "LoginForm": {
     "registeredSuccess": "Compte créé avec succès. Connectez-vous pour continuer.",
+    "resetSuccess": "Mot de passe mis à jour. Connectez-vous avec votre nouveau mot de passe.",
     "email": "Adresse email",
     "password": "Mot de passe",
+    "forgotPassword": "Mot de passe oublié ?",
     "submitPending": "Connexion…",
     "submit": "Se connecter",
     "invalidCredentials": "Email ou mot de passe incorrect."
+  },
+  "ForgotPasswordPage": {
+    "title": "Mot de passe oublié",
+    "subtitle": "Indiquez votre adresse email, nous générerons un lien de réinitialisation."
+  },
+  "ForgotPasswordForm": {
+    "email": "Adresse email",
+    "submitPending": "Envoi…",
+    "submit": "Envoyer le lien de réinitialisation",
+    "submittedMessage": "Si un compte existe avec cette adresse email, un lien de réinitialisation a été généré.",
+    "devModeLabel": "Mode développement — aucun email n'est envoyé pour l'instant",
+    "backToLogin": "Retour à la connexion"
+  },
+  "ResetPasswordPage": {
+    "title": "Réinitialiser le mot de passe",
+    "subtitle": "Choisissez un nouveau mot de passe.",
+    "missingToken": "Lien de réinitialisation invalide : le jeton est manquant."
+  },
+  "ResetPasswordForm": {
+    "newPassword": "Nouveau mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "submitPending": "Enregistrement…",
+    "submit": "Réinitialiser le mot de passe"
   },
   "RegisterPage": {
     "title": "Créer mon profil technicien",

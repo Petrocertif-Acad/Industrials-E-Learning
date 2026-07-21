@@ -14,3 +14,18 @@ export const registerTechnicianSchema = z.object({
 });
 
 export type RegisterTechnicianInput = z.infer<typeof registerTechnicianSchema>;
+
+export const requestPasswordResetSchema = z.object({
+  email: z.email(),
+});
+
+export const resetPasswordSchema = z
+  .object({
+    token: z.string().min(1),
+    password: z.string().min(10, "Le mot de passe doit contenir au moins 10 caractères."),
+    confirmPassword: z.string().min(1),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Les mots de passe ne correspondent pas.",
+    path: ["confirmPassword"],
+  });

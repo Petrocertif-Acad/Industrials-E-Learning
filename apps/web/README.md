@@ -253,6 +253,16 @@ Implémenté dans cette phase d'initialisation :
       calcul (`lib/score.ts`), pas recalculés à l'affichage ; les rendre
       bilingues demanderait de stocker des clés de traduction plutôt que du
       texte final, puis de relancer `npm run scores:recalculate`.
+- [x] Réinitialisation de mot de passe : `/forgot-password` (demande) et
+      `/reset-password?token=…` (nouveau mot de passe), token aléatoire de
+      32 octets dont seul le hash SHA-256 est stocké (`PasswordResetToken`,
+      expiration 1h, usage unique, un seul lien actif à la fois par compte),
+      réponse identique que l'email existe ou non (pas d'énumération de
+      comptes), journalisé dans l'audit. **Mode développement uniquement** :
+      aucun fournisseur d'email n'est encore branché dans le projet — le lien
+      de réinitialisation est affiché directement dans l'UI et journalisé
+      côté serveur (`console.log`) au lieu d'être envoyé par email ; voir le
+      `TODO(email)` dans `lib/actions/password-reset.ts`.
 
 À développer dans les prochains modules (voir le plan de développement du cadrage) :
 localisation des données de référence et du formatage des dates, évaluations

@@ -55,8 +55,27 @@ model User {
   verifiedDocuments       Document[]           @relation("DocumentVerifier")
   auditLogEntries         AuditLog[]           @relation("AuditActor")
   talentPoolEntriesAdded  TalentPoolEntry[]
+  passwordResetTokens     PasswordResetToken[]
 
   @@index([role])
+}
+
+// ---------------------------------------------------------------------------
+// Réinitialisation de mot de passe
+// ---------------------------------------------------------------------------
+
+model PasswordResetToken {
+  id        String    @id @default(uuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // Seul le hash SHA-256 du token est stocké : une fuite de la base ne
+  // permet jamais de réutiliser un lien de réinitialisation en circulation.
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
 }
 
 // ---------------------------------------------------------------------------
