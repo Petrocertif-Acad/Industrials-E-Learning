@@ -1,9 +1,11 @@
+import { getTranslations, getLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db/prisma";
 import { searchTechnicians, type TechnicianSearchFilters } from "@/lib/search";
 import { getOwnOrganization } from "@/lib/organization";
 import { getTalentPoolTechnicianIds } from "@/lib/talent-pool";
+import { localizedName } from "@/lib/localized-name";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/avatar";
@@ -29,6 +31,8 @@ interface OrganizationSearchPageProps {
 }
 
 export default async function OrganizationSearchPage({ searchParams }: OrganizationSearchPageProps) {
+  const t = await getTranslations("OrganizationSearchPage");
+  const locale = await getLocale();
   const params = await searchParams;
 
   const filters: TechnicianSearchFilters = {
@@ -45,73 +49,73 @@ export default async function OrganizationSearchPage({ searchParams }: Organizat
   const session = await auth();
   const organization = await getOwnOrganization(session!.user.id);
 
-  const [technicians, trades, countries, certifications, savedTechnicianIds] = await Promise.all([
+  const [technicians, tradesData, countriesData, certifications, savedTechnicianIds] = await Promise.all([
     searchTechnicians(filters),
-    prisma.trade.findMany({ orderBy: { nameFr: "asc" }, select: { id: true, nameFr: true } }),
-    prisma.country.findMany({ orderBy: { nameFr: "asc" }, select: { id: true, nameFr: true } }),
+    prisma.trade.findMany({ orderBy: { nameFr: "asc" }, select: { id: true, nameFr: true, nameEn: true } }),
+    prisma.country.findMany({ orderBy: { nameFr: "asc" }, select: { id: true, nameFr: true, nameEn: true } }),
     prisma.certification.findMany({ orderBy: { name: "asc" }, select: { id: true, name: true, standardRef: true } }),
     organization ? getTalentPoolTechnicianIds(organization.id) : Promise.resolve(new Set<string>()),
   ]);
+  const trades = tradesData.map((trade) => ({ id: trade.id, name: localizedName(trade, locale) }));
+  const countries = countriesData.map((country) => ({ id: country.id, name: localizedName(country, locale) }));
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Rechercher des techniciens</h1>
-        <p className="mt-1 text-sm text-slate-600">
-          Filtrez parmi les profils publiés pour trouver les techniciens correspondant à vos besoins.
-        </p>
+        <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
+        <p className="mt-1 text-sm text-slate-600">{t("subtitle")}</p>
       </div>
 
       <Card>
         <form method="get" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <div>
-            <Label htmlFor="trade">Métier</Label>
+            <Label htmlFor="trade">{t("trade")}</Label>
             <Select id="trade" name="trade" defaultValue={params.trade ?? ""}>
-              <option value="">Tous les métiers</option>
+              <option value="">{t("allTrades")}</option>
               {trades.map((trade) => (
                 <option key={trade.id} value={trade.id}>
-                  {trade.nameFr}
+                  {trade.name}
                 </option>
               ))}
             </Select>
           </div>
 
           <div>
-            <Label htmlFor="country">Pays</Label>
+            <Label htmlFor="country">{t("country")}</Label>
             <Select id="country" name="country" defaultValue={params.country ?? ""}>
-              <option value="">Tous les pays</option>
+              <option value="">{t("allCountries")}</option>
               {countries.map((country) => (
                 <option key={country.id} value={country.id}>
-                  {country.nameFr}
+                  {country.name}
                 </option>
               ))}
             </Select>
           </div>
 
           <div>
-            <Label htmlFor="availability">Disponibilité</Label>
+            <Label htmlFor="availability">{t("availability")}</Label>
             <Select id="availability" name="availability" defaultValue={params.availability ?? ""}>
-              <option value="">Toutes</option>
-              <option value="AVAILABLE">Disponible</option>
-              <option value="AVAILABLE_SOON">Disponible prochainement</option>
-              <option value="UNAVAILABLE">Non disponible</option>
+              <option value="">{t("allAvailability")}</option>
+              <option value="AVAILABLE">{t("availabilityAvailable")}</option>
+              <option value="AVAILABLE_SOON">{t("availabilitySoon")}</option>
+              <option value="UNAVAILABLE">{t("availabilityUnavailable")}</option>
             </Select>
           </div>
 
           <div>
-            <Label htmlFor="mobility">Mobilité</Label>
+            <Label htmlFor="mobility">{t("mobility")}</Label>
             <Select id="mobility" name="mobility" defaultValue={params.mobility ?? ""}>
-              <option value="">Toutes</option>
-              <option value="LOCAL">Locale</option>
-              <option value="NATIONAL">Nationale</option>
-              <option value="INTERNATIONAL">Internationale</option>
+              <option value="">{t("allMobility")}</option>
+              <option value="LOCAL">{t("mobilityLocal")}</option>
+              <option value="NATIONAL">{t("mobilityNational")}</option>
+              <option value="INTERNATIONAL">{t("mobilityInternational")}</option>
             </Select>
           </div>
 
           <div>
-            <Label htmlFor="certification">Certification</Label>
+            <Label htmlFor="certification">{t("certification")}</Label>
             <Select id="certification" name="certification" defaultValue={params.certification ?? ""}>
-              <option value="">Toutes</option>
+              <option value="">{t("allCertifications")}</option>
               {certifications.map((certification) => (
                 <option key={certification.id} value={certification.id}>
                   {certification.standardRef
@@ -123,7 +127,7 @@ export default async function OrganizationSearchPage({ searchParams }: Organizat
           </div>
 
           <div>
-            <Label htmlFor="minScore">Score ATTI minimum</Label>
+            <Label htmlFor="minScore">{t("minScore")}</Label>
             <Input
               id="minScore"
               name="minScore"
@@ -136,10 +140,10 @@ export default async function OrganizationSearchPage({ searchParams }: Organizat
           </div>
 
           <div className="flex items-end gap-3 sm:col-span-2 lg:col-span-3">
-            <Button type="submit">Rechercher</Button>
+            <Button type="submit">{t("search")}</Button>
             {hasActiveFilters && (
               <Link href="/organization/search" className="text-sm text-slate-600 hover:underline">
-                Réinitialiser les filtres
+                {t("resetFilters")}
               </Link>
             )}
           </div>
@@ -147,15 +151,14 @@ export default async function OrganizationSearchPage({ searchParams }: Organizat
       </Card>
 
       <p className="text-sm text-slate-600">
-        {technicians.length} technicien{technicians.length > 1 ? "s" : ""} trouvé
-        {technicians.length > 1 ? "s" : ""}
+        {technicians.length > 1
+          ? t("resultsCountPlural", { count: technicians.length })
+          : t("resultsCount", { count: technicians.length })}
       </p>
 
       {technicians.length === 0 ? (
         <Card className="border-slate-200 bg-slate-50 text-center">
-          <p className="text-sm text-slate-600">
-            Aucun technicien ne correspond à ces critères. Essayez d&apos;élargir votre recherche.
-          </p>
+          <p className="text-sm text-slate-600">{t("empty")}</p>
         </Card>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -170,9 +173,11 @@ export default async function OrganizationSearchPage({ searchParams }: Organizat
                     <p className="truncate font-medium text-slate-900">
                       {technician.firstName} {technician.lastName}
                     </p>
-                    <p className="truncate text-sm text-slate-600">{technician.primaryTrade?.nameFr}</p>
+                    <p className="truncate text-sm text-slate-600">
+                      {technician.primaryTrade && localizedName(technician.primaryTrade, locale)}
+                    </p>
                     <p className="truncate text-xs text-slate-500">
-                      {technician.country?.nameFr}
+                      {technician.country && localizedName(technician.country, locale)}
                       {technician.city ? ` · ${technician.city}` : ""}
                     </p>
                   </div>
@@ -180,7 +185,7 @@ export default async function OrganizationSearchPage({ searchParams }: Organizat
                     <p className="text-lg font-semibold text-slate-900">
                       {technician.score ? Number(technician.score.totalScore) : "—"}
                     </p>
-                    <p className="text-xs text-slate-500">Score</p>
+                    <p className="text-xs text-slate-500">{t("score")}</p>
                   </div>
                 </div>
 
@@ -196,9 +201,15 @@ export default async function OrganizationSearchPage({ searchParams }: Organizat
 
                 {technician.certifications.length > 0 && (
                   <p className="mt-3 text-xs text-slate-500">
-                    {verifiedCertifications}/{technician.certifications.length} certification
-                    {technician.certifications.length > 1 ? "s" : ""} vérifiée
-                    {verifiedCertifications > 1 ? "s" : ""}
+                    {verifiedCertifications > 1
+                      ? t("certificationsVerifiedPlural", {
+                          verified: verifiedCertifications,
+                          total: technician.certifications.length,
+                        })
+                      : t("certificationsVerified", {
+                          verified: verifiedCertifications,
+                          total: technician.certifications.length,
+                        })}
                   </p>
                 )}
 
@@ -207,7 +218,7 @@ export default async function OrganizationSearchPage({ searchParams }: Organizat
                     href={`/technicians/${technician.id}`}
                     className="rounded text-sm font-medium text-slate-900 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-600 focus-visible:ring-offset-2"
                   >
-                    Voir le profil →
+                    {t("viewProfile")}
                   </Link>
                   <TalentPoolToggleButton
                     technicianId={technician.id}

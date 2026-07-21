@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db/prisma";
 import { Card } from "@/components/ui/card";
@@ -14,6 +15,7 @@ interface EditCertificationPageProps {
 }
 
 export default async function EditCertificationPage({ params }: EditCertificationPageProps) {
+  const t = await getTranslations("EditCertificationPage");
   const { id } = await params;
   const session = await auth();
 
@@ -33,7 +35,7 @@ export default async function EditCertificationPage({ params }: EditCertificatio
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-semibold tracking-tight">Modifier la certification</h1>
+      <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
       <Card>
         <CertificationForm
           certifications={certifications}

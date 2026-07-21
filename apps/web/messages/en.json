@@ -96,5 +96,296 @@
     "certificationsViewAction": "View my certifications",
     "certificationsAddAction": "Add a certification",
     "expiryWarning": "Expiry to check"
+  },
+  "TechnicianProfilePage": {
+    "title": "My profile",
+    "subtitle": "This information determines your visibility in companies' search results.",
+    "viewPublicProfile": "View my public profile ↗"
+  },
+  "ProfileBasicsForm": {
+    "tradeLegend": "Trade",
+    "primaryTrade": "Primary trade",
+    "primaryTradePlaceholder": "Select your primary trade",
+    "secondaryTrades": "Secondary trades (optional, up to 5)",
+    "secondaryTradesHelp": "Hold Ctrl (Cmd on Mac) to select multiple trades.",
+    "yearsExperience": "Years of experience",
+    "locationLegend": "Location and availability",
+    "country": "Country",
+    "countryPlaceholder": "Select your country",
+    "city": "City",
+    "availability": "Availability",
+    "availabilityAvailable": "Available",
+    "availabilitySoon": "Available soon",
+    "availabilityUnavailable": "Unavailable",
+    "mobility": "Mobility",
+    "mobilityLocal": "Local",
+    "mobilityNational": "National",
+    "mobilityInternational": "International",
+    "visibilityLegend": "Profile visibility",
+    "visibilitySubtitle": "Control what companies see when they view your public profile.",
+    "visibilityLimitedTitle": "Limited visibility",
+    "visibilityLimitedDescription": "Only your trade, country and verification status are publicly visible. Skills, certifications and experience stay private.",
+    "visibilityFullTitle": "Full visibility",
+    "visibilityFullDescription": "Skills, certifications, experience and references are visible to any company viewing your public profile. Recommended to maximize your opportunities.",
+    "submitPending": "Saving…",
+    "submit": "Save"
+  },
+  "TechnicianSkillsPage": {
+    "title": "My skills",
+    "subtitle": "Declare your skills and level. They'll be factored into your score once verified."
+  },
+  "SkillsForm": {
+    "submitPending": "Saving…",
+    "submit": "Save my skills"
+  },
+  "TechnicianCertificationsPage": {
+    "title": "My certifications",
+    "subtitle": "Your qualifications and certifications. A verified document significantly increases your score.",
+    "addCertification": "Add a certification",
+    "savedNotice": "Certification saved.",
+    "empty": "You haven't added any certification yet.",
+    "issuedOn": "Issued on {date}",
+    "issuedOnMissing": "Issue date not set",
+    "expiresOn": "Expires on {date}",
+    "processPrefix": "Process {process}",
+    "viewDocument": "View the document",
+    "noDocument": "No document",
+    "edit": "Edit"
+  },
+  "DeleteCertificationButton": {
+    "confirm": "Delete this certification and its document, if any?",
+    "delete": "Delete"
+  },
+  "NewCertificationPage": {
+    "title": "Add a certification"
+  },
+  "EditCertificationPage": {
+    "title": "Edit certification"
+  },
+  "CertificationForm": {
+    "certification": "Certification",
+    "certificationPlaceholder": "Select a certification",
+    "certificationHelp": "Can't find the certification in the list? It will be added to the registry by an administrator.",
+    "issueDate": "Issue date (optional)",
+    "expiryDate": "Expiry date (optional)",
+    "weldingLegend": "Welding variables (if applicable)",
+    "weldingProcess": "Process",
+    "materialType": "Material",
+    "materialGroup": "Material group",
+    "qualifiedThickness": "Qualified thickness",
+    "qualifiedDiameter": "Qualified diameter",
+    "weldingPosition": "Welding position",
+    "jointType": "Joint type",
+    "fillerMetal": "Filler metal",
+    "shieldingGas": "Shielding gas",
+    "documentReplace": "Replace the document (optional)",
+    "documentNew": "Document (optional, PDF/JPG/PNG, max 10 MB)",
+    "viewCurrentDocument": "View the current document",
+    "submitPending": "Saving…",
+    "submitEdit": "Update",
+    "submitCreate": "Add the certification"
+  },
+  "TechnicianExperiencesPage": {
+    "title": "My work experience",
+    "subtitle": "Your past projects and assignments. They're factored into your experience score once verified.",
+    "addExperience": "Add an experience",
+    "savedNotice": "Experience saved.",
+    "empty": "You haven't added any work experience yet.",
+    "clientSuffix": "(client: {client})",
+    "ongoing": "ongoing",
+    "edit": "Edit"
+  },
+  "DeleteExperienceButton": {
+    "confirm": "Delete this work experience?",
+    "delete": "Delete"
+  },
+  "NewExperiencePage": {
+    "title": "Add an experience"
+  },
+  "EditExperiencePage": {
+    "title": "Edit experience"
+  },
+  "ExperienceForm": {
+    "projectName": "Project name",
+    "employer": "Employer",
+    "client": "End client (optional)",
+    "role": "Role held",
+    "country": "Country",
+    "countryPlaceholder": "Select a country",
+    "sector": "Sector (optional)",
+    "startDate": "Start date",
+    "endDate": "End date (leave blank if ongoing)",
+    "description": "Scope description (optional)",
+    "equipmentUsed": "Equipment used (optional)",
+    "materialsWorked": "Materials worked (optional)",
+    "processesApplied": "Processes applied (optional)",
+    "standardsUsed": "Standards used (optional)",
+    "responsibilities": "Responsibilities (optional)",
+    "referenceContact": "Professional reference (optional)",
+    "referenceContactPlaceholder": "Name, role, contact method",
+    "submitPending": "Saving…",
+    "submitEdit": "Update",
+    "submitCreate": "Add the experience"
+  },
+  "OrganizationNav": {
+    "ariaLabel": "Company navigation",
+    "dashboard": "Dashboard",
+    "search": "Search technicians",
+    "talentPool": "Talent pool",
+    "profile": "Company profile"
+  },
+  "OrganizationDashboardPage": {
+    "verificationPending": "Verification pending",
+    "verificationVerified": "Verified company",
+    "verificationRejected": "Verification rejected",
+    "savedNotice": "Your information has been saved.",
+    "location": "Location",
+    "editProfile": "Edit company profile",
+    "searchTitle": "Search technicians",
+    "searchSubtitle": "Filter verified technician profiles by trade, country, availability, mobility, certification or ATTI score.",
+    "searchCta": "Start a search →",
+    "comingSoon": "Talent pools and job postings are coming in a future module. Your company account is ready for them.",
+    "notFound": "Organization not found."
+  },
+  "OrganizationProfilePage": {
+    "title": "Company profile",
+    "subtitle": "This information is visible to technicians you contact.",
+    "notFound": "Organization not found."
+  },
+  "OrganizationProfileForm": {
+    "name": "Company name",
+    "country": "Country",
+    "website": "Website (optional)",
+    "description": "Company activity (optional)",
+    "submitPending": "Saving…",
+    "submit": "Save"
+  },
+  "OrganizationSearchPage": {
+    "title": "Search technicians",
+    "subtitle": "Filter published profiles to find technicians matching your needs.",
+    "trade": "Trade",
+    "allTrades": "All trades",
+    "country": "Country",
+    "allCountries": "All countries",
+    "availability": "Availability",
+    "allAvailability": "All",
+    "availabilityAvailable": "Available",
+    "availabilitySoon": "Available soon",
+    "availabilityUnavailable": "Unavailable",
+    "mobility": "Mobility",
+    "allMobility": "All",
+    "mobilityLocal": "Local",
+    "mobilityNational": "National",
+    "mobilityInternational": "International",
+    "certification": "Certification",
+    "allCertifications": "All",
+    "minScore": "Minimum ATTI score",
+    "search": "Search",
+    "resetFilters": "Reset filters",
+    "resultsCount": "{count} technician found",
+    "resultsCountPlural": "{count} technicians found",
+    "empty": "No technician matches these criteria. Try broadening your search.",
+    "score": "Score",
+    "certificationsVerified": "{verified}/{total} certification verified",
+    "certificationsVerifiedPlural": "{verified}/{total} certifications verified",
+    "viewProfile": "View profile →"
+  },
+  "TalentPoolPage": {
+    "title": "Talent pool",
+    "subtitle": "Technicians you've saved for later follow-up.",
+    "empty": "Your talent pool is empty. Add technicians from search or their public profile.",
+    "searchCta": "Start a search →",
+    "notFound": "Organization not found."
+  },
+  "TalentPoolToggleButton": {
+    "add": "Add to talent pool",
+    "remove": "Remove from talent pool"
+  },
+  "TalentPoolNoteForm": {
+    "label": "Internal note",
+    "placeholder": "E.g.: contact for site X, available from March…",
+    "submitPending": "Saving…",
+    "submit": "Save note"
+  },
+  "AdminNav": {
+    "dashboard": "Dashboard",
+    "verifications": "Verifications"
+  },
+  "AdminDashboardPage": {
+    "title": "Administration",
+    "technicians": "Registered technicians",
+    "organizations": "Organizations",
+    "pendingVerifications": "Pending verification"
+  },
+  "AdminVerificationsPage": {
+    "title": "Pending verifications",
+    "subtitle": "Review certifications and experience declared by technicians before approving or rejecting them.",
+    "certificationsHeading": "Certifications ({count})",
+    "noCertifications": "No certification pending.",
+    "experiencesHeading": "Work experience ({count})",
+    "noExperiences": "No experience pending.",
+    "viewDocument": "View the document",
+    "noDocument": "No document provided",
+    "employedAt": "at",
+    "statusDeclared": "Declared",
+    "statusUnderReview": "Under review"
+  },
+  "ReviewForm": {
+    "noteLabel": "Note (optional, logged in the audit trail)",
+    "approve": "Approve",
+    "reject": "Reject"
+  },
+  "Passport": {
+    "title": "Professional passport",
+    "tradeMissing": "Trade not set",
+    "countryMissing": "Country not set",
+    "verifyOnline": "Verify this profile online:",
+    "scoreLabel": "Overall ATTI score",
+    "scoreNotCalculated": "Not calculated",
+    "lastCalculation": "Last calculated: {date}",
+    "skillsTitle": "Declared skills",
+    "noSkills": "No skills declared.",
+    "verifiedSuffix": " (verified)",
+    "declaredSuffix": " (declared)",
+    "certificationsTitle": "Valid certifications ({valid}/{total})",
+    "noCertifications": "No certification added.",
+    "expiresOn": " · expires on {date}",
+    "expiredOn": " · expired on {date}",
+    "certificationsNote": "Expired or unverified certifications are not counted in the score.",
+    "experiencesTitle": "Work experience",
+    "noExperiences": "No experience added.",
+    "ongoing": "ongoing",
+    "languagesTitle": "Languages",
+    "footerIdentifier": "Technician ID: {id} · Profile last updated: {date}",
+    "footerGenerated": "Document generated on {date} — atti (demo)"
+  },
+  "TechnicianProfileViewPage": {
+    "scoreGlobal": "Overall score",
+    "scoreNotCalculated": "Not yet calculated",
+    "downloadPassport": "Download passport (PDF)",
+    "yearsExperience": "Years of experience",
+    "certificationsVerified": "Verified certifications",
+    "experiencesVerified": "Verified experience",
+    "skillsDeclared": "Declared skills",
+    "talentPoolTitle": "Talent pool",
+    "talentPoolSaved": "This technician is part of your talent pool.",
+    "talentPoolNotSaved": "Save this technician to your talent pool to find them easily later.",
+    "limitedVisibilityTitle": "Limited visibility profile",
+    "limitedVisibilityDescription": "This technician hasn't made their detailed skills, certifications and experience public yet. Only the general information above is visible.",
+    "skillsTitle": "Skills",
+    "skillVerified": "Verified skill",
+    "certificationsTitle": "Certifications",
+    "process": "Process: {process}",
+    "expiresOn": "Expires on {date}",
+    "experiencesTitle": "Work experience",
+    "ongoing": "ongoing",
+    "scoreDetailTitle": "ATTI score detail",
+    "additionalInfoTitle": "Additional information",
+    "secondaryTrades": "Secondary trades",
+    "languages": "Languages",
+    "lastUpdated": "Last updated",
+    "connectTitle": "Get in touch",
+    "connectDescription": "Messaging between companies and technicians is coming in a future module.",
+    "connectButton": "Contact this technician (coming soon)"
   }
 }

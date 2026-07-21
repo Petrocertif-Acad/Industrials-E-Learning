@@ -1,4 +1,6 @@
+import { getTranslations, getLocale } from "next-intl/server";
 import { prisma } from "@/lib/db/prisma";
+import { localizedName } from "@/lib/localized-name";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -8,12 +10,7 @@ import {
   rejectWorkExperienceAction,
 } from "@/lib/actions/verification";
 
-const STATUS_LABELS: Record<string, string> = {
-  DECLARED: "Déclarée",
-  UNDER_REVIEW: "En cours de vérification",
-};
-
-function ReviewForm({
+async function ReviewForm({
   verifyAction,
   rejectAction,
   id,
@@ -22,12 +19,14 @@ function ReviewForm({
   rejectAction: (formData: FormData) => Promise<void>;
   id: string;
 }) {
+  const t = await getTranslations("ReviewForm");
+
   return (
     <form action={verifyAction} className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-end">
       <input type="hidden" name="id" value={id} />
       <div className="flex-1">
         <label className="mb-1 block text-xs font-medium text-slate-600" htmlFor={`note-${id}`}>
-          Note (facultatif, journalisée dans l&apos;audit)
+          {t("noteLabel")}
         </label>
         <input
           id={`note-${id}`}
@@ -41,14 +40,14 @@ function ReviewForm({
           type="submit"
           className="rounded-md bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-emerald-700"
         >
-          Valider
+          {t("approve")}
         </button>
         <button
           type="submit"
           formAction={rejectAction}
           className="rounded-md bg-red-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-700"
         >
-          Rejeter
+          {t("reject")}
         </button>
       </div>
     </form>
@@ -56,6 +55,14 @@ function ReviewForm({
 }
 
 export default async function AdminVerificationsPage() {
+  const t = await getTranslations("AdminVerificationsPage");
+  const locale = await getLocale();
+
+  const STATUS_LABELS: Record<string, string> = {
+    DECLARED: t("statusDeclared"),
+    UNDER_REVIEW: t("statusUnderReview"),
+  };
+
   const [pendingCertifications, pendingExperiences] = await Promise.all([
     prisma.technicianCertification.findMany({
       where: { verificationStatus: { in: ["DECLARED", "UNDER_REVIEW"] } },
@@ -72,20 +79,15 @@ export default async function AdminVerificationsPage() {
   return (
     <div className="space-y-10">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Vérifications en attente</h1>
-        <p className="mt-1 text-sm text-slate-600">
-          Contrôlez les certifications et expériences déclarées par les techniciens avant de
-          les valider ou de les rejeter.
-        </p>
+        <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
+        <p className="mt-1 text-sm text-slate-600">{t("subtitle")}</p>
       </div>
 
       <section className="space-y-4">
-        <h2 className="text-lg font-medium">
-          Certifications ({pendingCertifications.length})
-        </h2>
+        <h2 className="text-lg font-medium">{t("certificationsHeading", { count: pendingCertifications.length })}</h2>
         {pendingCertifications.length === 0 ? (
           <Card>
-            <p className="text-sm text-slate-600">Aucune certification en attente.</p>
+            <p className="text-sm text-slate-600">{t("noCertifications")}</p>
           </Card>
         ) : (
           pendingCertifications.map((entry) => (
@@ -108,10 +110,10 @@ export default async function AdminVerificationsPage() {
                         rel="noreferrer"
                         className="text-slate-700 hover:underline"
                       >
-                        Voir le justificatif
+                        {t("viewDocument")}
                       </a>
                     ) : (
-                      "Aucun justificatif fourni"
+                      t("noDocument")
                     )}
                   </p>
                 </div>
@@ -128,12 +130,10 @@ export default async function AdminVerificationsPage() {
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-lg font-medium">
-          Expériences professionnelles ({pendingExperiences.length})
-        </h2>
+        <h2 className="text-lg font-medium">{t("experiencesHeading", { count: pendingExperiences.length })}</h2>
         {pendingExperiences.length === 0 ? (
           <Card>
-            <p className="text-sm text-slate-600">Aucune expérience en attente.</p>
+            <p className="text-sm text-slate-600">{t("noExperiences")}</p>
           </Card>
         ) : (
           pendingExperiences.map((entry) => (
@@ -142,8 +142,8 @@ export default async function AdminVerificationsPage() {
                 <div>
                   <h3 className="font-medium">{entry.projectName}</h3>
                   <p className="text-sm text-slate-600">
-                    {entry.technician.firstName} {entry.technician.lastName} — {entry.role} chez{" "}
-                    {entry.employer} ({entry.country.nameFr})
+                    {entry.technician.firstName} {entry.technician.lastName} — {entry.role} {t("employedAt")}{" "}
+                    {entry.employer} ({localizedName(entry.country, locale)})
                   </p>
                   <p className="mt-1 text-sm text-slate-500">
                     {entry.document ? (
@@ -153,10 +153,10 @@ export default async function AdminVerificationsPage() {
                         rel="noreferrer"
                         className="text-slate-700 hover:underline"
                       >
-                        Voir le justificatif
+                        {t("viewDocument")}
                       </a>
                     ) : (
-                      "Aucun justificatif fourni"
+                      t("noDocument")
                     )}
                   </p>
                 </div>

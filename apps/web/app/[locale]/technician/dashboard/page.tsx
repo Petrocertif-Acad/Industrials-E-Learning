@@ -1,7 +1,8 @@
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db/prisma";
+import { localizedName } from "@/lib/localized-name";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/avatar";
@@ -25,6 +26,7 @@ export default async function TechnicianDashboardPage({ searchParams }: Technici
   // La couche layout (app/technician/layout.tsx) a déjà vérifié le rôle ;
   // ce composant peut donc supposer une session TECHNICIAN valide.
   const t = await getTranslations("TechnicianDashboard");
+  const locale = await getLocale();
   const { updated } = await searchParams;
   const session = await auth();
   const profile = await prisma.technicianProfile.findUnique({
@@ -66,12 +68,11 @@ export default async function TechnicianDashboardPage({ searchParams }: Technici
               {PROFILE_VERIFICATION_LABELS[profile.verificationStatus]}
             </Badge>
           </div>
-          {/* Métier/pays affichés depuis le référentiel (nameFr) quelle que soit la
-              langue de l'interface : la localisation des données de référence
-              (Trade, Country, Skill, Certification) reste à faire. */}
-          <p className="mt-1 text-lg text-slate-700">{profile.primaryTrade?.nameFr ?? t("tradeMissing")}</p>
+          <p className="mt-1 text-lg text-slate-700">
+            {profile.primaryTrade ? localizedName(profile.primaryTrade, locale) : t("tradeMissing")}
+          </p>
           <p className="mt-1 text-sm text-slate-500">
-            {profile.country?.nameFr ?? t("locationMissing")}
+            {profile.country ? localizedName(profile.country, locale) : t("locationMissing")}
             {profile.city ? ` · ${profile.city}` : ""}
           </p>
           <div className="mt-4 flex flex-wrap gap-2">
@@ -94,7 +95,7 @@ export default async function TechnicianDashboardPage({ searchParams }: Technici
             )}
             {onboardingComplete && (
               // Lien direct (pas le Link localisé) : /api/* n'est jamais préfixé par la langue.
-              <a href={`/api/technicians/${profile.id}/passport`} className={SECONDARY_LINK_CLASSNAME}>
+              <a href={`/api/technicians/${profile.id}/passport?locale=${locale}`} className={SECONDARY_LINK_CLASSNAME}>
                 {t("downloadPassport")}
               </a>
             )}

@@ -1,6 +1,7 @@
 import { getLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { prisma } from "@/lib/db/prisma";
+import { localizedName } from "@/lib/localized-name";
 import { Card } from "@/components/ui/card";
 import { RegisterOrganizationForm } from "@/components/features/auth/register-organization-form";
 
@@ -16,10 +17,7 @@ export default async function RegisterOrganizationPage() {
     orderBy: { nameFr: "asc" },
     select: { id: true, nameFr: true, nameEn: true },
   });
-  const countries = countriesData.map((country) => ({
-    id: country.id,
-    name: locale === "en" ? country.nameEn : country.nameFr,
-  }));
+  const countries = countriesData.map((country) => ({ id: country.id, name: localizedName(country, locale) }));
 
   return (
     <div className="flex flex-1 items-center justify-center px-6 py-16">

@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,13 +12,13 @@ import type { TradeCategory } from "@/lib/generated/prisma/enums";
 
 interface TradeOption {
   id: string;
-  nameFr: string;
+  name: string;
   category: TradeCategory;
 }
 
 interface CountryOption {
   id: string;
-  nameFr: string;
+  name: string;
 }
 
 interface ProfileBasicsFormProps {
@@ -48,25 +49,26 @@ function groupTradesByCategory(trades: TradeOption[]) {
 }
 
 export function ProfileBasicsForm({ trades, countries, defaults }: ProfileBasicsFormProps) {
+  const t = useTranslations("ProfileBasicsForm");
   const [state, formAction, pending] = useActionState(updateProfileBasicsAction, initialState);
   const groupedTrades = groupTradesByCategory(trades);
 
   return (
     <form action={formAction} className="space-y-10">
       <fieldset className="space-y-5">
-        <legend className="text-base font-semibold text-slate-900">Métier</legend>
+        <legend className="text-base font-semibold text-slate-900">{t("tradeLegend")}</legend>
 
         <div>
-          <Label htmlFor="primaryTradeId">Métier principal</Label>
+          <Label htmlFor="primaryTradeId">{t("primaryTrade")}</Label>
           <Select id="primaryTradeId" name="primaryTradeId" required defaultValue={defaults.primaryTradeId ?? ""}>
             <option value="" disabled>
-              Sélectionnez votre métier principal
+              {t("primaryTradePlaceholder")}
             </option>
             {Array.from(groupedTrades.entries()).map(([category, categoryTrades]) => (
               <optgroup key={category} label={TRADE_CATEGORY_LABELS_FR[category]}>
                 {categoryTrades.map((trade) => (
                   <option key={trade.id} value={trade.id}>
-                    {trade.nameFr}
+                    {trade.name}
                   </option>
                 ))}
               </optgroup>
@@ -78,7 +80,7 @@ export function ProfileBasicsForm({ trades, countries, defaults }: ProfileBasics
         </div>
 
         <div>
-          <Label htmlFor="secondaryTradeIds">Métiers secondaires (facultatif, 5 maximum)</Label>
+          <Label htmlFor="secondaryTradeIds">{t("secondaryTrades")}</Label>
           <Select
             id="secondaryTradeIds"
             name="secondaryTradeIds"
@@ -91,14 +93,14 @@ export function ProfileBasicsForm({ trades, countries, defaults }: ProfileBasics
               <optgroup key={category} label={TRADE_CATEGORY_LABELS_FR[category]}>
                 {categoryTrades.map((trade) => (
                   <option key={trade.id} value={trade.id}>
-                    {trade.nameFr}
+                    {trade.name}
                   </option>
                 ))}
               </optgroup>
             ))}
           </Select>
           <p id="secondaryTradeIds-help" className="mt-1 text-xs text-slate-500">
-            Maintenez Ctrl (Cmd sur Mac) pour sélectionner plusieurs métiers.
+            {t("secondaryTradesHelp")}
           </p>
           {state.fieldErrors?.secondaryTradeIds && (
             <p className="mt-1 text-xs text-red-600">{state.fieldErrors.secondaryTradeIds[0]}</p>
@@ -106,7 +108,7 @@ export function ProfileBasicsForm({ trades, countries, defaults }: ProfileBasics
         </div>
 
         <div>
-          <Label htmlFor="yearsExperience">Années d&apos;expérience</Label>
+          <Label htmlFor="yearsExperience">{t("yearsExperience")}</Label>
           <Input
             id="yearsExperience"
             name="yearsExperience"
@@ -124,18 +126,18 @@ export function ProfileBasicsForm({ trades, countries, defaults }: ProfileBasics
       </fieldset>
 
       <fieldset className="space-y-5">
-        <legend className="text-base font-semibold text-slate-900">Localisation et disponibilité</legend>
+        <legend className="text-base font-semibold text-slate-900">{t("locationLegend")}</legend>
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <Label htmlFor="countryId">Pays</Label>
+            <Label htmlFor="countryId">{t("country")}</Label>
             <Select id="countryId" name="countryId" required defaultValue={defaults.countryId ?? ""}>
               <option value="" disabled>
-                Sélectionnez votre pays
+                {t("countryPlaceholder")}
               </option>
               {countries.map((country) => (
                 <option key={country.id} value={country.id}>
-                  {country.nameFr}
+                  {country.name}
                 </option>
               ))}
             </Select>
@@ -145,37 +147,35 @@ export function ProfileBasicsForm({ trades, countries, defaults }: ProfileBasics
           </div>
 
           <div>
-            <Label htmlFor="city">Ville</Label>
+            <Label htmlFor="city">{t("city")}</Label>
             <Input id="city" name="city" defaultValue={defaults.city ?? ""} />
           </div>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <Label htmlFor="availability">Disponibilité</Label>
+            <Label htmlFor="availability">{t("availability")}</Label>
             <Select id="availability" name="availability" defaultValue={defaults.availability}>
-              <option value="AVAILABLE">Disponible</option>
-              <option value="AVAILABLE_SOON">Disponible prochainement</option>
-              <option value="UNAVAILABLE">Non disponible</option>
+              <option value="AVAILABLE">{t("availabilityAvailable")}</option>
+              <option value="AVAILABLE_SOON">{t("availabilitySoon")}</option>
+              <option value="UNAVAILABLE">{t("availabilityUnavailable")}</option>
             </Select>
           </div>
 
           <div>
-            <Label htmlFor="mobilityScope">Mobilité</Label>
+            <Label htmlFor="mobilityScope">{t("mobility")}</Label>
             <Select id="mobilityScope" name="mobilityScope" defaultValue={defaults.mobilityScope}>
-              <option value="LOCAL">Locale</option>
-              <option value="NATIONAL">Nationale</option>
-              <option value="INTERNATIONAL">Internationale</option>
+              <option value="LOCAL">{t("mobilityLocal")}</option>
+              <option value="NATIONAL">{t("mobilityNational")}</option>
+              <option value="INTERNATIONAL">{t("mobilityInternational")}</option>
             </Select>
           </div>
         </div>
       </fieldset>
 
       <fieldset className="space-y-3">
-        <legend className="text-base font-semibold text-slate-900">Visibilité du profil</legend>
-        <p className="text-sm text-slate-600">
-          Contrôlez ce que voient les entreprises qui consultent votre profil public.
-        </p>
+        <legend className="text-base font-semibold text-slate-900">{t("visibilityLegend")}</legend>
+        <p className="text-sm text-slate-600">{t("visibilitySubtitle")}</p>
         <div className="space-y-2">
           <label className="flex items-start gap-3 rounded-md border border-slate-200 p-3 has-[:checked]:border-amber-600 has-[:checked]:bg-amber-50">
             <input
@@ -186,11 +186,8 @@ export function ProfileBasicsForm({ trades, countries, defaults }: ProfileBasics
               className="mt-1 h-4 w-4"
             />
             <span>
-              <span className="block text-sm font-medium text-slate-900">Visibilité limitée</span>
-              <span className="block text-sm text-slate-600">
-                Seuls votre métier, votre pays et votre statut de vérification sont visibles
-                publiquement. Compétences, certifications et expériences restent privées.
-              </span>
+              <span className="block text-sm font-medium text-slate-900">{t("visibilityLimitedTitle")}</span>
+              <span className="block text-sm text-slate-600">{t("visibilityLimitedDescription")}</span>
             </span>
           </label>
           <label className="flex items-start gap-3 rounded-md border border-slate-200 p-3 has-[:checked]:border-amber-600 has-[:checked]:bg-amber-50">
@@ -202,12 +199,8 @@ export function ProfileBasicsForm({ trades, countries, defaults }: ProfileBasics
               className="mt-1 h-4 w-4"
             />
             <span>
-              <span className="block text-sm font-medium text-slate-900">Visibilité complète</span>
-              <span className="block text-sm text-slate-600">
-                Compétences, certifications, expériences et références sont visibles par toute
-                entreprise consultant votre profil public. Recommandé pour maximiser vos
-                opportunités.
-              </span>
+              <span className="block text-sm font-medium text-slate-900">{t("visibilityFullTitle")}</span>
+              <span className="block text-sm text-slate-600">{t("visibilityFullDescription")}</span>
             </span>
           </label>
         </div>
@@ -216,7 +209,7 @@ export function ProfileBasicsForm({ trades, countries, defaults }: ProfileBasics
       {state.error && <p className="text-sm text-red-600">{state.error}</p>}
 
       <Button type="submit" disabled={pending}>
-        {pending ? "Enregistrement…" : "Enregistrer"}
+        {pending ? t("submitPending") : t("submit")}
       </Button>
     </form>
   );

@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation";
+import { getTranslations, getLocale } from "next-intl/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db/prisma";
+import { localizedName } from "@/lib/localized-name";
 import { Card } from "@/components/ui/card";
 import { ExperienceForm } from "@/components/features/experience/experience-form";
 
@@ -14,13 +16,16 @@ interface EditExperiencePageProps {
 }
 
 export default async function EditExperiencePage({ params }: EditExperiencePageProps) {
+  const t = await getTranslations("EditExperiencePage");
+  const locale = await getLocale();
   const { id } = await params;
   const session = await auth();
 
-  const [profile, countries] = await Promise.all([
+  const [profile, countriesData] = await Promise.all([
     prisma.technicianProfile.findUnique({ where: { userId: session!.user.id } }),
-    prisma.country.findMany({ orderBy: { nameFr: "asc" }, select: { id: true, nameFr: true } }),
+    prisma.country.findMany({ orderBy: { nameFr: "asc" }, select: { id: true, nameFr: true, nameEn: true } }),
   ]);
+  const countries = countriesData.map((country) => ({ id: country.id, name: localizedName(country, locale) }));
 
   const experience = await prisma.workExperience.findUnique({ where: { id } });
 
@@ -30,7 +35,7 @@ export default async function EditExperiencePage({ params }: EditExperiencePageP
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-semibold tracking-tight">Modifier l&apos;expérience</h1>
+      <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
       <Card>
         <ExperienceForm
           countries={countries}

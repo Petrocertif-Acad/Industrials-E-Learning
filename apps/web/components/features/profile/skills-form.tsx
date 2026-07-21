@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
 import { updateTechnicianSkillsAction, type SkillsFormState } from "@/lib/actions/technician-profile";
@@ -8,8 +9,8 @@ import { SKILL_LEVEL_LABELS } from "@/lib/skill-levels";
 
 interface SkillOption {
   id: string;
-  nameFr: string;
-  tradeNameFr: string;
+  name: string;
+  tradeName: string;
 }
 
 interface SkillsFormProps {
@@ -24,14 +25,15 @@ const SELECTABLE_LEVELS = ["BEGINNER", "INTERMEDIATE", "ADVANCED", "EXPERT"] as 
 function groupSkillsByTrade(skills: SkillOption[]) {
   const groups = new Map<string, SkillOption[]>();
   for (const skill of skills) {
-    const list = groups.get(skill.tradeNameFr) ?? [];
+    const list = groups.get(skill.tradeName) ?? [];
     list.push(skill);
-    groups.set(skill.tradeNameFr, list);
+    groups.set(skill.tradeName, list);
   }
   return groups;
 }
 
 export function SkillsForm({ skills, currentLevels }: SkillsFormProps) {
+  const t = useTranslations("SkillsForm");
   const [state, formAction, pending] = useActionState(updateTechnicianSkillsAction, initialState);
   const groupedSkills = groupSkillsByTrade(skills);
 
@@ -55,7 +57,7 @@ export function SkillsForm({ skills, currentLevels }: SkillsFormProps) {
                       defaultChecked={isChecked}
                       className="h-4 w-4 rounded border-slate-300"
                     />
-                    {skill.nameFr}
+                    {skill.name}
                   </label>
                   <Select
                     name={`level-${skill.id}`}
@@ -78,7 +80,7 @@ export function SkillsForm({ skills, currentLevels }: SkillsFormProps) {
       {state.error && <p className="text-sm text-red-600">{state.error}</p>}
 
       <Button type="submit" disabled={pending}>
-        {pending ? "Enregistrement…" : "Enregistrer mes compétences"}
+        {pending ? t("submitPending") : t("submit")}
       </Button>
     </form>
   );

@@ -1,7 +1,9 @@
 import { notFound } from "next/navigation";
+import { getTranslations, getLocale } from "next-intl/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db/prisma";
 import { getOwnOrganization } from "@/lib/organization";
+import { localizedName } from "@/lib/localized-name";
 import {
   getTechnicianProfileForDisplay,
   canViewFullTechnicianProfile,
@@ -37,6 +39,8 @@ interface TechnicianProfileViewPageProps {
 }
 
 export default async function TechnicianProfileViewPage({ params }: TechnicianProfileViewPageProps) {
+  const t = await getTranslations("TechnicianProfileViewPage");
+  const locale = await getLocale();
   const { id } = await params;
   const session = await auth();
 
@@ -80,9 +84,11 @@ export default async function TechnicianProfileViewPage({ params }: TechnicianPr
               {PROFILE_VERIFICATION_LABELS[profile.verificationStatus]}
             </Badge>
           </div>
-          <p className="mt-1 text-lg text-slate-700">{profile.primaryTrade?.nameFr}</p>
+          <p className="mt-1 text-lg text-slate-700">
+            {profile.primaryTrade && localizedName(profile.primaryTrade, locale)}
+          </p>
           <p className="mt-1 text-sm text-slate-500">
-            {profile.country?.nameFr}
+            {profile.country && localizedName(profile.country, locale)}
             {profile.city ? ` · ${profile.city}` : ""}
           </p>
           <div className="mt-4 flex flex-wrap gap-2">
@@ -91,19 +97,19 @@ export default async function TechnicianProfileViewPage({ params }: TechnicianPr
           </div>
         </div>
         <div className="shrink-0 rounded-lg border border-slate-200 bg-slate-50 px-5 py-4 text-center">
-          <p className="text-xs font-medium uppercase tracking-wide text-slate-500">Score global</p>
+          <p className="text-xs font-medium uppercase tracking-wide text-slate-500">{t("scoreGlobal")}</p>
           <p className="mt-1 text-3xl font-semibold text-slate-900">
             {profile.score ? Number(profile.score.totalScore) : "—"}
             {profile.score && <span className="text-base font-normal text-slate-500"> / 100</span>}
           </p>
-          {!profile.score && <p className="mt-1 text-xs text-slate-500">Non encore calculé</p>}
+          {!profile.score && <p className="mt-1 text-xs text-slate-500">{t("scoreNotCalculated")}</p>}
           {fullAccess && (
             // Lien direct (pas le Link localisé) : /api/* n'est jamais préfixé par la langue.
             <a
-              href={`/api/technicians/${profile.id}/passport`}
+              href={`/api/technicians/${profile.id}/passport?locale=${locale}`}
               className="mt-3 inline-block rounded text-xs font-medium text-slate-700 underline decoration-slate-300 underline-offset-4 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-600 focus-visible:ring-offset-2"
             >
-              Télécharger le passeport (PDF)
+              {t("downloadPassport")}
             </a>
           )}
         </div>
@@ -113,36 +119,34 @@ export default async function TechnicianProfileViewPage({ params }: TechnicianPr
       <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
         <Card className="text-center">
           <p className="text-2xl font-semibold text-slate-900">{profile.yearsExperience}</p>
-          <p className="mt-1 text-xs text-slate-500">Années d&apos;expérience</p>
+          <p className="mt-1 text-xs text-slate-500">{t("yearsExperience")}</p>
         </Card>
         <Card className="text-center">
           <p className="text-2xl font-semibold text-slate-900">
             {verifiedCertifications}
             <span className="text-base text-slate-500">/{profile.certifications.length}</span>
           </p>
-          <p className="mt-1 text-xs text-slate-500">Certifications vérifiées</p>
+          <p className="mt-1 text-xs text-slate-500">{t("certificationsVerified")}</p>
         </Card>
         <Card className="text-center">
           <p className="text-2xl font-semibold text-slate-900">
             {verifiedExperiences}
             <span className="text-base text-slate-500">/{profile.workExperiences.length}</span>
           </p>
-          <p className="mt-1 text-xs text-slate-500">Expériences vérifiées</p>
+          <p className="mt-1 text-xs text-slate-500">{t("experiencesVerified")}</p>
         </Card>
         <Card className="text-center">
           <p className="text-2xl font-semibold text-slate-900">{profile.skills.length}</p>
-          <p className="mt-1 text-xs text-slate-500">Compétences déclarées</p>
+          <p className="mt-1 text-xs text-slate-500">{t("skillsDeclared")}</p>
         </Card>
       </div>
 
       {organization && (
         <Card className="mt-6 flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 className="text-sm font-semibold text-slate-900">Vivier de candidats</h2>
+            <h2 className="text-sm font-semibold text-slate-900">{t("talentPoolTitle")}</h2>
             <p className="mt-1 text-sm text-slate-600">
-              {isSavedInTalentPool
-                ? "Ce technicien fait partie de votre vivier."
-                : "Enregistrez ce technicien dans votre vivier pour le retrouver facilement."}
+              {isSavedInTalentPool ? t("talentPoolSaved") : t("talentPoolNotSaved")}
             </p>
           </div>
           <TalentPoolToggleButton technicianId={profile.id} isSaved={isSavedInTalentPool} />
@@ -151,28 +155,25 @@ export default async function TechnicianProfileViewPage({ params }: TechnicianPr
 
       {!fullAccess ? (
         <Card className="mt-6 border-amber-200 bg-amber-50">
-          <h2 className="text-sm font-semibold text-amber-900">Profil à visibilité limitée</h2>
-          <p className="mt-1 text-sm text-amber-800">
-            Ce technicien n&apos;a pas encore rendu publiques ses compétences, certifications et
-            expériences détaillées. Seules les informations générales ci-dessus sont visibles.
-          </p>
+          <h2 className="text-sm font-semibold text-amber-900">{t("limitedVisibilityTitle")}</h2>
+          <p className="mt-1 text-sm text-amber-800">{t("limitedVisibilityDescription")}</p>
         </Card>
       ) : (
         <div className="mt-6 grid gap-6 lg:grid-cols-3">
           <div className="space-y-6 lg:col-span-2">
             {profile.skills.length > 0 && (
               <Card>
-                <h2 className="text-lg font-medium text-slate-900">Compétences</h2>
+                <h2 className="text-lg font-medium text-slate-900">{t("skillsTitle")}</h2>
                 <ul className="mt-4 flex flex-wrap gap-2">
                   {profile.skills.map((entry) => (
                     <li key={entry.id}>
                       <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1 text-sm text-slate-700">
-                        {entry.skill.nameFr}
+                        {localizedName(entry.skill, locale)}
                         <span className="text-xs text-slate-500">
                           · {SKILL_LEVEL_LABELS[entry.verifiedLevel ?? entry.selfLevel]}
                         </span>
                         {entry.verifiedLevel && (
-                          <span aria-label="Compétence vérifiée" title="Compétence vérifiée" className="text-emerald-600">
+                          <span aria-label={t("skillVerified")} title={t("skillVerified")} className="text-emerald-600">
                             ✓
                           </span>
                         )}
@@ -185,7 +186,7 @@ export default async function TechnicianProfileViewPage({ params }: TechnicianPr
 
             {profile.certifications.length > 0 && (
               <Card>
-                <h2 className="text-lg font-medium text-slate-900">Certifications</h2>
+                <h2 className="text-lg font-medium text-slate-900">{t("certificationsTitle")}</h2>
                 <ul className="mt-4 space-y-4">
                   {profile.certifications.map((entry) => {
                     const expiryBadge = getExpiryBadge(entry.expiryDate);
@@ -200,11 +201,11 @@ export default async function TechnicianProfileViewPage({ params }: TechnicianPr
                             </p>
                             <p className="text-sm text-slate-500">{entry.certification.issuingBody}</p>
                             {entry.weldingProcess && (
-                              <p className="mt-1 text-sm text-slate-500">Procédé : {entry.weldingProcess}</p>
+                              <p className="mt-1 text-sm text-slate-500">{t("process", { process: entry.weldingProcess })}</p>
                             )}
                             {entry.expiryDate && (
                               <p className="mt-1 text-xs text-slate-500">
-                                Expire le {formatDate(entry.expiryDate)}
+                                {t("expiresOn", { date: formatDate(entry.expiryDate) })}
                               </p>
                             )}
                           </div>
@@ -224,7 +225,7 @@ export default async function TechnicianProfileViewPage({ params }: TechnicianPr
 
             {profile.workExperiences.length > 0 && (
               <Card>
-                <h2 className="text-lg font-medium text-slate-900">Expériences professionnelles</h2>
+                <h2 className="text-lg font-medium text-slate-900">{t("experiencesTitle")}</h2>
                 <ul className="mt-4 space-y-4">
                   {profile.workExperiences.map((experience) => (
                     <li key={experience.id} className="border-b border-slate-100 pb-4 last:border-0 last:pb-0">
@@ -235,8 +236,8 @@ export default async function TechnicianProfileViewPage({ params }: TechnicianPr
                             {experience.role} — {experience.employer}
                           </p>
                           <p className="mt-1 text-xs text-slate-500">
-                            {experience.country.nameFr} · {formatMonthYear(experience.startDate)} —{" "}
-                            {experience.endDate ? formatMonthYear(experience.endDate) : "en cours"}
+                            {localizedName(experience.country, locale)} · {formatMonthYear(experience.startDate)} —{" "}
+                            {experience.endDate ? formatMonthYear(experience.endDate) : t("ongoing")}
                           </p>
                         </div>
                         <Badge tone={DOCUMENT_VERIFICATION_TONE[experience.verificationStatus]}>
@@ -256,7 +257,7 @@ export default async function TechnicianProfileViewPage({ params }: TechnicianPr
           <div className="space-y-6">
             {profile.score?.calculationDetails && (
               <Card>
-                <h2 className="text-sm font-semibold text-slate-900">Détail du score ATTI</h2>
+                <h2 className="text-sm font-semibold text-slate-900">{t("scoreDetailTitle")}</h2>
                 <p className="mt-1 text-xs text-slate-500">
                   {(profile.score.calculationDetails as unknown as ScoreCalculationDetails).method}
                 </p>
@@ -269,42 +270,42 @@ export default async function TechnicianProfileViewPage({ params }: TechnicianPr
             )}
 
             <Card>
-              <h2 className="text-sm font-semibold text-slate-900">Informations complémentaires</h2>
+              <h2 className="text-sm font-semibold text-slate-900">{t("additionalInfoTitle")}</h2>
               <dl className="mt-3 space-y-3 text-sm">
                 {profile.secondaryTrades.length > 0 && (
                   <div>
-                    <dt className="text-slate-500">Métiers secondaires</dt>
+                    <dt className="text-slate-500">{t("secondaryTrades")}</dt>
                     <dd className="mt-1 text-slate-800">
-                      {profile.secondaryTrades.map((t) => t.trade.nameFr).join(", ")}
+                      {profile.secondaryTrades
+                        .map((secondaryTrade) => localizedName(secondaryTrade.trade, locale))
+                        .join(", ")}
                     </dd>
                   </div>
                 )}
                 {profile.languages.length > 0 && (
                   <div>
-                    <dt className="text-slate-500">Langues</dt>
+                    <dt className="text-slate-500">{t("languages")}</dt>
                     <dd className="mt-1 text-slate-800">
                       {profile.languages.map((l) => l.languageCode.toUpperCase()).join(", ")}
                     </dd>
                   </div>
                 )}
                 <div>
-                  <dt className="text-slate-500">Dernière mise à jour</dt>
+                  <dt className="text-slate-500">{t("lastUpdated")}</dt>
                   <dd className="mt-1 text-slate-800">{formatDate(profile.updatedAt)}</dd>
                 </div>
               </dl>
             </Card>
 
             <Card>
-              <h2 className="text-sm font-semibold text-slate-900">Mettre en relation</h2>
-              <p className="mt-1 text-sm text-slate-600">
-                La messagerie entre entreprises et techniciens arrive dans un prochain module.
-              </p>
+              <h2 className="text-sm font-semibold text-slate-900">{t("connectTitle")}</h2>
+              <p className="mt-1 text-sm text-slate-600">{t("connectDescription")}</p>
               <button
                 type="button"
                 disabled
                 className="mt-3 w-full cursor-not-allowed rounded-md bg-slate-200 px-4 py-2 text-sm font-medium text-slate-500"
               >
-                Contacter ce technicien (bientôt disponible)
+                {t("connectButton")}
               </button>
             </Card>
           </div>

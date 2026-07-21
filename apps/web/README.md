@@ -217,17 +217,35 @@ Implémenté dans cette phase d'initialisation :
       dans `AGENTS.md`), langue par défaut FR, `Link`/`redirect`/`usePathname`
       centralisés dans `i18n/navigation.ts` pour que le reste du code continue
       d'écrire des chemins sans préfixe.
-- [x] Traduction FR/EN — accueil et authentification : page d'accueil,
-      connexion, inscription technicien et inscription entreprise
-      (`messages/fr.json`, `messages/en.json`, `useTranslations`/
-      `getTranslations`). Les noms de pays utilisent le champ `nameFr`/`nameEn`
-      déjà présent dans le référentiel `Country` selon la langue active. Reste
-      en français dans les deux langues à ce stade : les messages d'erreur de
-      validation (Zod) et les tableaux de bord technicien/entreprise/admin —
-      prochains modules.
+- [x] Traduction FR/EN — interface complète : accueil, authentification
+      (connexion, inscription technicien, inscription entreprise), espace
+      technicien (tableau de bord, profil, compétences, certifications,
+      expériences — listes, formulaires de création/modification, confirmations
+      de suppression), espace entreprise (tableau de bord, profil, recherche,
+      vivier), administration (tableau de bord, vérifications) et profil public
+      technicien, via `next-intl` (`useTranslations` côté client,
+      `getTranslations` côté serveur, `messages/fr.json` / `messages/en.json`).
+- [x] Localisation des données de référence : les noms de métiers, compétences
+      et pays (`Trade`, `Skill`, `Country` — champs `nameFr`/`nameEn` déjà
+      présents) s'affichent dans la langue active partout (recherche,
+      profils, formulaires, vivier, admin, passeport PDF) via un helper
+      partagé (`lib/localized-name.ts`). Le passeport PDF (généré hors du
+      segment `[locale]`, donc sans contexte de langue automatique) reçoit sa
+      langue via `?locale=` sur le lien de téléchargement, résolue avec
+      `getTranslations({ locale, ... })` — conçu par next-intl pour les cas
+      hors arbre React (PDF, emails). Reste volontairement en français dans
+      les deux langues (chantier séparé, à traiter d'un coup) : les noms de
+      certifications (champ unique `name`, pas de `nameFr`/`nameEn` — ce sont
+      des désignations techniques normalisées comme "ISO 9606-1"), les
+      libellés d'énumération partagés (niveaux de compétence, statuts de
+      vérification, catégories de métier — `lib/*-labels.ts` et
+      `lib/trade-categories.ts`), le formatage des dates restant
+      (`toLocaleDateString("fr-FR")` dans quelques listes), et les messages
+      d'erreur de validation (Zod).
 
 À développer dans les prochains modules (voir le plan de développement du cadrage) :
-traduction du contenu FR/EN, évaluations pratiques, avis employeurs, formation continue.
+localisation des données de référence et du formatage des dates, évaluations
+pratiques, avis employeurs, formation continue.
 
 ## Branding
 

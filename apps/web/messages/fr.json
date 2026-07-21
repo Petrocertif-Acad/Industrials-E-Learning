@@ -96,5 +96,296 @@
     "certificationsViewAction": "Voir mes certifications",
     "certificationsAddAction": "Ajouter une certification",
     "expiryWarning": "Expiration à vérifier"
+  },
+  "TechnicianProfilePage": {
+    "title": "Mon profil",
+    "subtitle": "Ces informations déterminent votre visibilité dans les résultats de recherche des entreprises.",
+    "viewPublicProfile": "Voir mon profil public ↗"
+  },
+  "ProfileBasicsForm": {
+    "tradeLegend": "Métier",
+    "primaryTrade": "Métier principal",
+    "primaryTradePlaceholder": "Sélectionnez votre métier principal",
+    "secondaryTrades": "Métiers secondaires (facultatif, 5 maximum)",
+    "secondaryTradesHelp": "Maintenez Ctrl (Cmd sur Mac) pour sélectionner plusieurs métiers.",
+    "yearsExperience": "Années d'expérience",
+    "locationLegend": "Localisation et disponibilité",
+    "country": "Pays",
+    "countryPlaceholder": "Sélectionnez votre pays",
+    "city": "Ville",
+    "availability": "Disponibilité",
+    "availabilityAvailable": "Disponible",
+    "availabilitySoon": "Disponible prochainement",
+    "availabilityUnavailable": "Non disponible",
+    "mobility": "Mobilité",
+    "mobilityLocal": "Locale",
+    "mobilityNational": "Nationale",
+    "mobilityInternational": "Internationale",
+    "visibilityLegend": "Visibilité du profil",
+    "visibilitySubtitle": "Contrôlez ce que voient les entreprises qui consultent votre profil public.",
+    "visibilityLimitedTitle": "Visibilité limitée",
+    "visibilityLimitedDescription": "Seuls votre métier, votre pays et votre statut de vérification sont visibles publiquement. Compétences, certifications et expériences restent privées.",
+    "visibilityFullTitle": "Visibilité complète",
+    "visibilityFullDescription": "Compétences, certifications, expériences et références sont visibles par toute entreprise consultant votre profil public. Recommandé pour maximiser vos opportunités.",
+    "submitPending": "Enregistrement…",
+    "submit": "Enregistrer"
+  },
+  "TechnicianSkillsPage": {
+    "title": "Mes compétences",
+    "subtitle": "Déclarez vos compétences et votre niveau. Elles seront prises en compte dans votre score une fois vérifiées."
+  },
+  "SkillsForm": {
+    "submitPending": "Enregistrement…",
+    "submit": "Enregistrer mes compétences"
+  },
+  "TechnicianCertificationsPage": {
+    "title": "Mes certifications",
+    "subtitle": "Vos qualifications et certifications. Un justificatif vérifié augmente significativement votre score.",
+    "addCertification": "Ajouter une certification",
+    "savedNotice": "Certification enregistrée.",
+    "empty": "Vous n'avez pas encore ajouté de certification.",
+    "issuedOn": "Obtenue le {date}",
+    "issuedOnMissing": "Date d'obtention non renseignée",
+    "expiresOn": "Expire le {date}",
+    "processPrefix": "Procédé {process}",
+    "viewDocument": "Voir le justificatif",
+    "noDocument": "Aucun justificatif",
+    "edit": "Modifier"
+  },
+  "DeleteCertificationButton": {
+    "confirm": "Supprimer cette certification et son justificatif éventuel ?",
+    "delete": "Supprimer"
+  },
+  "NewCertificationPage": {
+    "title": "Ajouter une certification"
+  },
+  "EditCertificationPage": {
+    "title": "Modifier la certification"
+  },
+  "CertificationForm": {
+    "certification": "Certification",
+    "certificationPlaceholder": "Sélectionnez une certification",
+    "certificationHelp": "Certification introuvable dans la liste ? Elle sera ajoutée au référentiel par l'administration.",
+    "issueDate": "Date d'obtention (facultatif)",
+    "expiryDate": "Date d'expiration (facultatif)",
+    "weldingLegend": "Variables de soudage (si applicable)",
+    "weldingProcess": "Procédé",
+    "materialType": "Matériau",
+    "materialGroup": "Groupe de matériau",
+    "qualifiedThickness": "Épaisseur qualifiée",
+    "qualifiedDiameter": "Diamètre qualifié",
+    "weldingPosition": "Position de soudage",
+    "jointType": "Type de joint",
+    "fillerMetal": "Métal d'apport",
+    "shieldingGas": "Gaz de protection",
+    "documentReplace": "Remplacer le justificatif (facultatif)",
+    "documentNew": "Justificatif (facultatif, PDF/JPG/PNG, 10 Mo max)",
+    "viewCurrentDocument": "Voir le document actuel",
+    "submitPending": "Enregistrement…",
+    "submitEdit": "Mettre à jour",
+    "submitCreate": "Ajouter la certification"
+  },
+  "TechnicianExperiencesPage": {
+    "title": "Mes expériences professionnelles",
+    "subtitle": "Vos projets et missions passés. Ils sont pris en compte dans votre score d'expérience une fois vérifiés.",
+    "addExperience": "Ajouter une expérience",
+    "savedNotice": "Expérience enregistrée.",
+    "empty": "Vous n'avez pas encore ajouté d'expérience professionnelle.",
+    "clientSuffix": "(client : {client})",
+    "ongoing": "en cours",
+    "edit": "Modifier"
+  },
+  "DeleteExperienceButton": {
+    "confirm": "Supprimer cette expérience professionnelle ?",
+    "delete": "Supprimer"
+  },
+  "NewExperiencePage": {
+    "title": "Ajouter une expérience"
+  },
+  "EditExperiencePage": {
+    "title": "Modifier l'expérience"
+  },
+  "ExperienceForm": {
+    "projectName": "Nom du projet",
+    "employer": "Entreprise",
+    "client": "Client final (facultatif)",
+    "role": "Poste occupé",
+    "country": "Pays",
+    "countryPlaceholder": "Sélectionnez un pays",
+    "sector": "Secteur (facultatif)",
+    "startDate": "Date de début",
+    "endDate": "Date de fin (laisser vide si en cours)",
+    "description": "Description du scope (facultatif)",
+    "equipmentUsed": "Équipements utilisés (facultatif)",
+    "materialsWorked": "Matériaux travaillés (facultatif)",
+    "processesApplied": "Procédés appliqués (facultatif)",
+    "standardsUsed": "Normes utilisées (facultatif)",
+    "responsibilities": "Responsabilités (facultatif)",
+    "referenceContact": "Référence professionnelle (facultatif)",
+    "referenceContactPlaceholder": "Nom, poste, moyen de contact",
+    "submitPending": "Enregistrement…",
+    "submitEdit": "Mettre à jour",
+    "submitCreate": "Ajouter l'expérience"
+  },
+  "OrganizationNav": {
+    "ariaLabel": "Navigation entreprise",
+    "dashboard": "Tableau de bord",
+    "search": "Rechercher des techniciens",
+    "talentPool": "Vivier",
+    "profile": "Profil entreprise"
+  },
+  "OrganizationDashboardPage": {
+    "verificationPending": "Vérification en attente",
+    "verificationVerified": "Entreprise vérifiée",
+    "verificationRejected": "Vérification rejetée",
+    "savedNotice": "Vos informations ont été enregistrées.",
+    "location": "Localisation",
+    "editProfile": "Modifier le profil entreprise",
+    "searchTitle": "Rechercher des techniciens",
+    "searchSubtitle": "Filtrez les profils techniciens vérifiés par métier, pays, disponibilité, mobilité, certification ou score ATTI.",
+    "searchCta": "Lancer une recherche →",
+    "comingSoon": "Les viviers de candidats et les missions arrivent dans un prochain module. Votre compte entreprise est prêt à les recevoir.",
+    "notFound": "Organisation introuvable."
+  },
+  "OrganizationProfilePage": {
+    "title": "Profil entreprise",
+    "subtitle": "Ces informations sont visibles par les techniciens que vous contactez.",
+    "notFound": "Organisation introuvable."
+  },
+  "OrganizationProfileForm": {
+    "name": "Nom de l'entreprise",
+    "country": "Pays",
+    "website": "Site web (facultatif)",
+    "description": "Activité de l'entreprise (facultatif)",
+    "submitPending": "Enregistrement…",
+    "submit": "Enregistrer"
+  },
+  "OrganizationSearchPage": {
+    "title": "Rechercher des techniciens",
+    "subtitle": "Filtrez parmi les profils publiés pour trouver les techniciens correspondant à vos besoins.",
+    "trade": "Métier",
+    "allTrades": "Tous les métiers",
+    "country": "Pays",
+    "allCountries": "Tous les pays",
+    "availability": "Disponibilité",
+    "allAvailability": "Toutes",
+    "availabilityAvailable": "Disponible",
+    "availabilitySoon": "Disponible prochainement",
+    "availabilityUnavailable": "Non disponible",
+    "mobility": "Mobilité",
+    "allMobility": "Toutes",
+    "mobilityLocal": "Locale",
+    "mobilityNational": "Nationale",
+    "mobilityInternational": "Internationale",
+    "certification": "Certification",
+    "allCertifications": "Toutes",
+    "minScore": "Score ATTI minimum",
+    "search": "Rechercher",
+    "resetFilters": "Réinitialiser les filtres",
+    "resultsCount": "{count} technicien trouvé",
+    "resultsCountPlural": "{count} techniciens trouvés",
+    "empty": "Aucun technicien ne correspond à ces critères. Essayez d'élargir votre recherche.",
+    "score": "Score",
+    "certificationsVerified": "{verified}/{total} certification vérifiée",
+    "certificationsVerifiedPlural": "{verified}/{total} certifications vérifiées",
+    "viewProfile": "Voir le profil →"
+  },
+  "TalentPoolPage": {
+    "title": "Vivier de candidats",
+    "subtitle": "Techniciens que vous avez enregistrés pour un suivi ultérieur.",
+    "empty": "Votre vivier est vide. Ajoutez des techniciens depuis la recherche ou leur profil public.",
+    "searchCta": "Lancer une recherche →",
+    "notFound": "Organisation introuvable."
+  },
+  "TalentPoolToggleButton": {
+    "add": "Ajouter au vivier",
+    "remove": "Retirer du vivier"
+  },
+  "TalentPoolNoteForm": {
+    "label": "Note interne",
+    "placeholder": "Ex : à contacter pour le chantier X, disponible dès mars…",
+    "submitPending": "Enregistrement…",
+    "submit": "Enregistrer la note"
+  },
+  "AdminNav": {
+    "dashboard": "Tableau de bord",
+    "verifications": "Vérifications"
+  },
+  "AdminDashboardPage": {
+    "title": "Administration",
+    "technicians": "Techniciens inscrits",
+    "organizations": "Organisations",
+    "pendingVerifications": "En attente de vérification"
+  },
+  "AdminVerificationsPage": {
+    "title": "Vérifications en attente",
+    "subtitle": "Contrôlez les certifications et expériences déclarées par les techniciens avant de les valider ou de les rejeter.",
+    "certificationsHeading": "Certifications ({count})",
+    "noCertifications": "Aucune certification en attente.",
+    "experiencesHeading": "Expériences professionnelles ({count})",
+    "noExperiences": "Aucune expérience en attente.",
+    "viewDocument": "Voir le justificatif",
+    "noDocument": "Aucun justificatif fourni",
+    "employedAt": "chez",
+    "statusDeclared": "Déclarée",
+    "statusUnderReview": "En cours de vérification"
+  },
+  "ReviewForm": {
+    "noteLabel": "Note (facultatif, journalisée dans l'audit)",
+    "approve": "Valider",
+    "reject": "Rejeter"
+  },
+  "Passport": {
+    "title": "Passeport professionnel",
+    "tradeMissing": "Métier non renseigné",
+    "countryMissing": "Pays non renseigné",
+    "verifyOnline": "Vérifier ce profil en ligne :",
+    "scoreLabel": "Score ATTI global",
+    "scoreNotCalculated": "Non calculé",
+    "lastCalculation": "Dernier calcul : {date}",
+    "skillsTitle": "Compétences déclarées",
+    "noSkills": "Aucune compétence déclarée.",
+    "verifiedSuffix": " (vérifiée)",
+    "declaredSuffix": " (déclarée)",
+    "certificationsTitle": "Certifications valides ({valid}/{total})",
+    "noCertifications": "Aucune certification ajoutée.",
+    "expiresOn": " · expire le {date}",
+    "expiredOn": " · expirée le {date}",
+    "certificationsNote": "Les certifications expirées ou non vérifiées ne sont pas comptabilisées dans le score.",
+    "experiencesTitle": "Expériences professionnelles",
+    "noExperiences": "Aucune expérience ajoutée.",
+    "ongoing": "en cours",
+    "languagesTitle": "Langues",
+    "footerIdentifier": "Identifiant technicien : {id} · Dernière mise à jour du profil : {date}",
+    "footerGenerated": "Document généré le {date} — atti (démonstration)"
+  },
+  "TechnicianProfileViewPage": {
+    "scoreGlobal": "Score global",
+    "scoreNotCalculated": "Non encore calculé",
+    "downloadPassport": "Télécharger le passeport (PDF)",
+    "yearsExperience": "Années d'expérience",
+    "certificationsVerified": "Certifications vérifiées",
+    "experiencesVerified": "Expériences vérifiées",
+    "skillsDeclared": "Compétences déclarées",
+    "talentPoolTitle": "Vivier de candidats",
+    "talentPoolSaved": "Ce technicien fait partie de votre vivier.",
+    "talentPoolNotSaved": "Enregistrez ce technicien dans votre vivier pour le retrouver facilement.",
+    "limitedVisibilityTitle": "Profil à visibilité limitée",
+    "limitedVisibilityDescription": "Ce technicien n'a pas encore rendu publiques ses compétences, certifications et expériences détaillées. Seules les informations générales ci-dessus sont visibles.",
+    "skillsTitle": "Compétences",
+    "skillVerified": "Compétence vérifiée",
+    "certificationsTitle": "Certifications",
+    "process": "Procédé : {process}",
+    "expiresOn": "Expire le {date}",
+    "experiencesTitle": "Expériences professionnelles",
+    "ongoing": "en cours",
+    "scoreDetailTitle": "Détail du score ATTI",
+    "additionalInfoTitle": "Informations complémentaires",
+    "secondaryTrades": "Métiers secondaires",
+    "languages": "Langues",
+    "lastUpdated": "Dernière mise à jour",
+    "connectTitle": "Mettre en relation",
+    "connectDescription": "La messagerie entre entreprises et techniciens arrive dans un prochain module.",
+    "connectButton": "Contacter ce technicien (bientôt disponible)"
   }
 }

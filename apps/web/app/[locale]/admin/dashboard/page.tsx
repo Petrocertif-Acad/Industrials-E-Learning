@@ -1,8 +1,10 @@
+import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { prisma } from "@/lib/db/prisma";
 import { Card } from "@/components/ui/card";
 
 export default async function AdminDashboardPage() {
+  const t = await getTranslations("AdminDashboardPage");
   const [technicianCount, organizationCount, pendingCertifications, pendingExperiences] = await Promise.all([
     prisma.technicianProfile.count(),
     prisma.organization.count(),
@@ -13,14 +15,14 @@ export default async function AdminDashboardPage() {
   const pendingVerifications = pendingCertifications + pendingExperiences;
 
   const stats = [
-    { label: "Techniciens inscrits", value: technicianCount, href: undefined },
-    { label: "Organisations", value: organizationCount, href: undefined },
-    { label: "En attente de vérification", value: pendingVerifications, href: "/admin/verifications" },
+    { label: t("technicians"), value: technicianCount, href: undefined },
+    { label: t("organizations"), value: organizationCount, href: undefined },
+    { label: t("pendingVerifications"), value: pendingVerifications, href: "/admin/verifications" },
   ];
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-semibold tracking-tight">Administration</h1>
+      <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
       <div className="grid gap-4 sm:grid-cols-3">
         {stats.map((stat) => {
           const content = (

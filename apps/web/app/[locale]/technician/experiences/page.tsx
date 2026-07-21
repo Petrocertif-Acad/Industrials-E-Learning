@@ -1,6 +1,8 @@
+import { getTranslations, getLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db/prisma";
+import { localizedName } from "@/lib/localized-name";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -19,6 +21,8 @@ interface TechnicianExperiencesPageProps {
 }
 
 export default async function TechnicianExperiencesPage({ searchParams }: TechnicianExperiencesPageProps) {
+  const t = await getTranslations("TechnicianExperiencesPage");
+  const locale = await getLocale();
   const { saved } = await searchParams;
   const session = await auth();
 
@@ -40,28 +44,21 @@ export default async function TechnicianExperiencesPage({ searchParams }: Techni
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Mes expériences professionnelles</h1>
-          <p className="mt-1 text-sm text-slate-600">
-            Vos projets et missions passés. Ils sont pris en compte dans votre score
-            d&apos;expérience une fois vérifiés.
-          </p>
+          <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
+          <p className="mt-1 text-sm text-slate-600">{t("subtitle")}</p>
         </div>
         <Link href="/technician/experiences/new">
-          <Button>Ajouter une expérience</Button>
+          <Button>{t("addExperience")}</Button>
         </Link>
       </div>
 
       {saved === "1" && (
-        <p className="rounded-md bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
-          Expérience enregistrée.
-        </p>
+        <p className="rounded-md bg-emerald-50 px-3 py-2 text-sm text-emerald-800">{t("savedNotice")}</p>
       )}
 
       {profile.workExperiences.length === 0 ? (
         <Card>
-          <p className="text-sm text-slate-600">
-            Vous n&apos;avez pas encore ajouté d&apos;expérience professionnelle.
-          </p>
+          <p className="text-sm text-slate-600">{t("empty")}</p>
         </Card>
       ) : (
         <div className="space-y-4">
@@ -72,13 +69,13 @@ export default async function TechnicianExperiencesPage({ searchParams }: Techni
                   <h2 className="text-lg font-medium">{experience.projectName}</h2>
                   <p className="text-sm text-slate-600">
                     {experience.role} — {experience.employer}
-                    {experience.client ? ` (client : ${experience.client})` : ""}
+                    {experience.client ? ` ${t("clientSuffix", { client: experience.client })}` : ""}
                   </p>
                   <p className="mt-1 text-sm text-slate-500">
-                    {experience.country.nameFr}
+                    {localizedName(experience.country, locale)}
                     {experience.sector ? ` · ${experience.sector}` : ""} ·{" "}
                     {formatDate(experience.startDate)} —{" "}
-                    {experience.endDate ? formatDate(experience.endDate) : "en cours"}
+                    {experience.endDate ? formatDate(experience.endDate) : t("ongoing")}
                   </p>
                 </div>
                 <Badge tone={DOCUMENT_VERIFICATION_TONE[experience.verificationStatus]}>
@@ -95,7 +92,7 @@ export default async function TechnicianExperiencesPage({ searchParams }: Techni
                   href={`/technician/experiences/${experience.id}/edit`}
                   className="rounded text-sm text-slate-700 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-600 focus-visible:ring-offset-2"
                 >
-                  Modifier
+                  {t("edit")}
                 </Link>
                 <DeleteExperienceButton experienceId={experience.id} />
               </div>

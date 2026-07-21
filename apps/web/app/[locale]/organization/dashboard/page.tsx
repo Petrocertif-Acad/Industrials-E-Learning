@@ -1,32 +1,36 @@
+import { getTranslations, getLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { auth } from "@/auth";
 import { getOwnOrganization } from "@/lib/organization";
+import { localizedName } from "@/lib/localized-name";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-
-const ORG_VERIFICATION_LABELS: Record<string, string> = {
-  PENDING: "Vérification en attente",
-  VERIFIED: "Entreprise vérifiée",
-  REJECTED: "Vérification rejetée",
-};
-
-const ORG_VERIFICATION_TONE: Record<string, "neutral" | "success" | "warning" | "danger"> = {
-  PENDING: "warning",
-  VERIFIED: "success",
-  REJECTED: "danger",
-};
 
 interface OrganizationDashboardPageProps {
   searchParams: Promise<{ updated?: string }>;
 }
 
 export default async function OrganizationDashboardPage({ searchParams }: OrganizationDashboardPageProps) {
+  const t = await getTranslations("OrganizationDashboardPage");
+  const locale = await getLocale();
   const { updated } = await searchParams;
   const session = await auth();
   const organization = await getOwnOrganization(session!.user.id);
 
+  const ORG_VERIFICATION_LABELS: Record<string, string> = {
+    PENDING: t("verificationPending"),
+    VERIFIED: t("verificationVerified"),
+    REJECTED: t("verificationRejected"),
+  };
+
+  const ORG_VERIFICATION_TONE: Record<string, "neutral" | "success" | "warning" | "danger"> = {
+    PENDING: "warning",
+    VERIFIED: "success",
+    REJECTED: "danger",
+  };
+
   if (!organization) {
-    return <p className="text-slate-600">Organisation introuvable.</p>;
+    return <p className="text-slate-600">{t("notFound")}</p>;
   }
 
   return (
@@ -39,14 +43,12 @@ export default async function OrganizationDashboardPage({ searchParams }: Organi
       </div>
 
       {updated === "1" && (
-        <p className="rounded-md bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
-          Vos informations ont été enregistrées.
-        </p>
+        <p className="rounded-md bg-emerald-50 px-3 py-2 text-sm text-emerald-800">{t("savedNotice")}</p>
       )}
 
       <Card>
-        <h2 className="text-sm font-medium text-slate-500">Localisation</h2>
-        <p className="mt-2 text-lg font-medium">{organization.country.nameFr}</p>
+        <h2 className="text-sm font-medium text-slate-500">{t("location")}</h2>
+        <p className="mt-2 text-lg font-medium">{localizedName(organization.country, locale)}</p>
         {organization.website && (
           <p className="mt-1 text-sm text-slate-600">
             <a
@@ -63,29 +65,23 @@ export default async function OrganizationDashboardPage({ searchParams }: Organi
           href="/organization/profile"
           className="mt-3 inline-block rounded text-sm text-slate-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-600 focus-visible:ring-offset-2"
         >
-          Modifier le profil entreprise
+          {t("editProfile")}
         </Link>
       </Card>
 
       <Card>
-        <h2 className="text-sm font-medium text-slate-500">Rechercher des techniciens</h2>
-        <p className="mt-2 text-sm text-slate-600">
-          Filtrez les profils techniciens vérifiés par métier, pays, disponibilité, mobilité,
-          certification ou score ATTI.
-        </p>
+        <h2 className="text-sm font-medium text-slate-500">{t("searchTitle")}</h2>
+        <p className="mt-2 text-sm text-slate-600">{t("searchSubtitle")}</p>
         <Link
           href="/organization/search"
           className="mt-3 inline-block rounded text-sm font-medium text-slate-900 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-600 focus-visible:ring-offset-2"
         >
-          Lancer une recherche →
+          {t("searchCta")}
         </Link>
       </Card>
 
       <Card className="border-slate-200 bg-slate-50">
-        <p className="text-sm text-slate-600">
-          Les viviers de candidats et les missions arrivent dans un prochain module. Votre compte
-          entreprise est prêt à les recevoir.
-        </p>
+        <p className="text-sm text-slate-600">{t("comingSoon")}</p>
       </Card>
     </div>
   );

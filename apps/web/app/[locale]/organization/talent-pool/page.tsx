@@ -1,7 +1,9 @@
+import { getTranslations, getLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { auth } from "@/auth";
 import { getOwnOrganization } from "@/lib/organization";
 import { getOwnTalentPoolEntries } from "@/lib/talent-pool";
+import { localizedName } from "@/lib/localized-name";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/avatar";
@@ -11,11 +13,13 @@ import { AVAILABILITY_LABELS, AVAILABILITY_TONE, MOBILITY_LABELS } from "@/lib/a
 import { PROFILE_VERIFICATION_LABELS, PROFILE_VERIFICATION_TONE } from "@/lib/verification-labels";
 
 export default async function TalentPoolPage() {
+  const t = await getTranslations("TalentPoolPage");
+  const locale = await getLocale();
   const session = await auth();
   const organization = await getOwnOrganization(session!.user.id);
 
   if (!organization) {
-    return <p className="text-slate-600">Organisation introuvable.</p>;
+    return <p className="text-slate-600">{t("notFound")}</p>;
   }
 
   const entries = await getOwnTalentPoolEntries(organization.id);
@@ -23,22 +27,18 @@ export default async function TalentPoolPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Vivier de candidats</h1>
-        <p className="mt-1 text-sm text-slate-600">
-          Techniciens que vous avez enregistrés pour un suivi ultérieur.
-        </p>
+        <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
+        <p className="mt-1 text-sm text-slate-600">{t("subtitle")}</p>
       </div>
 
       {entries.length === 0 ? (
         <Card className="border-slate-200 bg-slate-50 text-center">
-          <p className="text-sm text-slate-600">
-            Votre vivier est vide. Ajoutez des techniciens depuis la recherche ou leur profil public.
-          </p>
+          <p className="text-sm text-slate-600">{t("empty")}</p>
           <Link
             href="/organization/search"
             className="mt-3 inline-block rounded text-sm font-medium text-slate-900 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-600 focus-visible:ring-offset-2"
           >
-            Lancer une recherche →
+            {t("searchCta")}
           </Link>
         </Card>
       ) : (
@@ -55,9 +55,11 @@ export default async function TalentPoolPage() {
                     >
                       {entry.technician.firstName} {entry.technician.lastName}
                     </Link>
-                    <p className="text-sm text-slate-600">{entry.technician.primaryTrade?.nameFr}</p>
+                    <p className="text-sm text-slate-600">
+                      {entry.technician.primaryTrade && localizedName(entry.technician.primaryTrade, locale)}
+                    </p>
                     <p className="text-xs text-slate-500">
-                      {entry.technician.country?.nameFr}
+                      {entry.technician.country && localizedName(entry.technician.country, locale)}
                       {entry.technician.city ? ` · ${entry.technician.city}` : ""}
                     </p>
                     <div className="mt-2 flex flex-wrap gap-1.5">

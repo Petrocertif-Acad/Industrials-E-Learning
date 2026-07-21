@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -62,6 +63,7 @@ export function CertificationForm({
   defaults,
   existingDocumentId,
 }: CertificationFormProps) {
+  const t = useTranslations("CertificationForm");
   const action = mode === "edit" ? updateTechnicianCertificationAction : createTechnicianCertificationAction;
   const [state, formAction, pending] = useActionState(action, initialState);
   const grouped = groupByCategory(certifications);
@@ -71,10 +73,10 @@ export function CertificationForm({
       {mode === "edit" && <input type="hidden" name="id" value={certificationRecordId} />}
 
       <div>
-        <Label htmlFor="certificationId">Certification</Label>
+        <Label htmlFor="certificationId">{t("certification")}</Label>
         <Select id="certificationId" name="certificationId" required defaultValue={defaults?.certificationId ?? ""}>
           <option value="" disabled>
-            Sélectionnez une certification
+            {t("certificationPlaceholder")}
           </option>
           {Array.from(grouped.entries()).map(([category, options]) => (
             <optgroup key={category} label={TRADE_CATEGORY_LABELS_FR[category]}>
@@ -86,10 +88,7 @@ export function CertificationForm({
             </optgroup>
           ))}
         </Select>
-        <p className="mt-1 text-xs text-slate-500">
-          Certification introuvable dans la liste ? Elle sera ajoutée au référentiel par
-          l&apos;administration.
-        </p>
+        <p className="mt-1 text-xs text-slate-500">{t("certificationHelp")}</p>
         {state.fieldErrors?.certificationId && (
           <p className="mt-1 text-xs text-red-600">{state.fieldErrors.certificationId[0]}</p>
         )}
@@ -97,11 +96,11 @@ export function CertificationForm({
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <Label htmlFor="issueDate">Date d&apos;obtention (facultatif)</Label>
+          <Label htmlFor="issueDate">{t("issueDate")}</Label>
           <Input id="issueDate" name="issueDate" type="date" defaultValue={defaults?.issueDate ?? ""} />
         </div>
         <div>
-          <Label htmlFor="expiryDate">Date d&apos;expiration (facultatif)</Label>
+          <Label htmlFor="expiryDate">{t("expiryDate")}</Label>
           <Input id="expiryDate" name="expiryDate" type="date" defaultValue={defaults?.expiryDate ?? ""} />
           {state.fieldErrors?.expiryDate && (
             <p className="mt-1 text-xs text-red-600">{state.fieldErrors.expiryDate[0]}</p>
@@ -110,53 +109,49 @@ export function CertificationForm({
       </div>
 
       <fieldset className="space-y-4">
-        <legend className="text-sm font-semibold text-slate-900">
-          Variables de soudage (si applicable)
-        </legend>
+        <legend className="text-sm font-semibold text-slate-900">{t("weldingLegend")}</legend>
         <div className="grid gap-4 sm:grid-cols-3">
           <div>
-            <Label htmlFor="weldingProcess">Procédé</Label>
+            <Label htmlFor="weldingProcess">{t("weldingProcess")}</Label>
             <Input id="weldingProcess" name="weldingProcess" placeholder="GTAW, SMAW…" defaultValue={defaults?.weldingProcess ?? ""} />
           </div>
           <div>
-            <Label htmlFor="materialType">Matériau</Label>
+            <Label htmlFor="materialType">{t("materialType")}</Label>
             <Input id="materialType" name="materialType" defaultValue={defaults?.materialType ?? ""} />
           </div>
           <div>
-            <Label htmlFor="materialGroup">Groupe de matériau</Label>
+            <Label htmlFor="materialGroup">{t("materialGroup")}</Label>
             <Input id="materialGroup" name="materialGroup" defaultValue={defaults?.materialGroup ?? ""} />
           </div>
           <div>
-            <Label htmlFor="qualifiedThickness">Épaisseur qualifiée</Label>
+            <Label htmlFor="qualifiedThickness">{t("qualifiedThickness")}</Label>
             <Input id="qualifiedThickness" name="qualifiedThickness" defaultValue={defaults?.qualifiedThickness ?? ""} />
           </div>
           <div>
-            <Label htmlFor="qualifiedDiameter">Diamètre qualifié</Label>
+            <Label htmlFor="qualifiedDiameter">{t("qualifiedDiameter")}</Label>
             <Input id="qualifiedDiameter" name="qualifiedDiameter" defaultValue={defaults?.qualifiedDiameter ?? ""} />
           </div>
           <div>
-            <Label htmlFor="weldingPosition">Position de soudage</Label>
+            <Label htmlFor="weldingPosition">{t("weldingPosition")}</Label>
             <Input id="weldingPosition" name="weldingPosition" defaultValue={defaults?.weldingPosition ?? ""} />
           </div>
           <div>
-            <Label htmlFor="jointType">Type de joint</Label>
+            <Label htmlFor="jointType">{t("jointType")}</Label>
             <Input id="jointType" name="jointType" defaultValue={defaults?.jointType ?? ""} />
           </div>
           <div>
-            <Label htmlFor="fillerMetal">Métal d&apos;apport</Label>
+            <Label htmlFor="fillerMetal">{t("fillerMetal")}</Label>
             <Input id="fillerMetal" name="fillerMetal" defaultValue={defaults?.fillerMetal ?? ""} />
           </div>
           <div>
-            <Label htmlFor="shieldingGas">Gaz de protection</Label>
+            <Label htmlFor="shieldingGas">{t("shieldingGas")}</Label>
             <Input id="shieldingGas" name="shieldingGas" defaultValue={defaults?.shieldingGas ?? ""} />
           </div>
         </div>
       </fieldset>
 
       <div>
-        <Label htmlFor="document">
-          {existingDocumentId ? "Remplacer le justificatif (facultatif)" : "Justificatif (facultatif, PDF/JPG/PNG, 10 Mo max)"}
-        </Label>
+        <Label htmlFor="document">{existingDocumentId ? t("documentReplace") : t("documentNew")}</Label>
         {existingDocumentId && (
           <p className="mb-2 text-xs text-slate-600">
             <a
@@ -165,7 +160,7 @@ export function CertificationForm({
               target="_blank"
               rel="noreferrer"
             >
-              Voir le document actuel
+              {t("viewCurrentDocument")}
             </a>
           </p>
         )}
@@ -181,7 +176,7 @@ export function CertificationForm({
       {state.error && <p className="text-sm text-red-600">{state.error}</p>}
 
       <Button type="submit" disabled={pending}>
-        {pending ? "Enregistrement…" : mode === "edit" ? "Mettre à jour" : "Ajouter la certification"}
+        {pending ? t("submitPending") : mode === "edit" ? t("submitEdit") : t("submitCreate")}
       </Button>
     </form>
   );

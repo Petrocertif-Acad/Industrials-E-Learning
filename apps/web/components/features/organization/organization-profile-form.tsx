@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,7 +13,7 @@ import {
 
 interface CountryOption {
   id: string;
-  nameFr: string;
+  name: string;
 }
 
 interface OrganizationProfileFormProps {
@@ -28,22 +29,23 @@ interface OrganizationProfileFormProps {
 const initialState: OrganizationProfileFormState = {};
 
 export function OrganizationProfileForm({ countries, defaults }: OrganizationProfileFormProps) {
+  const t = useTranslations("OrganizationProfileForm");
   const [state, formAction, pending] = useActionState(updateOrganizationProfileAction, initialState);
 
   return (
     <form action={formAction} className="space-y-4">
       <div>
-        <Label htmlFor="name">Nom de l&apos;entreprise</Label>
+        <Label htmlFor="name">{t("name")}</Label>
         <Input id="name" name="name" required defaultValue={defaults.name} />
         {state.fieldErrors?.name && <p className="mt-1 text-xs text-red-600">{state.fieldErrors.name[0]}</p>}
       </div>
 
       <div>
-        <Label htmlFor="countryId">Pays</Label>
+        <Label htmlFor="countryId">{t("country")}</Label>
         <Select id="countryId" name="countryId" required defaultValue={defaults.countryId}>
           {countries.map((country) => (
             <option key={country.id} value={country.id}>
-              {country.nameFr}
+              {country.name}
             </option>
           ))}
         </Select>
@@ -53,7 +55,7 @@ export function OrganizationProfileForm({ countries, defaults }: OrganizationPro
       </div>
 
       <div>
-        <Label htmlFor="website">Site web (facultatif)</Label>
+        <Label htmlFor="website">{t("website")}</Label>
         <Input
           id="website"
           name="website"
@@ -67,7 +69,7 @@ export function OrganizationProfileForm({ countries, defaults }: OrganizationPro
       </div>
 
       <div>
-        <Label htmlFor="description">Activité de l&apos;entreprise (facultatif)</Label>
+        <Label htmlFor="description">{t("description")}</Label>
         <textarea
           id="description"
           name="description"
@@ -80,7 +82,7 @@ export function OrganizationProfileForm({ countries, defaults }: OrganizationPro
       {state.error && <p className="text-sm text-red-600">{state.error}</p>}
 
       <Button type="submit" disabled={pending}>
-        {pending ? "Enregistrement…" : "Enregistrer"}
+        {pending ? t("submitPending") : t("submit")}
       </Button>
     </form>
   );

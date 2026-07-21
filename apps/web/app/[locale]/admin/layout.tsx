@@ -1,14 +1,16 @@
+import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { requireRole } from "@/lib/permissions";
 import { UserRole } from "@/lib/generated/prisma/enums";
 
-const NAV_ITEMS = [
-  { href: "/admin/dashboard", label: "Tableau de bord" },
-  { href: "/admin/verifications", label: "Vérifications" },
-];
-
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   await requireRole(UserRole.ADMIN);
+  const t = await getTranslations("AdminNav");
+
+  const NAV_ITEMS = [
+    { href: "/admin/dashboard", label: t("dashboard") },
+    { href: "/admin/verifications", label: t("verifications") },
+  ];
 
   return (
     <div className="mx-auto w-full max-w-5xl flex-1 px-6 py-10">

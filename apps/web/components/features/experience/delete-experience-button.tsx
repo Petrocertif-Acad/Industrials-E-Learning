@@ -1,13 +1,16 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { deleteWorkExperienceAction } from "@/lib/actions/work-experience";
 
 export function DeleteExperienceButton({ experienceId }: { experienceId: string }) {
+  const t = useTranslations("DeleteExperienceButton");
+
   return (
     <form
       action={deleteWorkExperienceAction}
       onSubmit={(event) => {
-        if (!confirm("Supprimer cette expérience professionnelle ?")) {
+        if (!confirm(t("confirm"))) {
           event.preventDefault();
         }
       }}
@@ -17,7 +20,7 @@ export function DeleteExperienceButton({ experienceId }: { experienceId: string 
         type="submit"
         className="rounded text-sm text-red-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-600 focus-visible:ring-offset-2"
       >
-        Supprimer
+        {t("delete")}
       </button>
     </form>
   );

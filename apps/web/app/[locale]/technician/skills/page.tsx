@@ -1,9 +1,13 @@
+import { getTranslations, getLocale } from "next-intl/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db/prisma";
+import { localizedName } from "@/lib/localized-name";
 import { Card } from "@/components/ui/card";
 import { SkillsForm } from "@/components/features/profile/skills-form";
 
 export default async function TechnicianSkillsPage() {
+  const t = await getTranslations("TechnicianSkillsPage");
+  const locale = await getLocale();
   const session = await auth();
 
   const [profile, skills] = await Promise.all([
@@ -13,7 +17,7 @@ export default async function TechnicianSkillsPage() {
     }),
     prisma.skill.findMany({
       orderBy: { nameFr: "asc" },
-      select: { id: true, nameFr: true, trade: { select: { nameFr: true } } },
+      select: { id: true, nameFr: true, nameEn: true, trade: { select: { nameFr: true, nameEn: true } } },
     }),
   ]);
 
@@ -26,16 +30,17 @@ export default async function TechnicianSkillsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Mes compétences</h1>
-        <p className="mt-1 text-sm text-slate-600">
-          Déclarez vos compétences et votre niveau. Elles seront prises en compte dans votre
-          score une fois vérifiées.
-        </p>
+        <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
+        <p className="mt-1 text-sm text-slate-600">{t("subtitle")}</p>
       </div>
 
       <Card>
         <SkillsForm
-          skills={skills.map((s) => ({ id: s.id, nameFr: s.nameFr, tradeNameFr: s.trade.nameFr }))}
+          skills={skills.map((s) => ({
+            id: s.id,
+            name: localizedName(s, locale),
+            tradeName: localizedName(s.trade, locale),
+          }))}
           currentLevels={currentLevels}
         />
       </Card>

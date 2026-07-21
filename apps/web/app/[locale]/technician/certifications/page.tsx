@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db/prisma";
@@ -20,6 +21,7 @@ interface TechnicianCertificationsPageProps {
 }
 
 export default async function TechnicianCertificationsPage({ searchParams }: TechnicianCertificationsPageProps) {
+  const t = await getTranslations("TechnicianCertificationsPage");
   const { saved } = await searchParams;
   const session = await auth();
 
@@ -41,26 +43,21 @@ export default async function TechnicianCertificationsPage({ searchParams }: Tec
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Mes certifications</h1>
-          <p className="mt-1 text-sm text-slate-600">
-            Vos qualifications et certifications. Un justificatif vérifié augmente
-            significativement votre score.
-          </p>
+          <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
+          <p className="mt-1 text-sm text-slate-600">{t("subtitle")}</p>
         </div>
         <Link href="/technician/certifications/new">
-          <Button>Ajouter une certification</Button>
+          <Button>{t("addCertification")}</Button>
         </Link>
       </div>
 
       {saved === "1" && (
-        <p className="rounded-md bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
-          Certification enregistrée.
-        </p>
+        <p className="rounded-md bg-emerald-50 px-3 py-2 text-sm text-emerald-800">{t("savedNotice")}</p>
       )}
 
       {profile.certifications.length === 0 ? (
         <Card>
-          <p className="text-sm text-slate-600">Vous n&apos;avez pas encore ajouté de certification.</p>
+          <p className="text-sm text-slate-600">{t("empty")}</p>
         </Card>
       ) : (
         <div className="space-y-4">
@@ -77,9 +74,9 @@ export default async function TechnicianCertificationsPage({ searchParams }: Tec
                     </h2>
                     <p className="text-sm text-slate-600">{entry.certification.issuingBody}</p>
                     <p className="mt-1 text-sm text-slate-500">
-                      {entry.issueDate ? `Obtenue le ${formatDate(entry.issueDate)}` : "Date d'obtention non renseignée"}
-                      {entry.expiryDate ? ` · Expire le ${formatDate(entry.expiryDate)}` : ""}
-                      {entry.weldingProcess ? ` · Procédé ${entry.weldingProcess}` : ""}
+                      {entry.issueDate ? t("issuedOn", { date: formatDate(entry.issueDate) }) : t("issuedOnMissing")}
+                      {entry.expiryDate ? ` · ${t("expiresOn", { date: formatDate(entry.expiryDate) })}` : ""}
+                      {entry.weldingProcess ? ` · ${t("processPrefix", { process: entry.weldingProcess })}` : ""}
                     </p>
                   </div>
                   <div className="flex flex-col items-end gap-2">
@@ -98,16 +95,16 @@ export default async function TechnicianCertificationsPage({ searchParams }: Tec
                       rel="noreferrer"
                       className="rounded text-sm text-slate-700 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-600 focus-visible:ring-offset-2"
                     >
-                      Voir le justificatif
+                      {t("viewDocument")}
                     </a>
                   ) : (
-                    <span className="text-sm text-slate-400">Aucun justificatif</span>
+                    <span className="text-sm text-slate-400">{t("noDocument")}</span>
                   )}
                   <Link
                     href={`/technician/certifications/${entry.id}/edit`}
                     className="rounded text-sm text-slate-700 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-600 focus-visible:ring-offset-2"
                   >
-                    Modifier
+                    {t("edit")}
                   </Link>
                   <DeleteCertificationButton certificationRecordId={entry.id} />
                 </div>

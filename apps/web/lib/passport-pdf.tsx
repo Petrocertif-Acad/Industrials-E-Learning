@@ -1,6 +1,8 @@
 import { Document, Page, View, Text, Image, StyleSheet, renderToBuffer } from "@react-pdf/renderer";
 import QRCode from "qrcode";
+import { getTranslations } from "next-intl/server";
 import type { TechnicianProfileForDisplay } from "@/lib/technician";
+import { localizedName } from "@/lib/localized-name";
 import { PROFILE_VERIFICATION_LABELS, DOCUMENT_VERIFICATION_LABELS } from "@/lib/verification-labels";
 import { SKILL_LEVEL_LABELS } from "@/lib/skill-levels";
 import { AVAILABILITY_LABELS, MOBILITY_LABELS } from "@/lib/availability-labels";
@@ -10,6 +12,14 @@ import { isCertificationCurrentlyValid } from "@/lib/certification-expiry";
 // données réellement issues du profil : pas de classement (aucun système de
 // ranking dans ce MVP), pas d'historique d'évaluations (pas de modèle
 // Assessment). Le QR code renvoie vers le profil public pour vérification.
+//
+// Ce fichier est rendu hors de l'arbre React de l'application (renderToBuffer
+// dans un route handler non préfixé par la langue) : impossible d'utiliser
+// useTranslations/NextIntlClientProvider. On résout la locale explicitement
+// via getTranslations({ locale, ... }), conçu par next-intl pour ce cas
+// d'usage (PDF, emails). Les libellés d'énumération partagés (niveaux de
+// compétence, statuts) restent en français pour l'instant, comme le reste du
+// site — chantier séparé.
 
 const INK = "#1e293b"; // slate-800
 const MUTED = "#64748b"; // slate-500
@@ -94,19 +104,24 @@ const styles = StyleSheet.create({
   },
 });
 
-function formatDate(date: Date | null): string {
+function formatDate(date: Date | null, locale: string): string {
   if (!date) return "—";
-  return date.toLocaleDateString("fr-FR", { year: "numeric", month: "short", day: "numeric", timeZone: "UTC" });
+  const dateLocale = locale === "en" ? "en-GB" : "fr-FR";
+  return date.toLocaleDateString(dateLocale, { year: "numeric", month: "short", day: "numeric", timeZone: "UTC" });
 }
+
+type PassportMessages = Awaited<ReturnType<typeof getTranslations<"Passport">>>;
 
 interface PassportDocumentProps {
   profile: TechnicianProfileForDisplay;
   publicProfileUrl: string;
   qrCodeDataUrl: string;
   generatedAt: Date;
+  locale: string;
+  t: PassportMessages;
 }
 
-function PassportDocument({ profile, publicProfileUrl, qrCodeDataUrl, generatedAt }: PassportDocumentProps) {
+function PassportDocument({ profile, publicProfileUrl, qrCodeDataUrl, generatedAt, locale, t }: PassportDocumentProps) {
   const initials = `${profile.firstName.charAt(0)}${profile.lastName.charAt(0)}`.toUpperCase();
   const totalScore = profile.score ? Number(profile.score.totalScore) : null;
   const validCertifications = profile.certifications.filter(isCertificationCurrentlyValid);
@@ -114,13 +129,13 @@ function PassportDocument({ profile, publicProfileUrl, qrCodeDataUrl, generatedA
 
   return (
     <Document
-      title={`Passeport ATTI — ${profile.firstName} ${profile.lastName}`}
+      title={`ATTI Passport — ${profile.firstName} ${profile.lastName}`}
       author="African Technical Talent Index"
     >
       <Page size="A4" style={styles.page}>
         <View style={styles.headerBar} />
         <Text style={styles.brand}>ATTI — African Technical Talent Index</Text>
-        <Text style={styles.title}>Passeport professionnel</Text>
+        <Text style={styles.title}>{t("title")}</Text>
 
         <View style={styles.heroRow}>
           <View style={styles.identityBlock}>
@@ -129,9 +144,11 @@ function PassportDocument({ profile, publicProfileUrl, qrCodeDataUrl, generatedA
               <Text style={styles.name}>
                 {profile.firstName} {profile.lastName}
               </Text>
-              <Text style={styles.subtitle}>{profile.primaryTrade?.nameFr ?? "Métier non renseigné"}</Text>
               <Text style={styles.subtitle}>
-                {profile.country?.nameFr ?? "Pays non renseigné"}
+                {profile.primaryTrade ? localizedName(profile.primaryTrade, locale) : t("tradeMissing")}
+              </Text>
+              <Text style={styles.subtitle}>
+                {profile.country ? localizedName(profile.country, locale) : t("countryMissing")}
                 {profile.city ? ` · ${profile.city}` : ""}
               </Text>
               <View style={styles.badgeRow}>
@@ -144,31 +161,35 @@ function PassportDocument({ profile, publicProfileUrl, qrCodeDataUrl, generatedA
 
           <View style={styles.qrBlock}>
             <Image src={qrCodeDataUrl} style={styles.qrImage} />
-            <Text style={styles.qrCaption}>Vérifier ce profil en ligne :{"\n"}{publicProfileUrl}</Text>
+            <Text style={styles.qrCaption}>
+              {t("verifyOnline")}
+              {"\n"}
+              {publicProfileUrl}
+            </Text>
           </View>
         </View>
 
         <View style={styles.scoreBox}>
           <View>
-            <Text style={styles.scoreLabel}>Score ATTI global</Text>
-            <Text style={styles.scoreValue}>{totalScore !== null ? `${totalScore} / 100` : "Non calculé"}</Text>
+            <Text style={styles.scoreLabel}>{t("scoreLabel")}</Text>
+            <Text style={styles.scoreValue}>{totalScore !== null ? `${totalScore} / 100` : t("scoreNotCalculated")}</Text>
           </View>
           <Text style={styles.rowMeta}>
-            {profile.score ? `Dernier calcul : ${formatDate(profile.score.calculatedAt)}` : ""}
+            {profile.score ? t("lastCalculation", { date: formatDate(profile.score.calculatedAt, locale) }) : ""}
           </Text>
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Compétences déclarées</Text>
+          <Text style={styles.sectionTitle}>{t("skillsTitle")}</Text>
           {profile.skills.length === 0 ? (
-            <Text style={styles.emptyText}>Aucune compétence déclarée.</Text>
+            <Text style={styles.emptyText}>{t("noSkills")}</Text>
           ) : (
             profile.skills.map((entry) => (
               <View key={entry.id} style={styles.row}>
-                <Text>{entry.skill.nameFr}</Text>
+                <Text>{localizedName(entry.skill, locale)}</Text>
                 <Text style={styles.rowMeta}>
                   {SKILL_LEVEL_LABELS[entry.verifiedLevel ?? entry.selfLevel]}
-                  {entry.verifiedLevel ? " (vérifiée)" : " (déclarée)"}
+                  {entry.verifiedLevel ? t("verifiedSuffix") : t("declaredSuffix")}
                 </Text>
               </View>
             ))
@@ -177,10 +198,10 @@ function PassportDocument({ profile, publicProfileUrl, qrCodeDataUrl, generatedA
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>
-            Certifications valides ({validCertifications.length}/{profile.certifications.length})
+            {t("certificationsTitle", { valid: validCertifications.length, total: profile.certifications.length })}
           </Text>
           {profile.certifications.length === 0 ? (
-            <Text style={styles.emptyText}>Aucune certification ajoutée.</Text>
+            <Text style={styles.emptyText}>{t("noCertifications")}</Text>
           ) : (
             profile.certifications.map((entry) => (
               <View key={entry.id} style={styles.row}>
@@ -196,35 +217,34 @@ function PassportDocument({ profile, publicProfileUrl, qrCodeDataUrl, generatedA
                   {DOCUMENT_VERIFICATION_LABELS[entry.verificationStatus]}
                   {entry.expiryDate
                     ? isCertificationCurrentlyValid(entry)
-                      ? ` · expire le ${formatDate(entry.expiryDate)}`
-                      : ` · expirée le ${formatDate(entry.expiryDate)}`
+                      ? t("expiresOn", { date: formatDate(entry.expiryDate, locale) })
+                      : t("expiredOn", { date: formatDate(entry.expiryDate, locale) })
                     : ""}
                 </Text>
               </View>
             ))
           )}
           {expiredOrInvalidCertifications.length > 0 && (
-            <Text style={[styles.emptyText, { marginTop: 6 }]}>
-              Les certifications expirées ou non vérifiées ne sont pas comptabilisées dans le score.
-            </Text>
+            <Text style={[styles.emptyText, { marginTop: 6 }]}>{t("certificationsNote")}</Text>
           )}
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Expériences professionnelles</Text>
+          <Text style={styles.sectionTitle}>{t("experiencesTitle")}</Text>
           {profile.workExperiences.length === 0 ? (
-            <Text style={styles.emptyText}>Aucune expérience ajoutée.</Text>
+            <Text style={styles.emptyText}>{t("noExperiences")}</Text>
           ) : (
             profile.workExperiences.map((experience) => (
               <View key={experience.id} style={styles.row}>
                 <View>
                   <Text style={styles.rowLabel}>{experience.projectName}</Text>
                   <Text style={styles.rowMeta}>
-                    {experience.role} — {experience.employer} ({experience.country.nameFr})
+                    {experience.role} — {experience.employer} ({localizedName(experience.country, locale)})
                   </Text>
                 </View>
                 <Text style={styles.rowMeta}>
-                  {formatDate(experience.startDate)} — {experience.endDate ? formatDate(experience.endDate) : "en cours"}
+                  {formatDate(experience.startDate, locale)} —{" "}
+                  {experience.endDate ? formatDate(experience.endDate, locale) : t("ongoing")}
                   {" · "}
                   {DOCUMENT_VERIFICATION_LABELS[experience.verificationStatus]}
                 </Text>
@@ -235,16 +255,14 @@ function PassportDocument({ profile, publicProfileUrl, qrCodeDataUrl, generatedA
 
         {profile.languages.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Langues</Text>
+            <Text style={styles.sectionTitle}>{t("languagesTitle")}</Text>
             <Text>{profile.languages.map((l) => l.languageCode.toUpperCase()).join(", ")}</Text>
           </View>
         )}
 
         <View style={styles.footer} fixed>
-          <Text>
-            Identifiant technicien : {profile.id} · Dernière mise à jour du profil : {formatDate(profile.updatedAt)}
-          </Text>
-          <Text>Document généré le {formatDate(generatedAt)} — atti (démonstration)</Text>
+          <Text>{t("footerIdentifier", { id: profile.id, date: formatDate(profile.updatedAt, locale) })}</Text>
+          <Text>{t("footerGenerated", { date: formatDate(generatedAt, locale) })}</Text>
         </View>
       </Page>
     </Document>
@@ -253,9 +271,13 @@ function PassportDocument({ profile, publicProfileUrl, qrCodeDataUrl, generatedA
 
 export async function generateTechnicianPassportPdf(
   profile: TechnicianProfileForDisplay,
-  publicProfileUrl: string
+  publicProfileUrl: string,
+  locale: string
 ): Promise<Buffer> {
-  const qrCodeDataUrl = await QRCode.toDataURL(publicProfileUrl, { margin: 1, width: 200 });
+  const [qrCodeDataUrl, t] = await Promise.all([
+    QRCode.toDataURL(publicProfileUrl, { margin: 1, width: 200 }),
+    getTranslations({ locale, namespace: "Passport" }),
+  ]);
 
   return renderToBuffer(
     <PassportDocument
@@ -263,6 +285,8 @@ export async function generateTechnicianPassportPdf(
       publicProfileUrl={publicProfileUrl}
       qrCodeDataUrl={qrCodeDataUrl}
       generatedAt={new Date()}
+      locale={locale}
+      t={t}
     />
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,7 +15,7 @@ import { INDUSTRY_SECTORS } from "@/lib/sectors";
 
 interface CountryOption {
   id: string;
-  nameFr: string;
+  name: string;
 }
 
 interface ExperienceDefaults {
@@ -45,6 +46,7 @@ interface ExperienceFormProps {
 const initialState: WorkExperienceFormState = {};
 
 export function ExperienceForm({ countries, mode, experienceId, defaults }: ExperienceFormProps) {
+  const t = useTranslations("ExperienceForm");
   const action = mode === "edit" ? updateWorkExperienceAction : createWorkExperienceAction;
   const [state, formAction, pending] = useActionState(action, initialState);
 
@@ -54,14 +56,14 @@ export function ExperienceForm({ countries, mode, experienceId, defaults }: Expe
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <Label htmlFor="projectName">Nom du projet</Label>
+          <Label htmlFor="projectName">{t("projectName")}</Label>
           <Input id="projectName" name="projectName" required defaultValue={defaults?.projectName} />
           {state.fieldErrors?.projectName && (
             <p className="mt-1 text-xs text-red-600">{state.fieldErrors.projectName[0]}</p>
           )}
         </div>
         <div>
-          <Label htmlFor="employer">Entreprise</Label>
+          <Label htmlFor="employer">{t("employer")}</Label>
           <Input id="employer" name="employer" required defaultValue={defaults?.employer} />
           {state.fieldErrors?.employer && (
             <p className="mt-1 text-xs text-red-600">{state.fieldErrors.employer[0]}</p>
@@ -71,11 +73,11 @@ export function ExperienceForm({ countries, mode, experienceId, defaults }: Expe
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <Label htmlFor="client">Client final (facultatif)</Label>
+          <Label htmlFor="client">{t("client")}</Label>
           <Input id="client" name="client" defaultValue={defaults?.client ?? ""} />
         </div>
         <div>
-          <Label htmlFor="role">Poste occupé</Label>
+          <Label htmlFor="role">{t("role")}</Label>
           <Input id="role" name="role" required defaultValue={defaults?.role} />
           {state.fieldErrors?.role && <p className="mt-1 text-xs text-red-600">{state.fieldErrors.role[0]}</p>}
         </div>
@@ -83,14 +85,14 @@ export function ExperienceForm({ countries, mode, experienceId, defaults }: Expe
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <Label htmlFor="countryId">Pays</Label>
+          <Label htmlFor="countryId">{t("country")}</Label>
           <Select id="countryId" name="countryId" required defaultValue={defaults?.countryId ?? ""}>
             <option value="" disabled>
-              Sélectionnez un pays
+              {t("countryPlaceholder")}
             </option>
             {countries.map((country) => (
               <option key={country.id} value={country.id}>
-                {country.nameFr}
+                {country.name}
               </option>
             ))}
           </Select>
@@ -99,7 +101,7 @@ export function ExperienceForm({ countries, mode, experienceId, defaults }: Expe
           )}
         </div>
         <div>
-          <Label htmlFor="sector">Secteur (facultatif)</Label>
+          <Label htmlFor="sector">{t("sector")}</Label>
           <Input id="sector" name="sector" list="industry-sectors" defaultValue={defaults?.sector ?? ""} />
           <datalist id="industry-sectors">
             {INDUSTRY_SECTORS.map((sector) => (
@@ -111,14 +113,14 @@ export function ExperienceForm({ countries, mode, experienceId, defaults }: Expe
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <Label htmlFor="startDate">Date de début</Label>
+          <Label htmlFor="startDate">{t("startDate")}</Label>
           <Input id="startDate" name="startDate" type="date" required defaultValue={defaults?.startDate} />
           {state.fieldErrors?.startDate && (
             <p className="mt-1 text-xs text-red-600">{state.fieldErrors.startDate[0]}</p>
           )}
         </div>
         <div>
-          <Label htmlFor="endDate">Date de fin (laisser vide si en cours)</Label>
+          <Label htmlFor="endDate">{t("endDate")}</Label>
           <Input id="endDate" name="endDate" type="date" defaultValue={defaults?.endDate ?? ""} />
           {state.fieldErrors?.endDate && (
             <p className="mt-1 text-xs text-red-600">{state.fieldErrors.endDate[0]}</p>
@@ -127,7 +129,7 @@ export function ExperienceForm({ countries, mode, experienceId, defaults }: Expe
       </div>
 
       <div>
-        <Label htmlFor="description">Description du scope (facultatif)</Label>
+        <Label htmlFor="description">{t("description")}</Label>
         <textarea
           id="description"
           name="description"
@@ -139,25 +141,25 @@ export function ExperienceForm({ countries, mode, experienceId, defaults }: Expe
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <Label htmlFor="equipmentUsed">Équipements utilisés (facultatif)</Label>
+          <Label htmlFor="equipmentUsed">{t("equipmentUsed")}</Label>
           <Input id="equipmentUsed" name="equipmentUsed" defaultValue={defaults?.equipmentUsed ?? ""} />
         </div>
         <div>
-          <Label htmlFor="materialsWorked">Matériaux travaillés (facultatif)</Label>
+          <Label htmlFor="materialsWorked">{t("materialsWorked")}</Label>
           <Input id="materialsWorked" name="materialsWorked" defaultValue={defaults?.materialsWorked ?? ""} />
         </div>
         <div>
-          <Label htmlFor="processesApplied">Procédés appliqués (facultatif)</Label>
+          <Label htmlFor="processesApplied">{t("processesApplied")}</Label>
           <Input id="processesApplied" name="processesApplied" defaultValue={defaults?.processesApplied ?? ""} />
         </div>
         <div>
-          <Label htmlFor="standardsUsed">Normes utilisées (facultatif)</Label>
+          <Label htmlFor="standardsUsed">{t("standardsUsed")}</Label>
           <Input id="standardsUsed" name="standardsUsed" defaultValue={defaults?.standardsUsed ?? ""} />
         </div>
       </div>
 
       <div>
-        <Label htmlFor="responsibilities">Responsabilités (facultatif)</Label>
+        <Label htmlFor="responsibilities">{t("responsibilities")}</Label>
         <textarea
           id="responsibilities"
           name="responsibilities"
@@ -168,11 +170,11 @@ export function ExperienceForm({ countries, mode, experienceId, defaults }: Expe
       </div>
 
       <div>
-        <Label htmlFor="referenceContact">Référence professionnelle (facultatif)</Label>
+        <Label htmlFor="referenceContact">{t("referenceContact")}</Label>
         <Input
           id="referenceContact"
           name="referenceContact"
-          placeholder="Nom, poste, moyen de contact"
+          placeholder={t("referenceContactPlaceholder")}
           defaultValue={defaults?.referenceContact ?? ""}
         />
       </div>
@@ -180,7 +182,7 @@ export function ExperienceForm({ countries, mode, experienceId, defaults }: Expe
       {state.error && <p className="text-sm text-red-600">{state.error}</p>}
 
       <Button type="submit" disabled={pending}>
-        {pending ? "Enregistrement…" : mode === "edit" ? "Mettre à jour" : "Ajouter l'expérience"}
+        {pending ? t("submitPending") : mode === "edit" ? t("submitEdit") : t("submitCreate")}
       </Button>
     </form>
   );
