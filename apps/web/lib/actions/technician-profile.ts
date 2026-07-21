@@ -1,7 +1,7 @@
 "use server";
 
-import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
+import { redirectLocalized } from "@/lib/redirect";
+import { revalidateLocalizedPath } from "@/lib/revalidate";
 import { prisma } from "@/lib/db/prisma";
 import { requireUser } from "@/lib/permissions";
 import { getOwnTechnicianProfile } from "@/lib/technician";
@@ -89,8 +89,8 @@ export async function updateProfileBasicsAction(
 
   await recalculateTechnicianScore(profile.id);
 
-  revalidatePath("/technician/dashboard");
-  redirect("/technician/dashboard?updated=1");
+  await revalidateLocalizedPath("/technician/dashboard");
+  return redirectLocalized("/technician/dashboard?updated=1");
 }
 
 export interface SkillsFormState {
@@ -152,7 +152,7 @@ export async function updateTechnicianSkillsAction(
 
   await recalculateTechnicianScore(profile.id);
 
-  revalidatePath("/technician/skills");
-  revalidatePath("/technician/dashboard");
-  redirect("/technician/dashboard?updated=1");
+  await revalidateLocalizedPath("/technician/skills");
+  await revalidateLocalizedPath("/technician/dashboard");
+  return redirectLocalized("/technician/dashboard?updated=1");
 }

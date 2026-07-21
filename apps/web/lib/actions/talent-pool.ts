@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidateLocalizedPath } from "@/lib/revalidate";
 import { prisma } from "@/lib/db/prisma";
 import { requireUser } from "@/lib/permissions";
 import { getOwnOrganization } from "@/lib/organization";
@@ -43,9 +43,9 @@ export async function toggleTalentPoolAction(formData: FormData): Promise<void> 
     });
   }
 
-  revalidatePath("/organization/search");
-  revalidatePath("/organization/talent-pool");
-  revalidatePath(`/technicians/${technicianId}`);
+  await revalidateLocalizedPath("/organization/search");
+  await revalidateLocalizedPath("/organization/talent-pool");
+  await revalidateLocalizedPath(`/technicians/${technicianId}`);
 }
 
 export interface TalentPoolNoteFormState {
@@ -76,6 +76,6 @@ export async function updateTalentPoolNoteAction(
 
   await prisma.talentPoolEntry.update({ where: { id: entryId }, data: { note: note || null } });
 
-  revalidatePath("/organization/talent-pool");
+  await revalidateLocalizedPath("/organization/talent-pool");
   return {};
 }

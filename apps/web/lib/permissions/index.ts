@@ -1,6 +1,6 @@
 import { UserRole } from "@/lib/generated/prisma/enums";
 import { auth } from "@/auth";
-import { redirect } from "next/navigation";
+import { redirectLocalized } from "@/lib/redirect";
 
 /**
  * Vérification d'accès côté serveur. Chaque page/layout protégé doit appeler
@@ -10,7 +10,7 @@ import { redirect } from "next/navigation";
 export async function requireUser() {
   const session = await auth();
   if (!session?.user) {
-    redirect("/login");
+    return redirectLocalized("/login");
   }
   return session.user;
 }
@@ -18,7 +18,7 @@ export async function requireUser() {
 export async function requireRole(...allowedRoles: UserRole[]) {
   const user = await requireUser();
   if (!allowedRoles.includes(user.role)) {
-    redirect("/");
+    return redirectLocalized("/");
   }
   return user;
 }

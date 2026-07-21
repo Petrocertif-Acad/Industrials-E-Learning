@@ -1,7 +1,7 @@
 "use server";
 
-import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
+import { redirectLocalized } from "@/lib/redirect";
+import { revalidateLocalizedPath } from "@/lib/revalidate";
 import { prisma } from "@/lib/db/prisma";
 import { requireUser } from "@/lib/permissions";
 import { getOwnTechnicianProfile } from "@/lib/technician";
@@ -125,9 +125,9 @@ export async function createTechnicianCertificationAction(
 
   await recalculateTechnicianScore(profile.id);
 
-  revalidatePath("/technician/certifications");
-  revalidatePath("/technician/dashboard");
-  redirect("/technician/certifications?saved=1");
+  await revalidateLocalizedPath("/technician/certifications");
+  await revalidateLocalizedPath("/technician/dashboard");
+  return redirectLocalized("/technician/certifications?saved=1");
 }
 
 export async function updateTechnicianCertificationAction(
@@ -203,9 +203,9 @@ export async function updateTechnicianCertificationAction(
 
   await recalculateTechnicianScore(profile.id);
 
-  revalidatePath("/technician/certifications");
-  revalidatePath("/technician/dashboard");
-  redirect("/technician/certifications?saved=1");
+  await revalidateLocalizedPath("/technician/certifications");
+  await revalidateLocalizedPath("/technician/dashboard");
+  return redirectLocalized("/technician/certifications?saved=1");
 }
 
 export async function deleteTechnicianCertificationAction(formData: FormData): Promise<void> {
@@ -246,6 +246,6 @@ export async function deleteTechnicianCertificationAction(formData: FormData): P
 
   await recalculateTechnicianScore(profile.id);
 
-  revalidatePath("/technician/certifications");
-  revalidatePath("/technician/dashboard");
+  await revalidateLocalizedPath("/technician/certifications");
+  await revalidateLocalizedPath("/technician/dashboard");
 }

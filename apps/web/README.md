@@ -212,9 +212,17 @@ Implémenté dans cette phase d'initialisation :
       expériences, langues, QR code de vérification vers le profil public ;
       mêmes règles de visibilité que le profil public (propriétaire, admin, ou
       visibilité complète)
+- [x] Routing bilingue FR/EN (infrastructure) : toutes les routes vivent sous
+      `/fr/...` ou `/en/...` (`next-intl`, `proxy.ts` — voir la note Next.js 16
+      dans `AGENTS.md`), langue par défaut FR, `Link`/`redirect`/`usePathname`
+      centralisés dans `i18n/navigation.ts` pour que le reste du code continue
+      d'écrire des chemins sans préfixe. Le contenu textuel reste en français
+      dans les deux langues pour l'instant — l'extraction/traduction des
+      chaînes vers `messages/fr.json` et `messages/en.json` est le module
+      suivant.
 
 À développer dans les prochains modules (voir le plan de développement du cadrage) :
-i18n FR/EN, évaluations pratiques, avis employeurs, formation continue.
+traduction du contenu FR/EN, évaluations pratiques, avis employeurs, formation continue.
 
 ## Branding
 

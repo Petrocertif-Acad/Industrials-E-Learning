@@ -1,7 +1,7 @@
 "use server";
 
-import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
+import { redirectLocalized } from "@/lib/redirect";
+import { revalidateLocalizedPath } from "@/lib/revalidate";
 import { prisma } from "@/lib/db/prisma";
 import { requireUser } from "@/lib/permissions";
 import { getOwnTechnicianProfile } from "@/lib/technician";
@@ -71,9 +71,9 @@ export async function createWorkExperienceAction(
 
   await recalculateTechnicianScore(profile.id);
 
-  revalidatePath("/technician/experiences");
-  revalidatePath("/technician/dashboard");
-  redirect("/technician/experiences?saved=1");
+  await revalidateLocalizedPath("/technician/experiences");
+  await revalidateLocalizedPath("/technician/dashboard");
+  return redirectLocalized("/technician/experiences?saved=1");
 }
 
 export async function updateWorkExperienceAction(
@@ -109,9 +109,9 @@ export async function updateWorkExperienceAction(
 
   await recalculateTechnicianScore(profile.id);
 
-  revalidatePath("/technician/experiences");
-  revalidatePath("/technician/dashboard");
-  redirect("/technician/experiences?saved=1");
+  await revalidateLocalizedPath("/technician/experiences");
+  await revalidateLocalizedPath("/technician/dashboard");
+  return redirectLocalized("/technician/experiences?saved=1");
 }
 
 export async function deleteWorkExperienceAction(formData: FormData): Promise<void> {
@@ -136,6 +136,6 @@ export async function deleteWorkExperienceAction(formData: FormData): Promise<vo
 
   await recalculateTechnicianScore(profile.id);
 
-  revalidatePath("/technician/experiences");
-  revalidatePath("/technician/dashboard");
+  await revalidateLocalizedPath("/technician/experiences");
+  await revalidateLocalizedPath("/technician/dashboard");
 }

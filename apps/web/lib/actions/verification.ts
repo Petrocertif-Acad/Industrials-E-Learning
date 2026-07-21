@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidateLocalizedPath } from "@/lib/revalidate";
 import { prisma } from "@/lib/db/prisma";
 import { requireRole } from "@/lib/permissions";
 import { UserRole } from "@/lib/generated/prisma/enums";
@@ -54,10 +54,10 @@ async function reviewTechnicianCertification(formData: FormData, decision: Verif
 
   await recalculateTechnicianScore(entry.technicianId);
 
-  revalidatePath("/admin/verifications");
-  revalidatePath("/admin/dashboard");
-  revalidatePath("/technician/certifications");
-  revalidatePath("/technician/dashboard");
+  await revalidateLocalizedPath("/admin/verifications");
+  await revalidateLocalizedPath("/admin/dashboard");
+  await revalidateLocalizedPath("/technician/certifications");
+  await revalidateLocalizedPath("/technician/dashboard");
 }
 
 async function reviewWorkExperience(formData: FormData, decision: VerificationDecisionInput["decision"]) {
@@ -89,10 +89,10 @@ async function reviewWorkExperience(formData: FormData, decision: VerificationDe
 
   await recalculateTechnicianScore(entry.technicianId);
 
-  revalidatePath("/admin/verifications");
-  revalidatePath("/admin/dashboard");
-  revalidatePath("/technician/experiences");
-  revalidatePath("/technician/dashboard");
+  await revalidateLocalizedPath("/admin/verifications");
+  await revalidateLocalizedPath("/admin/dashboard");
+  await revalidateLocalizedPath("/technician/experiences");
+  await revalidateLocalizedPath("/technician/dashboard");
 }
 
 export async function verifyTechnicianCertificationAction(formData: FormData): Promise<void> {

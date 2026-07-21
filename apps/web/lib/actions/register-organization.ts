@@ -1,7 +1,7 @@
 "use server";
 
 import bcrypt from "bcryptjs";
-import { redirect } from "next/navigation";
+import { redirectLocalized } from "@/lib/redirect";
 import { prisma } from "@/lib/db/prisma";
 import { registerOrganizationSchema } from "@/lib/validation/organization";
 
@@ -63,5 +63,5 @@ export async function registerOrganizationAction(
     },
   });
 
-  redirect("/login?registered=1");
+  return redirectLocalized("/login?registered=1");
 }

@@ -1,7 +1,7 @@
 "use server";
 
 import bcrypt from "bcryptjs";
-import { redirect } from "next/navigation";
+import { redirectLocalized } from "@/lib/redirect";
 import { prisma } from "@/lib/db/prisma";
 import { registerTechnicianSchema } from "@/lib/validation/auth";
 import { recalculateTechnicianScore } from "@/lib/score";
@@ -67,5 +67,5 @@ export async function registerTechnicianAction(
     await recalculateTechnicianScore(user.technicianProfile.id);
   }
 
-  redirect("/login?registered=1");
+  return redirectLocalized("/login?registered=1");
 }

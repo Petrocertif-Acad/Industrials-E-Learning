@@ -1,7 +1,7 @@
 "use server";
 
-import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
+import { redirectLocalized } from "@/lib/redirect";
+import { revalidateLocalizedPath } from "@/lib/revalidate";
 import { prisma } from "@/lib/db/prisma";
 import { requireUser } from "@/lib/permissions";
 import { getOwnOrganization } from "@/lib/organization";
@@ -58,6 +58,6 @@ export async function updateOrganizationProfileAction(
     },
   });
 
-  revalidatePath("/organization/dashboard");
-  redirect("/organization/dashboard?updated=1");
+  await revalidateLocalizedPath("/organization/dashboard");
+  return redirectLocalized("/organization/dashboard?updated=1");
 }
