@@ -14,6 +14,7 @@ export function TechnicianNav() {
     { href: "/technician/skills", label: t("skills") },
     { href: "/technician/experiences", label: t("experiences") },
     { href: "/technician/certifications", label: t("certifications") },
+    { href: "/technician/trainings", label: t("trainings") },
   ];
 
   return (

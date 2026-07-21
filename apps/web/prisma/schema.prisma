@@ -233,6 +233,7 @@ model TechnicianProfile {
   skills          TechnicianSkill[]
   certifications  TechnicianCertification[]
   workExperiences WorkExperience[]
+  trainings       TechnicianTraining[]
   languages       TechnicianLanguage[]
   documents       Document[]                 @relation("DocumentSubject")
   score           Score?
@@ -357,6 +358,7 @@ enum DocumentType {
   IDENTITY
   CERTIFICATION_PROOF
   EXPERIENCE_PROOF
+  TRAINING_PROOF
   PROFILE_PHOTO
   OTHER
 }
@@ -380,9 +382,37 @@ model Document {
 
   technicianCertification TechnicianCertification?
   workExperience          WorkExperience?
+  technicianTraining      TechnicianTraining?
 
   @@index([ownerId])
   @@index([verificationStatus])
+}
+
+// ---------------------------------------------------------------------------
+// Formation continue (formations suivies en dehors des certifications
+// standardisées déjà modélisées par Certification/TechnicianCertification —
+// pas de catalogue de référence ici, les intitulés de formation sont trop
+// hétérogènes pour être normalisés comme le sont les certifications)
+// ---------------------------------------------------------------------------
+
+model TechnicianTraining {
+  id                 String                     @id @default(uuid())
+  technicianId       String
+  technician         TechnicianProfile          @relation(fields: [technicianId], references: [id], onDelete: Cascade)
+  title              String
+  provider           String
+  category           TradeCategory?
+  hours              Int?
+  completionDate     DateTime
+  description        String?
+  verificationStatus DocumentVerificationStatus @default(DECLARED)
+  documentId         String?                    @unique
+  document           Document?                  @relation(fields: [documentId], references: [id])
+  createdAt          DateTime                   @default(now())
+  updatedAt          DateTime                   @updatedAt
+
+  @@index([technicianId])
+  @@index([completionDate])
 }
 
 // ---------------------------------------------------------------------------

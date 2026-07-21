@@ -135,10 +135,11 @@ apps/web/
 Le schéma Prisma (`prisma/schema.prisma`) couvre le noyau du MVP : comptes et rôles
 (`User`), profils techniciens, taxonomie métiers/compétences (`Trade`, `Skill`),
 certifications (avec champs spécifiques au soudage), expériences professionnelles,
-documents, score et historique de score, organisations, et journal d'audit.
+formation continue (`TechnicianTraining`), documents, score et historique de score,
+organisations, et journal d'audit.
 
 Les entités listées dans le cahier des charges complet mais hors périmètre MVP
-(`Assessment`, `JobOpportunity`, `TalentPool`, `Subscription`, `Payment`, `Training`,
+(`Assessment`, `JobOpportunity`, `TalentPool`, `Subscription`, `Payment`,
 référentiel géographique complet Country/Region/City, etc.) seront ajoutées au fil des
 modules correspondants plutôt que d'être stubées par anticipation.
 
@@ -297,11 +298,25 @@ Implémenté dans cette phase d'initialisation :
       l'accueil et à la mise en page publique des profils techniciens.
       Pas de case à cocher de consentement ajoutée aux formulaires
       d'inscription dans cette passe (décision de périmètre, pas un oubli).
+- [x] Formation continue (`TechnicianTraining`, `/technician/trainings`) :
+      déclaration de formations suivies en dehors des certifications
+      standardisées déjà modélisées — pas de catalogue de référence, les
+      intitulés sont trop hétérogènes pour être normalisés comme le sont les
+      certifications. Justificatif optionnel (même stockage S3 signé que les
+      autres documents), workflow de vérification admin identique à celui des
+      certifications/expériences (`/admin/verifications`). Contribue au
+      sous-score "formation continue" (5 pts, cadrage section 6) : seules les
+      formations achevées au cours des 3 dernières années comptent, pondérées
+      par leur statut de vérification, avec la même logique de plafond que le
+      sous-score certifications — les sous-scores "évaluations pratiques" (15
+      pts) et "avis employeurs" (5 pts) restent à 0, non disponibles dans ce
+      MVP (`Assessment` et `EmployerReview` ne sont toujours pas modélisés).
+      Visible sur le tableau de bord technicien, le profil public et le
+      passeport PDF.
 
 À développer dans les prochains modules (voir le plan de développement du cadrage) :
-déploiement automatisé (CD), évaluations pratiques, avis
-employeurs, formation continue, envoi d'email réel pour la réinitialisation
-de mot de passe.
+déploiement automatisé (CD), évaluations pratiques, avis employeurs, envoi
+d'email réel pour la réinitialisation de mot de passe.
 
 ## Branding
 

@@ -110,3 +110,46 @@ export async function verifyWorkExperienceAction(formData: FormData): Promise<vo
 export async function rejectWorkExperienceAction(formData: FormData): Promise<void> {
   await reviewWorkExperience(formData, "REJECTED");
 }
+
+async function reviewTechnicianTraining(formData: FormData, decision: VerificationDecisionInput["decision"]) {
+  const admin = await requireRole(UserRole.ADMIN);
+  const { id, note } = readReviewInput(formData, decision);
+
+  const entry = await prisma.technicianTraining.findUnique({ where: { id } });
+  if (!entry) return;
+
+  await prisma.$transaction(async (tx) => {
+    await tx.technicianTraining.update({ where: { id }, data: { verificationStatus: decision } });
+    if (entry.documentId) {
+      await tx.document.update({
+        where: { id: entry.documentId },
+        data: { verificationStatus: decision, verifiedById: admin.id, verifiedAt: new Date() },
+      });
+    }
+  });
+
+  await prisma.auditLog.create({
+    data: {
+      actorId: admin.id,
+      action: decision === "VERIFIED" ? "technician_training.verified" : "technician_training.rejected",
+      targetType: "TechnicianTraining",
+      targetId: id,
+      metadata: note ? { note } : undefined,
+    },
+  });
+
+  await recalculateTechnicianScore(entry.technicianId);
+
+  await revalidateLocalizedPath("/admin/verifications");
+  await revalidateLocalizedPath("/admin/dashboard");
+  await revalidateLocalizedPath("/technician/trainings");
+  await revalidateLocalizedPath("/technician/dashboard");
+}
+
+export async function verifyTechnicianTrainingAction(formData: FormData): Promise<void> {
+  await reviewTechnicianTraining(formData, "VERIFIED");
+}
+
+export async function rejectTechnicianTrainingAction(formData: FormData): Promise<void> {
+  await reviewTechnicianTraining(formData, "REJECTED");
+}

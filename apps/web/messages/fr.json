@@ -97,7 +97,8 @@
     "profile": "Mon profil",
     "skills": "Compétences",
     "experiences": "Expériences",
-    "certifications": "Certifications"
+    "certifications": "Certifications",
+    "trainings": "Formations"
   },
   "TechnicianLoading": {
     "ariaLabel": "Chargement en cours"
@@ -126,7 +127,10 @@
     "certificationsVerifiedSuffixPlural": "vérifiées",
     "certificationsViewAction": "Voir mes certifications",
     "certificationsAddAction": "Ajouter une certification",
-    "expiryWarning": "Expiration à vérifier"
+    "expiryWarning": "Expiration à vérifier",
+    "trainingsLabel": "Formation continue",
+    "trainingsViewAction": "Voir mes formations",
+    "trainingsAddAction": "Ajouter une formation"
   },
   "TechnicianProfilePage": {
     "title": "Mon profil",
@@ -258,6 +262,43 @@
     "submitEdit": "Mettre à jour",
     "submitCreate": "Ajouter l'expérience"
   },
+  "TechnicianTrainingsPage": {
+    "title": "Mes formations",
+    "subtitle": "Vos formations suivies en dehors des certifications standardisées. Les formations récentes et vérifiées comptent dans votre score.",
+    "addTraining": "Ajouter une formation",
+    "savedNotice": "Formation enregistrée.",
+    "empty": "Vous n'avez pas encore ajouté de formation.",
+    "completedOn": "Achevée le {date}",
+    "hoursSuffix": "{hours} h",
+    "viewDocument": "Voir le justificatif",
+    "noDocument": "Aucun justificatif",
+    "edit": "Modifier"
+  },
+  "DeleteTrainingButton": {
+    "confirm": "Supprimer cette formation et son justificatif éventuel ?",
+    "delete": "Supprimer"
+  },
+  "NewTrainingPage": {
+    "title": "Ajouter une formation"
+  },
+  "EditTrainingPage": {
+    "title": "Modifier la formation"
+  },
+  "TrainingForm": {
+    "title": "Intitulé de la formation",
+    "provider": "Organisme de formation",
+    "category": "Catégorie (facultatif)",
+    "categoryPlaceholder": "Sélectionnez une catégorie",
+    "hours": "Durée en heures (facultatif)",
+    "completionDate": "Date d'obtention",
+    "description": "Description (facultatif)",
+    "documentReplace": "Remplacer le justificatif (facultatif)",
+    "documentNew": "Justificatif (facultatif, PDF/JPG/PNG, 10 Mo max)",
+    "viewCurrentDocument": "Voir le document actuel",
+    "submitPending": "Enregistrement…",
+    "submitEdit": "Mettre à jour",
+    "submitCreate": "Ajouter la formation"
+  },
   "OrganizationNav": {
     "ariaLabel": "Navigation entreprise",
     "dashboard": "Tableau de bord",
@@ -355,6 +396,8 @@
     "noCertifications": "Aucune certification en attente.",
     "experiencesHeading": "Expériences professionnelles ({count})",
     "noExperiences": "Aucune expérience en attente.",
+    "trainingsHeading": "Formations continues ({count})",
+    "noTrainings": "Aucune formation en attente.",
     "viewDocument": "Voir le justificatif",
     "noDocument": "Aucun justificatif fourni",
     "employedAt": "chez",
@@ -401,6 +444,8 @@
     "experiencesTitle": "Expériences professionnelles",
     "noExperiences": "Aucune expérience ajoutée.",
     "ongoing": "en cours",
+    "trainingsTitle": "Formation continue",
+    "noTrainings": "Aucune formation ajoutée.",
     "languagesTitle": "Langues",
     "footerIdentifier": "Identifiant technicien : {id} · Dernière mise à jour du profil : {date}",
     "footerGenerated": "Document généré le {date} — atti (démonstration)"
@@ -425,6 +470,8 @@
     "expiresOn": "Expire le {date}",
     "experiencesTitle": "Expériences professionnelles",
     "ongoing": "en cours",
+    "trainingsTitle": "Formation continue",
+    "trainingHours": "{hours} h",
     "scoreDetailTitle": "Détail du score ATTI",
     "additionalInfoTitle": "Informations complémentaires",
     "secondaryTrades": "Métiers secondaires",

@@ -8,6 +8,8 @@ import {
   rejectTechnicianCertificationAction,
   verifyWorkExperienceAction,
   rejectWorkExperienceAction,
+  verifyTechnicianTrainingAction,
+  rejectTechnicianTrainingAction,
 } from "@/lib/actions/verification";
 
 async function ReviewForm({
@@ -54,6 +56,15 @@ async function ReviewForm({
   );
 }
 
+function formatDate(date: Date, locale: string) {
+  return date.toLocaleDateString(locale === "en" ? "en-GB" : "fr-FR", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    timeZone: "UTC",
+  });
+}
+
 export default async function AdminVerificationsPage() {
   const t = await getTranslations("AdminVerificationsPage");
   const locale = await getLocale();
@@ -63,7 +74,7 @@ export default async function AdminVerificationsPage() {
     UNDER_REVIEW: t("statusUnderReview"),
   };
 
-  const [pendingCertifications, pendingExperiences] = await Promise.all([
+  const [pendingCertifications, pendingExperiences, pendingTrainings] = await Promise.all([
     prisma.technicianCertification.findMany({
       where: { verificationStatus: { in: ["DECLARED", "UNDER_REVIEW"] } },
       include: { technician: true, certification: true, document: true },
@@ -73,6 +84,11 @@ export default async function AdminVerificationsPage() {
       where: { verificationStatus: { in: ["DECLARED", "UNDER_REVIEW"] } },
       include: { technician: true, document: true, country: true },
       orderBy: { startDate: "desc" },
+    }),
+    prisma.technicianTraining.findMany({
+      where: { verificationStatus: { in: ["DECLARED", "UNDER_REVIEW"] } },
+      include: { technician: true, document: true },
+      orderBy: { createdAt: "asc" },
     }),
   ]);
 
@@ -165,6 +181,49 @@ export default async function AdminVerificationsPage() {
               <ReviewForm
                 verifyAction={verifyWorkExperienceAction}
                 rejectAction={rejectWorkExperienceAction}
+                id={entry.id}
+              />
+            </Card>
+          ))
+        )}
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-lg font-medium">{t("trainingsHeading", { count: pendingTrainings.length })}</h2>
+        {pendingTrainings.length === 0 ? (
+          <Card>
+            <p className="text-sm text-slate-600">{t("noTrainings")}</p>
+          </Card>
+        ) : (
+          pendingTrainings.map((entry) => (
+            <Card key={entry.id}>
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h3 className="font-medium">{entry.title}</h3>
+                  <p className="text-sm text-slate-600">
+                    {entry.technician.firstName} {entry.technician.lastName} — {entry.provider} (
+                    {formatDate(entry.completionDate, locale)})
+                  </p>
+                  <p className="mt-1 text-sm text-slate-500">
+                    {entry.document ? (
+                      <a
+                        href={`/api/documents/${entry.document.id}/download`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-slate-700 hover:underline"
+                      >
+                        {t("viewDocument")}
+                      </a>
+                    ) : (
+                      t("noDocument")
+                    )}
+                  </p>
+                </div>
+                <Badge tone="warning">{STATUS_LABELS[entry.verificationStatus]}</Badge>
+              </div>
+              <ReviewForm
+                verifyAction={verifyTechnicianTrainingAction}
+                rejectAction={rejectTechnicianTrainingAction}
                 id={entry.id}
               />
             </Card>

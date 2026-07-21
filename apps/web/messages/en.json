@@ -97,7 +97,8 @@
     "profile": "My profile",
     "skills": "Skills",
     "experiences": "Experience",
-    "certifications": "Certifications"
+    "certifications": "Certifications",
+    "trainings": "Training"
   },
   "TechnicianLoading": {
     "ariaLabel": "Loading"
@@ -126,7 +127,10 @@
     "certificationsVerifiedSuffixPlural": "verified",
     "certificationsViewAction": "View my certifications",
     "certificationsAddAction": "Add a certification",
-    "expiryWarning": "Expiry to check"
+    "expiryWarning": "Expiry to check",
+    "trainingsLabel": "Continuous training",
+    "trainingsViewAction": "View my training",
+    "trainingsAddAction": "Add a training"
   },
   "TechnicianProfilePage": {
     "title": "My profile",
@@ -258,6 +262,43 @@
     "submitEdit": "Update",
     "submitCreate": "Add the experience"
   },
+  "TechnicianTrainingsPage": {
+    "title": "My training",
+    "subtitle": "Training you've completed outside of the standardized certifications. Recent, verified training counts toward your score.",
+    "addTraining": "Add a training",
+    "savedNotice": "Training saved.",
+    "empty": "You haven't added any training yet.",
+    "completedOn": "Completed on {date}",
+    "hoursSuffix": "{hours}h",
+    "viewDocument": "View the document",
+    "noDocument": "No document",
+    "edit": "Edit"
+  },
+  "DeleteTrainingButton": {
+    "confirm": "Delete this training and its document, if any?",
+    "delete": "Delete"
+  },
+  "NewTrainingPage": {
+    "title": "Add a training"
+  },
+  "EditTrainingPage": {
+    "title": "Edit training"
+  },
+  "TrainingForm": {
+    "title": "Training title",
+    "provider": "Training provider",
+    "category": "Category (optional)",
+    "categoryPlaceholder": "Select a category",
+    "hours": "Duration in hours (optional)",
+    "completionDate": "Completion date",
+    "description": "Description (optional)",
+    "documentReplace": "Replace the document (optional)",
+    "documentNew": "Document (optional, PDF/JPG/PNG, 10 MB max)",
+    "viewCurrentDocument": "View current document",
+    "submitPending": "Saving…",
+    "submitEdit": "Update",
+    "submitCreate": "Add the training"
+  },
   "OrganizationNav": {
     "ariaLabel": "Company navigation",
     "dashboard": "Dashboard",
@@ -355,6 +396,8 @@
     "noCertifications": "No certification pending.",
     "experiencesHeading": "Work experience ({count})",
     "noExperiences": "No experience pending.",
+    "trainingsHeading": "Continuous training ({count})",
+    "noTrainings": "No training pending.",
     "viewDocument": "View the document",
     "noDocument": "No document provided",
     "employedAt": "at",
@@ -401,6 +444,8 @@
     "experiencesTitle": "Work experience",
     "noExperiences": "No experience added.",
     "ongoing": "ongoing",
+    "trainingsTitle": "Continuous training",
+    "noTrainings": "No training added.",
     "languagesTitle": "Languages",
     "footerIdentifier": "Technician ID: {id} · Profile last updated: {date}",
     "footerGenerated": "Document generated on {date} — atti (demo)"
@@ -425,6 +470,8 @@
     "expiresOn": "Expires on {date}",
     "experiencesTitle": "Work experience",
     "ongoing": "ongoing",
+    "trainingsTitle": "Continuous training",
+    "trainingHours": "{hours}h",
     "scoreDetailTitle": "ATTI score detail",
     "additionalInfoTitle": "Additional information",
     "secondaryTrades": "Secondary trades",

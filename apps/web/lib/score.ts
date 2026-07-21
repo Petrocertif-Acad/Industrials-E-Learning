@@ -8,10 +8,11 @@ import { buildProfileCompletenessChecklist } from "@/lib/technician";
 // HSE 10, avis employeurs 5, formation continue 5, disponibilité/mobilité 3,
 // complétude/vérification du profil 2.
 //
-// Le MVP ne modélise pas encore les évaluations pratiques (Assessment), les
-// avis employeurs (EmployerReview) ni la formation continue (Training) : ces
-// sous-parties valent 0 avec un motif explicite plutôt qu'une valeur inventée
-// — jamais de boîte noire (cadrage section 13).
+// Le MVP ne modélise pas encore les évaluations pratiques (Assessment) ni les
+// avis employeurs (EmployerReview) : ces sous-parties valent 0 avec un motif
+// explicite plutôt qu'une valeur inventée — jamais de boîte noire (cadrage
+// section 13). La formation continue (TechnicianTraining) est modélisée et
+// contribue au score.
 
 const SKILL_LEVEL_VALUE: Record<string, number> = {
   NOT_ASSESSED: 0,
@@ -48,6 +49,13 @@ const MOBILITY_SCOPE_RATIO: Record<string, number> = {
 const CERTIFICATION_TARGET_WEIGHTED_COUNT = 2;
 const EXPERIENCE_TARGET_YEARS = 10;
 
+// Formation "continue" : seules les formations achevées récemment comptent,
+// pour refléter un effort de mise à jour des compétences plutôt qu'un
+// historique figé. Fenêtre et cible alignées sur la même logique que les
+// certifications (section 6 du cadrage), à une échelle réduite (5 pts).
+const CONTINUOUS_TRAINING_WINDOW_YEARS = 3;
+const CONTINUOUS_TRAINING_TARGET_WEIGHTED_COUNT = 2;
+
 function round2(value: number): number {
   return Math.round(value * 100) / 100;
 }
@@ -83,7 +91,7 @@ const UNAVAILABLE_EXPLANATION = "Fonctionnalité non disponible dans cette versi
 export async function calculateTechnicianScore(technicianId: string): Promise<ScoreCalculationResult> {
   const profile = await prisma.technicianProfile.findUniqueOrThrow({
     where: { id: technicianId },
-    include: { skills: true, certifications: true, workExperiences: true },
+    include: { skills: true, certifications: true, workExperiences: true, trainings: true },
   });
 
   // --- Compétences techniques vérifiées (25 pts) ---
@@ -136,10 +144,22 @@ export async function calculateTechnicianScore(technicianId: string): Promise<Sc
   const completenessRatio = checklist.filter((item) => item.done).length / checklist.length;
   const verificationScore = round2(completenessRatio * 2);
 
+  // --- Formation continue (5 pts) ---
+  const trainingWindowStart = new Date(now);
+  trainingWindowStart.setFullYear(trainingWindowStart.getFullYear() - CONTINUOUS_TRAINING_WINDOW_YEARS);
+  const recentTrainings = profile.trainings.filter(
+    (tr) => tr.verificationStatus !== "REJECTED" && tr.completionDate >= trainingWindowStart
+  );
+  const trainingWeightedSum = recentTrainings.reduce(
+    (acc, tr) => acc + (DOCUMENT_STATUS_COEFFICIENT[tr.verificationStatus] ?? 0.4),
+    0
+  );
+  const continuousTrainingRatio = Math.min(1, trainingWeightedSum / CONTINUOUS_TRAINING_TARGET_WEIGHTED_COUNT);
+  const continuousTrainingScore = round2(continuousTrainingRatio * 5);
+
   // --- Sous-parties non disponibles dans le MVP ---
   const safetyScore = 0;
   const employabilityScore = 0;
-  const continuousTrainingScore = 0;
 
   const totalScore = round2(
     technicalScore +
@@ -204,9 +224,12 @@ export async function calculateTechnicianScore(technicianId: string): Promise<Sc
     {
       key: "continuousTraining",
       label: "Formation continue",
-      points: 0,
+      points: continuousTrainingScore,
       max: 5,
-      explanation: UNAVAILABLE_EXPLANATION,
+      explanation:
+        recentTrainings.length > 0
+          ? `${recentTrainings.length} formation(s) achevée(s) au cours des ${CONTINUOUS_TRAINING_WINDOW_YEARS} dernières années, pondérée(s) par leur statut de vérification.`
+          : "Aucune formation continue déclarée au cours des 3 dernières années. Ajoutez vos formations pour faire progresser ce score.",
     },
     {
       key: "mobility",

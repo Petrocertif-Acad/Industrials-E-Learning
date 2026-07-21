@@ -7,6 +7,7 @@ import { getProfileVerificationLabels, getDocumentVerificationLabels } from "@/l
 import { getSkillLevelLabels } from "@/lib/skill-levels";
 import { getAvailabilityLabels, getMobilityLabels } from "@/lib/availability-labels";
 import { isCertificationCurrentlyValid } from "@/lib/certification-expiry";
+import { getTradeCategoryLabels } from "@/lib/trade-categories";
 
 // Passeport numérique de compétences — cadrage section 5. Ne reprend que des
 // données réellement issues du profil : pas de classement (aucun système de
@@ -131,6 +132,7 @@ function PassportDocument({ profile, publicProfileUrl, qrCodeDataUrl, generatedA
   const SKILL_LEVEL_LABELS = getSkillLevelLabels(locale);
   const AVAILABILITY_LABELS = getAvailabilityLabels(locale);
   const MOBILITY_LABELS = getMobilityLabels(locale);
+  const TRADE_CATEGORY_LABELS = getTradeCategoryLabels(locale);
 
   return (
     <Document
@@ -252,6 +254,30 @@ function PassportDocument({ profile, publicProfileUrl, qrCodeDataUrl, generatedA
                   {experience.endDate ? formatDate(experience.endDate, locale) : t("ongoing")}
                   {" · "}
                   {DOCUMENT_VERIFICATION_LABELS[experience.verificationStatus]}
+                </Text>
+              </View>
+            ))
+          )}
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>{t("trainingsTitle")}</Text>
+          {profile.trainings.length === 0 ? (
+            <Text style={styles.emptyText}>{t("noTrainings")}</Text>
+          ) : (
+            profile.trainings.map((training) => (
+              <View key={training.id} style={styles.row}>
+                <View>
+                  <Text style={styles.rowLabel}>{training.title}</Text>
+                  <Text style={styles.rowMeta}>
+                    {training.provider}
+                    {training.category ? ` — ${TRADE_CATEGORY_LABELS[training.category]}` : ""}
+                  </Text>
+                </View>
+                <Text style={styles.rowMeta}>
+                  {formatDate(training.completionDate, locale)}
+                  {" · "}
+                  {DOCUMENT_VERIFICATION_LABELS[training.verificationStatus]}
                 </Text>
               </View>
             ))

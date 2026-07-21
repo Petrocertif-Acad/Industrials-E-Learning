@@ -23,6 +23,7 @@ import {
 import { getSkillLevelLabels } from "@/lib/skill-levels";
 import { getAvailabilityLabels, AVAILABILITY_TONE, getMobilityLabels } from "@/lib/availability-labels";
 import { getExpiryBadge, isCertificationCurrentlyValid } from "@/lib/certification-expiry";
+import { getTradeCategoryLabels } from "@/lib/trade-categories";
 import { ScoreBreakdownList } from "@/components/features/technician/score-breakdown-list";
 import type { ScoreCalculationDetails } from "@/lib/score";
 
@@ -55,6 +56,7 @@ export default async function TechnicianProfileViewPage({ params }: TechnicianPr
   const SKILL_LEVEL_LABELS = getSkillLevelLabels(locale);
   const AVAILABILITY_LABELS = getAvailabilityLabels(locale);
   const MOBILITY_LABELS = getMobilityLabels(locale);
+  const TRADE_CATEGORY_LABELS = getTradeCategoryLabels(locale);
   const { id } = await params;
   const session = await auth();
 
@@ -261,6 +263,34 @@ export default async function TechnicianProfileViewPage({ params }: TechnicianPr
                       {experience.description && (
                         <p className="mt-2 text-sm text-slate-600">{experience.description}</p>
                       )}
+                    </li>
+                  ))}
+                </ul>
+              </Card>
+            )}
+
+            {profile.trainings.length > 0 && (
+              <Card>
+                <h2 className="text-lg font-medium text-slate-900">{t("trainingsTitle")}</h2>
+                <ul className="mt-4 space-y-4">
+                  {profile.trainings.map((training) => (
+                    <li key={training.id} className="border-b border-slate-100 pb-4 last:border-0 last:pb-0">
+                      <div className="flex flex-wrap items-start justify-between gap-2">
+                        <div>
+                          <p className="font-medium text-slate-900">{training.title}</p>
+                          <p className="text-sm text-slate-600">
+                            {training.provider}
+                            {training.category ? ` · ${TRADE_CATEGORY_LABELS[training.category]}` : ""}
+                          </p>
+                          <p className="mt-1 text-xs text-slate-500">
+                            {formatMonthYear(training.completionDate, locale)}
+                            {training.hours ? ` · ${t("trainingHours", { hours: training.hours })}` : ""}
+                          </p>
+                        </div>
+                        <Badge tone={DOCUMENT_VERIFICATION_TONE[training.verificationStatus]}>
+                          {DOCUMENT_VERIFICATION_LABELS[training.verificationStatus]}
+                        </Badge>
+                      </div>
                     </li>
                   ))}
                 </ul>

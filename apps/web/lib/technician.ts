@@ -18,6 +18,7 @@ export function getTechnicianProfileForDisplay(id: string) {
       skills: { include: { skill: { include: { trade: true } } }, orderBy: { updatedAt: "desc" } },
       certifications: { include: { certification: true }, orderBy: { createdAt: "desc" } },
       workExperiences: { include: { country: true }, orderBy: { startDate: "desc" } },
+      trainings: { orderBy: { completionDate: "desc" } },
       languages: true,
     },
   });

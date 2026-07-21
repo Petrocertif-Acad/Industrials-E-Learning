@@ -41,7 +41,7 @@ export default async function TechnicianDashboardPage({ searchParams }: Technici
       country: true,
       score: true,
       certifications: { select: { verificationStatus: true, expiryDate: true } },
-      _count: { select: { skills: true, workExperiences: true } },
+      _count: { select: { skills: true, workExperiences: true, trainings: true } },
     },
   });
 
@@ -159,6 +159,13 @@ export default async function TechnicianDashboardPage({ searchParams }: Technici
           }
           description={certificationsTotal > 0 ? t("certificationsViewAction") : t("certificationsAddAction")}
           badge={hasExpiringCertification && <Badge tone="warning">{t("expiryWarning")}</Badge>}
+        />
+
+        <DashboardStatCard
+          href="/technician/trainings"
+          label={t("trainingsLabel")}
+          value={profile._count.trainings}
+          description={profile._count.trainings > 0 ? t("trainingsViewAction") : t("trainingsAddAction")}
         />
       </div>
     </div>
