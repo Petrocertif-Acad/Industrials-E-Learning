@@ -216,10 +216,15 @@ Implémenté dans cette phase d'initialisation :
       `/fr/...` ou `/en/...` (`next-intl`, `proxy.ts` — voir la note Next.js 16
       dans `AGENTS.md`), langue par défaut FR, `Link`/`redirect`/`usePathname`
       centralisés dans `i18n/navigation.ts` pour que le reste du code continue
-      d'écrire des chemins sans préfixe. Le contenu textuel reste en français
-      dans les deux langues pour l'instant — l'extraction/traduction des
-      chaînes vers `messages/fr.json` et `messages/en.json` est le module
-      suivant.
+      d'écrire des chemins sans préfixe.
+- [x] Traduction FR/EN — accueil et authentification : page d'accueil,
+      connexion, inscription technicien et inscription entreprise
+      (`messages/fr.json`, `messages/en.json`, `useTranslations`/
+      `getTranslations`). Les noms de pays utilisent le champ `nameFr`/`nameEn`
+      déjà présent dans le référentiel `Country` selon la langue active. Reste
+      en français dans les deux langues à ce stade : les messages d'erreur de
+      validation (Zod) et les tableaux de bord technicien/entreprise/admin —
+      prochains modules.
 
 À développer dans les prochains modules (voir le plan de développement du cadrage) :
 traduction du contenu FR/EN, évaluations pratiques, avis employeurs, formation continue.

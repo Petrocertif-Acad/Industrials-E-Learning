@@ -1,1 +1,63 @@
-{}
+{
+  "Common": {
+    "homeAriaLabel": "ATTI — Home",
+    "login": "Log in"
+  },
+  "HomePage": {
+    "eyebrow": "African Technical Talent Index",
+    "title": "The verifiable professional registry for African industrial technicians",
+    "subtitle": "Welding, boilermaking, piping, metal structures, industrial maintenance. Verified skills, tracked certifications, transparent score.",
+    "login": "Log in",
+    "ctaTechnicianShort": "Create a technician profile",
+    "ctaTechnician": "Create my technician profile",
+    "ctaOrganization": "Create a company account",
+    "alreadyRegistered": "Already registered?",
+    "loginLink": "Log in"
+  },
+  "LoginPage": {
+    "title": "Log in",
+    "noAccount": "Don't have an account yet?",
+    "registerTechnician": "Create a technician profile"
+  },
+  "LoginForm": {
+    "registeredSuccess": "Account created successfully. Log in to continue.",
+    "email": "Email address",
+    "password": "Password",
+    "submitPending": "Logging in…",
+    "submit": "Log in",
+    "invalidCredentials": "Incorrect email or password."
+  },
+  "RegisterPage": {
+    "title": "Create my technician profile",
+    "subtitle": "Free. You'll complete your trade, skills and certifications in the next step.",
+    "alreadyRegistered": "Already registered?",
+    "login": "Log in",
+    "isOrganization": "Are you a company?",
+    "registerOrganization": "Create a company account"
+  },
+  "RegisterForm": {
+    "firstName": "First name",
+    "lastName": "Last name",
+    "email": "Email address",
+    "password": "Password",
+    "submitPending": "Creating account…",
+    "submit": "Create my technician account"
+  },
+  "RegisterOrganizationPage": {
+    "title": "Create my company account",
+    "subtitle": "Free. Search and evaluate verified technicians.",
+    "alreadyRegistered": "Already registered?",
+    "login": "Log in",
+    "isTechnician": "Are you a technician?",
+    "registerTechnician": "Create a technician profile"
+  },
+  "RegisterOrganizationForm": {
+    "name": "Company name",
+    "country": "Country",
+    "countryPlaceholder": "Select a country",
+    "email": "Professional email address",
+    "password": "Password",
+    "submitPending": "Creating account…",
+    "submit": "Create my company account"
+  }
+}

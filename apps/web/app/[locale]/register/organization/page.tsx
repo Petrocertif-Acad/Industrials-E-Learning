@@ -1,3 +1,4 @@
+import { getLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { prisma } from "@/lib/db/prisma";
 import { Card } from "@/components/ui/card";
@@ -9,33 +10,35 @@ import { RegisterOrganizationForm } from "@/components/features/auth/register-or
 export const dynamic = "force-dynamic";
 
 export default async function RegisterOrganizationPage() {
-  const countries = await prisma.country.findMany({
+  const t = await getTranslations("RegisterOrganizationPage");
+  const locale = await getLocale();
+  const countriesData = await prisma.country.findMany({
     orderBy: { nameFr: "asc" },
-    select: { id: true, nameFr: true },
+    select: { id: true, nameFr: true, nameEn: true },
   });
+  const countries = countriesData.map((country) => ({
+    id: country.id,
+    name: locale === "en" ? country.nameEn : country.nameFr,
+  }));
 
   return (
     <div className="flex flex-1 items-center justify-center px-6 py-16">
       <div className="w-full max-w-md">
-        <h1 className="mb-2 text-center text-2xl font-semibold tracking-tight">
-          Créer mon compte entreprise
-        </h1>
-        <p className="mb-6 text-center text-sm text-slate-600">
-          Gratuit. Recherchez et évaluez des techniciens vérifiés.
-        </p>
+        <h1 className="mb-2 text-center text-2xl font-semibold tracking-tight">{t("title")}</h1>
+        <p className="mb-6 text-center text-sm text-slate-600">{t("subtitle")}</p>
         <Card>
           <RegisterOrganizationForm countries={countries} />
         </Card>
         <p className="mt-4 text-center text-sm text-slate-600">
-          Déjà inscrit ?{" "}
+          {t("alreadyRegistered")}{" "}
           <Link href="/login" className="font-medium text-slate-900 hover:underline">
-            Se connecter
+            {t("login")}
           </Link>
         </p>
         <p className="mt-2 text-center text-sm text-slate-600">
-          Vous êtes technicien ?{" "}
+          {t("isTechnician")}{" "}
           <Link href="/register" className="font-medium text-slate-900 hover:underline">
-            Créer un profil technicien
+            {t("registerTechnician")}
           </Link>
         </p>
       </div>

@@ -1,1 +1,63 @@
-{}
+{
+  "Common": {
+    "homeAriaLabel": "ATTI — Accueil",
+    "login": "Connexion"
+  },
+  "HomePage": {
+    "eyebrow": "African Technical Talent Index",
+    "title": "Le registre professionnel vérifiable des techniciens industriels africains",
+    "subtitle": "Soudage, chaudronnerie, tuyauterie, structures métalliques, maintenance industrielle. Compétences vérifiées, certifications tracées, score transparent.",
+    "login": "Connexion",
+    "ctaTechnicianShort": "Créer un profil technicien",
+    "ctaTechnician": "Créer mon profil technicien",
+    "ctaOrganization": "Créer un compte entreprise",
+    "alreadyRegistered": "Déjà inscrit ?",
+    "loginLink": "Se connecter"
+  },
+  "LoginPage": {
+    "title": "Connexion",
+    "noAccount": "Pas encore de compte ?",
+    "registerTechnician": "Créer un profil technicien"
+  },
+  "LoginForm": {
+    "registeredSuccess": "Compte créé avec succès. Connectez-vous pour continuer.",
+    "email": "Adresse email",
+    "password": "Mot de passe",
+    "submitPending": "Connexion…",
+    "submit": "Se connecter",
+    "invalidCredentials": "Email ou mot de passe incorrect."
+  },
+  "RegisterPage": {
+    "title": "Créer mon profil technicien",
+    "subtitle": "Gratuit. Vous complèterez votre métier, vos compétences et vos certifications à l'étape suivante.",
+    "alreadyRegistered": "Déjà inscrit ?",
+    "login": "Se connecter",
+    "isOrganization": "Vous êtes une entreprise ?",
+    "registerOrganization": "Créer un compte entreprise"
+  },
+  "RegisterForm": {
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "email": "Adresse email",
+    "password": "Mot de passe",
+    "submitPending": "Création en cours…",
+    "submit": "Créer mon compte technicien"
+  },
+  "RegisterOrganizationPage": {
+    "title": "Créer mon compte entreprise",
+    "subtitle": "Gratuit. Recherchez et évaluez des techniciens vérifiés.",
+    "alreadyRegistered": "Déjà inscrit ?",
+    "login": "Se connecter",
+    "isTechnician": "Vous êtes technicien ?",
+    "registerTechnician": "Créer un profil technicien"
+  },
+  "RegisterOrganizationForm": {
+    "name": "Nom de l'entreprise",
+    "country": "Pays",
+    "countryPlaceholder": "Sélectionnez un pays",
+    "email": "Adresse email professionnelle",
+    "password": "Mot de passe",
+    "submitPending": "Création en cours…",
+    "submit": "Créer mon compte entreprise"
+  }
+}
