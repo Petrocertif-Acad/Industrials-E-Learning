@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
+import { ScoreMeter } from "@/components/features/technician/score-meter";
 import { PROFILE_VERIFICATION_LABELS, PROFILE_VERIFICATION_TONE } from "@/lib/verification-labels";
 import { AVAILABILITY_LABELS, AVAILABILITY_TONE, MOBILITY_LABELS } from "@/lib/availability-labels";
 
@@ -96,17 +97,10 @@ export default async function TechnicianDashboardPage({ searchParams }: Technici
       )}
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Card>
-          <h2 className="text-sm font-medium text-slate-500">Score global</h2>
-          <p className="mt-2 text-3xl font-semibold">
-            {profile.score ? `${profile.score.totalScore} / 100` : "Non calculé"}
-          </p>
-          <p className="mt-1 text-sm text-slate-600">
-            {profile.score
-              ? `Dernier calcul : ${profile.score.calculatedAt.toLocaleDateString("fr-FR")}`
-              : "Le score sera calculé une fois votre profil et vos certifications complétés."}
-          </p>
-        </Card>
+        <ScoreMeter
+          score={profile.score ? Number(profile.score.totalScore) : null}
+          calculatedAt={profile.score?.calculatedAt ?? null}
+        />
 
         <Card>
           <h2 className="text-sm font-medium text-slate-500">Compétences déclarées</h2>
