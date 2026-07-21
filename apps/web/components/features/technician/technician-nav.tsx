@@ -1,24 +1,23 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import { cn } from "@/lib/utils/cn";
 
-const NAV_ITEMS = [
-  { href: "/technician/dashboard", label: "Tableau de bord" },
-  { href: "/technician/profile", label: "Mon profil" },
-  { href: "/technician/skills", label: "Compétences" },
-  { href: "/technician/experiences", label: "Expériences" },
-  { href: "/technician/certifications", label: "Certifications" },
-];
-
 export function TechnicianNav() {
+  const t = useTranslations("TechnicianNav");
   const pathname = usePathname();
 
+  const NAV_ITEMS = [
+    { href: "/technician/dashboard", label: t("dashboard") },
+    { href: "/technician/profile", label: t("profile") },
+    { href: "/technician/skills", label: t("skills") },
+    { href: "/technician/experiences", label: t("experiences") },
+    { href: "/technician/certifications", label: t("certifications") },
+  ];
+
   return (
-    <nav
-      aria-label="Navigation technicien"
-      className="flex flex-nowrap gap-1 overflow-x-auto"
-    >
+    <nav aria-label={t("ariaLabel")} className="flex flex-nowrap gap-1 overflow-x-auto">
       {NAV_ITEMS.map((item) => {
         const isActive = pathname === item.href || pathname?.startsWith(`${item.href}/`);
         return (

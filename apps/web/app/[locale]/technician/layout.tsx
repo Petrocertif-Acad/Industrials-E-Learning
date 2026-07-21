@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { requireRole } from "@/lib/permissions";
 import { UserRole } from "@/lib/generated/prisma/enums";
@@ -6,12 +7,13 @@ import { TechnicianNav } from "@/components/features/technician/technician-nav";
 
 export default async function TechnicianLayout({ children }: { children: React.ReactNode }) {
   await requireRole(UserRole.TECHNICIAN);
+  const t = await getTranslations("Common");
 
   return (
     <div className="flex flex-1 flex-col">
       <header className="border-b border-slate-200 bg-white">
         <div className="mx-auto flex w-full max-w-5xl items-center gap-4 px-6 py-4">
-          <Link href="/" aria-label="ATTI — Accueil" className="shrink-0">
+          <Link href="/" aria-label={t("homeAriaLabel")} className="shrink-0">
             <Logo />
           </Link>
           <div className="min-w-0 flex-1">

@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db/prisma";
@@ -23,6 +24,7 @@ interface TechnicianDashboardPageProps {
 export default async function TechnicianDashboardPage({ searchParams }: TechnicianDashboardPageProps) {
   // La couche layout (app/technician/layout.tsx) a déjà vérifié le rôle ;
   // ce composant peut donc supposer une session TECHNICIAN valide.
+  const t = await getTranslations("TechnicianDashboard");
   const { updated } = await searchParams;
   const session = await auth();
   const profile = await prisma.technicianProfile.findUnique({
@@ -59,16 +61,17 @@ export default async function TechnicianDashboardPage({ searchParams }: Technici
         <Avatar firstName={profile.firstName} lastName={profile.lastName} size="lg" />
         <div className="flex-1">
           <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-2xl font-semibold tracking-tight">Bonjour {profile.firstName}</h1>
+            <h1 className="text-2xl font-semibold tracking-tight">{t("greeting", { firstName: profile.firstName })}</h1>
             <Badge tone={PROFILE_VERIFICATION_TONE[profile.verificationStatus]}>
               {PROFILE_VERIFICATION_LABELS[profile.verificationStatus]}
             </Badge>
           </div>
-          <p className="mt-1 text-lg text-slate-700">
-            {profile.primaryTrade?.nameFr ?? "Métier non renseigné"}
-          </p>
+          {/* Métier/pays affichés depuis le référentiel (nameFr) quelle que soit la
+              langue de l'interface : la localisation des données de référence
+              (Trade, Country, Skill, Certification) reste à faire. */}
+          <p className="mt-1 text-lg text-slate-700">{profile.primaryTrade?.nameFr ?? t("tradeMissing")}</p>
           <p className="mt-1 text-sm text-slate-500">
-            {profile.country?.nameFr ?? "Localisation non renseignée"}
+            {profile.country?.nameFr ?? t("locationMissing")}
             {profile.city ? ` · ${profile.city}` : ""}
           </p>
           <div className="mt-4 flex flex-wrap gap-2">
@@ -77,7 +80,7 @@ export default async function TechnicianDashboardPage({ searchParams }: Technici
           </div>
           <div className="mt-4 flex flex-wrap items-center gap-4">
             <Link href="/technician/profile" className={SECONDARY_LINK_CLASSNAME}>
-              Modifier mon profil
+              {t("editProfile")}
             </Link>
             {onboardingComplete && (
               <Link
@@ -86,13 +89,13 @@ export default async function TechnicianDashboardPage({ searchParams }: Technici
                 rel="noreferrer"
                 className={SECONDARY_LINK_CLASSNAME}
               >
-                Voir mon profil public ↗
+                {t("viewPublicProfile")}
               </Link>
             )}
             {onboardingComplete && (
               // Lien direct (pas le Link localisé) : /api/* n'est jamais préfixé par la langue.
               <a href={`/api/technicians/${profile.id}/passport`} className={SECONDARY_LINK_CLASSNAME}>
-                Télécharger mon passeport (PDF)
+                {t("downloadPassport")}
               </a>
             )}
           </div>
@@ -100,9 +103,7 @@ export default async function TechnicianDashboardPage({ searchParams }: Technici
       </Card>
 
       {updated === "1" && (
-        <p className="rounded-md bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
-          Vos informations ont été enregistrées.
-        </p>
+        <p className="rounded-md bg-emerald-50 px-3 py-2 text-sm text-emerald-800">{t("savedNotice")}</p>
       )}
 
       <ProfileCompleteness items={checklist} />
@@ -116,36 +117,39 @@ export default async function TechnicianDashboardPage({ searchParams }: Technici
 
         <DashboardStatCard
           href="/technician/skills"
-          label="Compétences déclarées"
+          label={t("skillsLabel")}
           value={profile._count.skills}
-          description={profile._count.skills > 0 ? "Modifier mes compétences" : "Déclarer mes compétences"}
+          description={profile._count.skills > 0 ? t("skillsEditAction") : t("skillsAddAction")}
         />
 
         <DashboardStatCard
           href="/technician/experiences"
-          label="Expériences professionnelles"
+          label={t("experiencesLabel")}
           value={profile._count.workExperiences}
-          description={profile._count.workExperiences > 0 ? "Voir mes expériences" : "Ajouter une expérience"}
+          description={profile._count.workExperiences > 0 ? t("experiencesViewAction") : t("experiencesAddAction")}
         />
 
         <DashboardStatCard
           href="/technician/certifications"
-          label="Certifications"
+          label={t("certificationsLabel")}
           value={
             certificationsTotal > 0 ? (
               <>
                 {certificationsTotal}
                 <span className="text-base font-normal text-slate-500">
                   {" "}
-                  · {certificationsVerified} vérifiée{certificationsVerified > 1 ? "s" : ""}
+                  · {certificationsVerified}{" "}
+                  {certificationsVerified > 1
+                    ? t("certificationsVerifiedSuffixPlural")
+                    : t("certificationsVerifiedSuffix")}
                 </span>
               </>
             ) : (
               0
             )
           }
-          description={certificationsTotal > 0 ? "Voir mes certifications" : "Ajouter une certification"}
-          badge={hasExpiringCertification && <Badge tone="warning">Expiration à vérifier</Badge>}
+          description={certificationsTotal > 0 ? t("certificationsViewAction") : t("certificationsAddAction")}
+          badge={hasExpiringCertification && <Badge tone="warning">{t("expiryWarning")}</Badge>}
         />
       </div>
     </div>

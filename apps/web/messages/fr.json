@@ -59,5 +59,42 @@
     "password": "Mot de passe",
     "submitPending": "Création en cours…",
     "submit": "Créer mon compte entreprise"
+  },
+  "TechnicianNav": {
+    "ariaLabel": "Navigation technicien",
+    "dashboard": "Tableau de bord",
+    "profile": "Mon profil",
+    "skills": "Compétences",
+    "experiences": "Expériences",
+    "certifications": "Certifications"
+  },
+  "TechnicianLoading": {
+    "ariaLabel": "Chargement en cours"
+  },
+  "TechnicianError": {
+    "title": "Une erreur est survenue",
+    "description": "Impossible d'afficher cette page pour le moment. Vérifiez votre connexion et réessayez.",
+    "retry": "Réessayer"
+  },
+  "TechnicianDashboard": {
+    "greeting": "Bonjour {firstName}",
+    "tradeMissing": "Métier non renseigné",
+    "locationMissing": "Localisation non renseignée",
+    "editProfile": "Modifier mon profil",
+    "viewPublicProfile": "Voir mon profil public ↗",
+    "downloadPassport": "Télécharger mon passeport (PDF)",
+    "savedNotice": "Vos informations ont été enregistrées.",
+    "skillsLabel": "Compétences déclarées",
+    "skillsEditAction": "Modifier mes compétences",
+    "skillsAddAction": "Déclarer mes compétences",
+    "experiencesLabel": "Expériences professionnelles",
+    "experiencesViewAction": "Voir mes expériences",
+    "experiencesAddAction": "Ajouter une expérience",
+    "certificationsLabel": "Certifications",
+    "certificationsVerifiedSuffix": "vérifiée",
+    "certificationsVerifiedSuffixPlural": "vérifiées",
+    "certificationsViewAction": "Voir mes certifications",
+    "certificationsAddAction": "Ajouter une certification",
+    "expiryWarning": "Expiration à vérifier"
   }
 }

@@ -59,5 +59,42 @@
     "password": "Password",
     "submitPending": "Creating account…",
     "submit": "Create my company account"
+  },
+  "TechnicianNav": {
+    "ariaLabel": "Technician navigation",
+    "dashboard": "Dashboard",
+    "profile": "My profile",
+    "skills": "Skills",
+    "experiences": "Experience",
+    "certifications": "Certifications"
+  },
+  "TechnicianLoading": {
+    "ariaLabel": "Loading"
+  },
+  "TechnicianError": {
+    "title": "Something went wrong",
+    "description": "This page couldn't be displayed right now. Check your connection and try again.",
+    "retry": "Try again"
+  },
+  "TechnicianDashboard": {
+    "greeting": "Hello {firstName}",
+    "tradeMissing": "Trade not set",
+    "locationMissing": "Location not set",
+    "editProfile": "Edit my profile",
+    "viewPublicProfile": "View my public profile ↗",
+    "downloadPassport": "Download my passport (PDF)",
+    "savedNotice": "Your information has been saved.",
+    "skillsLabel": "Declared skills",
+    "skillsEditAction": "Edit my skills",
+    "skillsAddAction": "Declare my skills",
+    "experiencesLabel": "Work experience",
+    "experiencesViewAction": "View my experience",
+    "experiencesAddAction": "Add an experience",
+    "certificationsLabel": "Certifications",
+    "certificationsVerifiedSuffix": "verified",
+    "certificationsVerifiedSuffixPlural": "verified",
+    "certificationsViewAction": "View my certifications",
+    "certificationsAddAction": "Add a certification",
+    "expiryWarning": "Expiry to check"
   }
 }
