@@ -186,6 +186,13 @@ Implémenté dans cette phase d'initialisation :
       limitée/complète contrôlée par le technicien (`TechnicianProfile.visibility`)
 - [x] Redesign de `/technician/profile` : sections regroupées, indicateur de complétude,
       contrôle de visibilité, navigation à onglet actif
+- [x] Refonte UX/UI du tableau de bord technicien : bloc identité & confiance,
+      score ATTI mis en avant, bandeau de progression du profil, grille de cartes
+      cliquables (compétences, expériences, certifications avec statut vérifié/déclaré),
+      navigation à défilement horizontal, états de chargement/erreur dédiés
+- [x] Espace entreprise (fondations) : inscription (`/register/organization`),
+      profil entreprise modifiable (`/organization/profile`), tableau de bord avec
+      statut de vérification (`/organization/dashboard`), navigation dédiée
 
 À développer dans les prochains modules (voir le plan de développement du cadrage) :
 moteur de score, recherche de techniciens, passeport PDF, i18n FR/EN.

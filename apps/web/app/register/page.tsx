@@ -22,6 +22,12 @@ export default function RegisterPage() {
             Se connecter
           </Link>
         </p>
+        <p className="mt-2 text-center text-sm text-slate-600">
+          Vous êtes une entreprise ?{" "}
+          <Link href="/register/organization" className="font-medium text-slate-900 hover:underline">
+            Créer un compte entreprise
+          </Link>
+        </p>
       </div>
     </div>
   );

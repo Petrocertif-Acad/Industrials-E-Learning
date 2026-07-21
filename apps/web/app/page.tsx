@@ -36,10 +36,16 @@ export default function Home() {
           <Link href="/register">
             <Button>Créer mon profil technicien</Button>
           </Link>
-          <Link href="/login">
-            <Button variant="secondary">Accès entreprise / administration</Button>
+          <Link href="/register/organization">
+            <Button variant="secondary">Créer un compte entreprise</Button>
           </Link>
         </div>
+        <p className="mt-6 text-sm text-slate-500">
+          Déjà inscrit ?{" "}
+          <Link href="/login" className="font-medium text-slate-700 hover:text-slate-900">
+            Se connecter
+          </Link>
+        </p>
       </main>
     </div>
   );
