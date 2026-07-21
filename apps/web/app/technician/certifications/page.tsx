@@ -6,23 +6,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DeleteCertificationButton } from "@/components/features/certification/delete-certification-button";
 import { DOCUMENT_VERIFICATION_LABELS, DOCUMENT_VERIFICATION_TONE } from "@/lib/verification-labels";
-
-const EXPIRY_WARNING_WINDOW_DAYS = 60;
+import { getExpiryBadge } from "@/lib/certification-expiry";
 
 function formatDate(date: Date) {
   // Les dates de certification n'ont pas de composante horaire : elles sont
   // stockées à minuit UTC. Formater dans le fuseau du serveur ferait glisser
   // l'affichage d'un jour selon son décalage horaire (ex. UTC-5 en soirée).
   return date.toLocaleDateString("fr-FR", { year: "numeric", month: "short", day: "numeric", timeZone: "UTC" });
-}
-
-function getExpiryBadge(expiryDate: Date | null) {
-  if (!expiryDate) return null;
-  const now = new Date();
-  const daysUntilExpiry = Math.floor((expiryDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-  if (daysUntilExpiry < 0) return { label: "Expirée", tone: "danger" as const };
-  if (daysUntilExpiry <= EXPIRY_WARNING_WINDOW_DAYS) return { label: `Expire dans ${daysUntilExpiry} j`, tone: "warning" as const };
-  return null;
 }
 
 interface TechnicianCertificationsPageProps {

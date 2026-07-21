@@ -12,8 +12,7 @@ import {
 } from "@/lib/verification-labels";
 import { SKILL_LEVEL_LABELS } from "@/lib/skill-levels";
 import { AVAILABILITY_LABELS, AVAILABILITY_TONE, MOBILITY_LABELS } from "@/lib/availability-labels";
-
-const EXPIRY_WARNING_WINDOW_DAYS = 60;
+import { getExpiryBadge } from "@/lib/certification-expiry";
 
 function formatDate(date: Date) {
   return date.toLocaleDateString("fr-FR", { year: "numeric", month: "short", day: "numeric", timeZone: "UTC" });
@@ -21,14 +20,6 @@ function formatDate(date: Date) {
 
 function formatMonthYear(date: Date) {
   return date.toLocaleDateString("fr-FR", { year: "numeric", month: "short", timeZone: "UTC" });
-}
-
-function getExpiryBadge(expiryDate: Date | null) {
-  if (!expiryDate) return null;
-  const daysUntilExpiry = Math.floor((expiryDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
-  if (daysUntilExpiry < 0) return { label: "Expirée", tone: "danger" as const };
-  if (daysUntilExpiry <= EXPIRY_WARNING_WINDOW_DAYS) return { label: `Expire dans ${daysUntilExpiry} j`, tone: "warning" as const };
-  return null;
 }
 
 interface TechnicianProfileViewPageProps {

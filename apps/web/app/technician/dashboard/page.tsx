@@ -6,9 +6,11 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/avatar";
 import { ScoreMeter } from "@/components/features/technician/score-meter";
 import { ProfileCompleteness } from "@/components/features/technician/profile-completeness";
+import { DashboardStatCard } from "@/components/features/technician/dashboard-stat-card";
 import { PROFILE_VERIFICATION_LABELS, PROFILE_VERIFICATION_TONE } from "@/lib/verification-labels";
 import { AVAILABILITY_LABELS, AVAILABILITY_TONE, MOBILITY_LABELS } from "@/lib/availability-labels";
 import { buildProfileCompletenessChecklist } from "@/lib/technician";
+import { isExpiringSoonOrExpired } from "@/lib/certification-expiry";
 
 const SECONDARY_LINK_CLASSNAME =
   "rounded text-sm text-slate-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-600 focus-visible:ring-offset-2";
@@ -28,7 +30,8 @@ export default async function TechnicianDashboardPage({ searchParams }: Technici
       primaryTrade: true,
       country: true,
       score: true,
-      _count: { select: { skills: true, workExperiences: true, certifications: true } },
+      certifications: { select: { verificationStatus: true, expiryDate: true } },
+      _count: { select: { skills: true, workExperiences: true } },
     },
   });
 
@@ -37,11 +40,14 @@ export default async function TechnicianDashboardPage({ searchParams }: Technici
   }
 
   const onboardingComplete = Boolean(profile.primaryTradeId && profile.countryId);
+  const certificationsTotal = profile.certifications.length;
+  const certificationsVerified = profile.certifications.filter((c) => c.verificationStatus === "VERIFIED").length;
+  const hasExpiringCertification = profile.certifications.some((c) => isExpiringSoonOrExpired(c.expiryDate));
   const checklist = buildProfileCompletenessChecklist({
     primaryTradeId: profile.primaryTradeId,
     countryId: profile.countryId,
     skillsCount: profile._count.skills,
-    certificationsCount: profile._count.certifications,
+    certificationsCount: certificationsTotal,
     workExperiencesCount: profile._count.workExperiences,
   });
 
@@ -100,29 +106,39 @@ export default async function TechnicianDashboardPage({ searchParams }: Technici
           calculatedAt={profile.score?.calculatedAt ?? null}
         />
 
-        <Card>
-          <h2 className="text-sm font-medium text-slate-500">Compétences déclarées</h2>
-          <p className="mt-2 text-3xl font-semibold">{profile._count.skills}</p>
-          <Link href="/technician/skills" className={`mt-1 inline-block ${SECONDARY_LINK_CLASSNAME}`}>
-            {profile._count.skills > 0 ? "Modifier mes compétences" : "Déclarer mes compétences"}
-          </Link>
-        </Card>
+        <DashboardStatCard
+          href="/technician/skills"
+          label="Compétences déclarées"
+          value={profile._count.skills}
+          description={profile._count.skills > 0 ? "Modifier mes compétences" : "Déclarer mes compétences"}
+        />
 
-        <Card>
-          <h2 className="text-sm font-medium text-slate-500">Expériences professionnelles</h2>
-          <p className="mt-2 text-3xl font-semibold">{profile._count.workExperiences}</p>
-          <Link href="/technician/experiences" className={`mt-1 inline-block ${SECONDARY_LINK_CLASSNAME}`}>
-            {profile._count.workExperiences > 0 ? "Voir mes expériences" : "Ajouter une expérience"}
-          </Link>
-        </Card>
+        <DashboardStatCard
+          href="/technician/experiences"
+          label="Expériences professionnelles"
+          value={profile._count.workExperiences}
+          description={profile._count.workExperiences > 0 ? "Voir mes expériences" : "Ajouter une expérience"}
+        />
 
-        <Card>
-          <h2 className="text-sm font-medium text-slate-500">Certifications</h2>
-          <p className="mt-2 text-3xl font-semibold">{profile._count.certifications}</p>
-          <Link href="/technician/certifications" className={`mt-1 inline-block ${SECONDARY_LINK_CLASSNAME}`}>
-            {profile._count.certifications > 0 ? "Voir mes certifications" : "Ajouter une certification"}
-          </Link>
-        </Card>
+        <DashboardStatCard
+          href="/technician/certifications"
+          label="Certifications"
+          value={
+            certificationsTotal > 0 ? (
+              <>
+                {certificationsTotal}
+                <span className="text-base font-normal text-slate-500">
+                  {" "}
+                  · {certificationsVerified} vérifiée{certificationsVerified > 1 ? "s" : ""}
+                </span>
+              </>
+            ) : (
+              0
+            )
+          }
+          description={certificationsTotal > 0 ? "Voir mes certifications" : "Ajouter une certification"}
+          badge={hasExpiringCertification && <Badge tone="warning">Expiration à vérifier</Badge>}
+        />
       </div>
     </div>
   );
