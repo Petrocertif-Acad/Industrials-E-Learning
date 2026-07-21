@@ -4,6 +4,11 @@
     "login": "Log in",
     "profileNotFound": "Profile not found."
   },
+  "Footer": {
+    "copyright": "© {year} ATTI — African Technical Talent Index",
+    "privacy": "Privacy",
+    "terms": "Terms of service"
+  },
   "HomePage": {
     "eyebrow": "African Technical Talent Index",
     "title": "The verifiable professional registry for African industrial technicians",

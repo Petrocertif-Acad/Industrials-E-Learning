@@ -285,9 +285,21 @@ Implémenté dans cette phase d'initialisation :
       avec une requête Prisma au moment du build, donc rien n'a besoin de se
       connecter réellement pendant le build. Pas de déploiement automatisé
       pour l'instant (CD), seulement l'intégration continue.
+- [x] Pages légales (`/legal/privacy`, `/legal/terms`) : politique de
+      confidentialité et conditions d'utilisation bilingues FR/EN, contenu
+      écrit directement dans chaque composant de page (pas dans
+      `messages/*.json` — texte long, pas des libellés d'interface). Raison
+      sociale, adresse et juridiction restent des placeholders entre
+      crochets (`[À compléter]`) car aucune entité juridique réelle n'a
+      encore été établie pour ATTI dans ce projet ; à faire relire par un
+      juriste avant toute mise en production. Nouveau composant `Footer`
+      (`components/ui/footer.tsx`) liant vers les deux pages, ajouté à
+      l'accueil et à la mise en page publique des profils techniciens.
+      Pas de case à cocher de consentement ajoutée aux formulaires
+      d'inscription dans cette passe (décision de périmètre, pas un oubli).
 
 À développer dans les prochains modules (voir le plan de développement du cadrage) :
-déploiement automatisé (CD), pages légales, évaluations pratiques, avis
+déploiement automatisé (CD), évaluations pratiques, avis
 employeurs, formation continue, envoi d'email réel pour la réinitialisation
 de mot de passe.
 

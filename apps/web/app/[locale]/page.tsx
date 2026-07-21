@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/ui/logo";
+import { Footer } from "@/components/ui/footer";
 
 export default async function Home() {
   const t = await getTranslations("HomePage");
@@ -44,6 +45,8 @@ export default async function Home() {
           </Link>
         </p>
       </main>
+
+      <Footer />
     </div>
   );
 }

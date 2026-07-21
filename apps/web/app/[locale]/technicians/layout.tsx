@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { Logo } from "@/components/ui/logo";
+import { Footer } from "@/components/ui/footer";
 
 export default async function PublicTechniciansLayout({ children }: { children: React.ReactNode }) {
   const t = await getTranslations("Common");
@@ -18,6 +19,7 @@ export default async function PublicTechniciansLayout({ children }: { children: 
         </div>
       </header>
       <div className="flex-1">{children}</div>
+      <Footer />
     </div>
   );
 }
