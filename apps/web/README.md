@@ -277,10 +277,19 @@ Implémenté dans cette phase d'initialisation :
       formaliser quelques parcours critiques (connexion, inscription, RBAC)
       en E2E persisté est un chantier naturel à mener avec la mise en place
       de la CI/CD.
+- [x] CI (`.github/workflows/ci.yml`) : à chaque push/PR sur `main` —
+      installation, génération du client Prisma, `tsc --noEmit`, `eslint`,
+      `npm test`, `npm run build`. Fonctionne sans base de données ni
+      service de stockage réels (variables d'environnement de substitution
+      uniquement) : vérifié qu'aucune route n'est pré-rendue statiquement
+      avec une requête Prisma au moment du build, donc rien n'a besoin de se
+      connecter réellement pendant le build. Pas de déploiement automatisé
+      pour l'instant (CD), seulement l'intégration continue.
 
 À développer dans les prochains modules (voir le plan de développement du cadrage) :
-CI/CD, pages légales, évaluations pratiques, avis employeurs, formation
-continue, envoi d'email réel pour la réinitialisation de mot de passe.
+déploiement automatisé (CD), pages légales, évaluations pratiques, avis
+employeurs, formation continue, envoi d'email réel pour la réinitialisation
+de mot de passe.
 
 ## Branding
 

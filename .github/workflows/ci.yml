@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+defaults:
+  run:
+    working-directory: apps/web
+
+# Valeurs de substitution uniquement : aucune route n'est pré-rendue
+# statiquement avec une requête Prisma au moment du build (vérifié — toutes
+# les pages qui interrogent la base sont dynamiques), donc le build n'a
+# jamais besoin de se connecter réellement à ces services.
+env:
+  DATABASE_URL: "postgresql://ci:ci@localhost:5432/ci?schema=public"
+  AUTH_SECRET: "ci-placeholder-secret-not-for-production-use"
+  AUTH_URL: "http://localhost:3000"
+  STORAGE_ENDPOINT: "http://localhost:9000"
+  STORAGE_PUBLIC_ENDPOINT: "http://localhost:9000"
+  STORAGE_REGION: "us-east-1"
+  STORAGE_BUCKET: "atti-documents"
+  STORAGE_ACCESS_KEY_ID: "ci"
+  STORAGE_SECRET_ACCESS_KEY: "ci-placeholder"
+  STORAGE_FORCE_PATH_STYLE: "true"
+
+jobs:
+  build-and-test:
+    name: Lint, typecheck, test, build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: apps/web/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma client
+        run: npx prisma generate
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Lint
+        run: npx eslint .
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Build
+        run: npm run build
