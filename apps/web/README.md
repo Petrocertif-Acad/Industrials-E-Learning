@@ -135,12 +135,12 @@ apps/web/
 Le schéma Prisma (`prisma/schema.prisma`) couvre le noyau du MVP : comptes et rôles
 (`User`), profils techniciens, taxonomie métiers/compétences (`Trade`, `Skill`),
 certifications (avec champs spécifiques au soudage), expériences professionnelles,
-formation continue (`TechnicianTraining`), documents, score et historique de score,
-organisations, et journal d'audit.
+formation continue (`TechnicianTraining`), avis employeurs (`EmployerReview`),
+documents, score et historique de score, organisations, et journal d'audit.
 
 Les entités listées dans le cahier des charges complet mais hors périmètre MVP
-(`Assessment`, `JobOpportunity`, `TalentPool`, `Subscription`, `Payment`,
-référentiel géographique complet Country/Region/City, etc.) seront ajoutées au fil des
+(`Assessment`, `JobOpportunity`, `Subscription`, `Payment`, référentiel
+géographique complet Country/Region/City, etc.) seront ajoutées au fil des
 modules correspondants plutôt que d'être stubées par anticipation.
 
 ## Sécurité
@@ -308,15 +308,28 @@ Implémenté dans cette phase d'initialisation :
       sous-score "formation continue" (5 pts, cadrage section 6) : seules les
       formations achevées au cours des 3 dernières années comptent, pondérées
       par leur statut de vérification, avec la même logique de plafond que le
-      sous-score certifications — les sous-scores "évaluations pratiques" (15
-      pts) et "avis employeurs" (5 pts) restent à 0, non disponibles dans ce
-      MVP (`Assessment` et `EmployerReview` ne sont toujours pas modélisés).
-      Visible sur le tableau de bord technicien, le profil public et le
-      passeport PDF.
+      sous-score certifications. Visible sur le tableau de bord technicien, le
+      profil public et le passeport PDF.
+- [x] Avis employeurs (`EmployerReview`, sur le profil public technicien) :
+      une entreprise **vérifiée** peut laisser une note (1 à 5) et un
+      commentaire sur un technicien — un seul avis actif par couple
+      entreprise/technicien, republier le met à jour plutôt que de le
+      dupliquer. Pas de modèle de mission/engagement dans ce MVP
+      (`JobOpportunity` reste hors périmètre), donc pas de preuve qu'une
+      collaboration a réellement eu lieu : le seul garde-fou contre les faux
+      avis est le statut d'organisation vérifiée par un administrateur
+      (décision de périmètre documentée dans `prisma/schema.prisma`).
+      Alimente le sous-score "avis employeurs" (5 pts, cadrage section 6) —
+      moyenne simple des notes, ramenée sur 5 points, sans pondération par
+      ancienneté ni par volume pour rester explicable. Visible sur le profil
+      public (liste des avis, moyenne dans le bandeau de confiance) et
+      résumé (moyenne + nombre) dans le passeport PDF ; le sous-score
+      "évaluations pratiques" (15 pts) reste seul à 0, `Assessment` n'étant
+      toujours pas modélisé.
 
 À développer dans les prochains modules (voir le plan de développement du cadrage) :
-déploiement automatisé (CD), évaluations pratiques, avis employeurs, envoi
-d'email réel pour la réinitialisation de mot de passe.
+déploiement automatisé (CD), évaluations pratiques, envoi d'email réel pour
+la réinitialisation de mot de passe.
 
 ## Branding
 

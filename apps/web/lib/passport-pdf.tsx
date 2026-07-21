@@ -284,6 +284,23 @@ function PassportDocument({ profile, publicProfileUrl, qrCodeDataUrl, generatedA
           )}
         </View>
 
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>{t("employerReviewsTitle")}</Text>
+          {profile.employerReviews.length === 0 ? (
+            <Text style={styles.emptyText}>{t("noEmployerReviews")}</Text>
+          ) : (
+            <Text>
+              {t("employerReviewsSummary", {
+                average: (
+                  profile.employerReviews.reduce((acc, review) => acc + review.rating, 0) /
+                  profile.employerReviews.length
+                ).toFixed(1),
+                count: profile.employerReviews.length,
+              })}
+            </Text>
+          )}
+        </View>
+
         {profile.languages.length > 0 && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>{t("languagesTitle")}</Text>

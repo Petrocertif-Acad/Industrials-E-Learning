@@ -14,6 +14,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/avatar";
 import { TalentPoolToggleButton } from "@/components/features/organization/talent-pool-toggle-button";
+import { EmployerReviewForm } from "@/components/features/organization/employer-review-form";
 import {
   getDocumentVerificationLabels,
   DOCUMENT_VERIFICATION_TONE,
@@ -85,6 +86,13 @@ export default async function TechnicianProfileViewPage({ params }: TechnicianPr
 
   const verifiedCertifications = profile.certifications.filter(isCertificationCurrentlyValid).length;
   const verifiedExperiences = profile.workExperiences.filter((e) => e.verificationStatus === "VERIFIED").length;
+  const averageReviewRating =
+    profile.employerReviews.length > 0
+      ? profile.employerReviews.reduce((acc, review) => acc + review.rating, 0) / profile.employerReviews.length
+      : null;
+  const ownReview = organization
+    ? profile.employerReviews.find((review) => review.organizationId === organization.id)
+    : undefined;
 
   return (
     <div className="mx-auto w-full max-w-5xl px-6 py-10">
@@ -132,7 +140,7 @@ export default async function TechnicianProfileViewPage({ params }: TechnicianPr
       </Card>
 
       {/* Trust indicators */}
-      <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
+      <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-5">
         <Card className="text-center">
           <p className="text-2xl font-semibold text-slate-900">{profile.yearsExperience}</p>
           <p className="mt-1 text-xs text-slate-500">{t("yearsExperience")}</p>
@@ -154,6 +162,13 @@ export default async function TechnicianProfileViewPage({ params }: TechnicianPr
         <Card className="text-center">
           <p className="text-2xl font-semibold text-slate-900">{profile.skills.length}</p>
           <p className="mt-1 text-xs text-slate-500">{t("skillsDeclared")}</p>
+        </Card>
+        <Card className="text-center">
+          <p className="text-2xl font-semibold text-slate-900">
+            {averageReviewRating !== null ? averageReviewRating.toFixed(1) : "—"}
+            <span className="text-base text-slate-500">/5</span>
+          </p>
+          <p className="mt-1 text-xs text-slate-500">{t("employerReviewsCount")}</p>
         </Card>
       </div>
 
@@ -296,6 +311,54 @@ export default async function TechnicianProfileViewPage({ params }: TechnicianPr
                 </ul>
               </Card>
             )}
+
+            <Card>
+              <h2 className="text-lg font-medium text-slate-900">{t("employerReviewsTitle")}</h2>
+              {profile.employerReviews.length === 0 ? (
+                <p className="mt-2 text-sm text-slate-600">{t("noEmployerReviews")}</p>
+              ) : (
+                <ul className="mt-4 space-y-4">
+                  {profile.employerReviews.map((review) => (
+                    <li key={review.id} className="border-b border-slate-100 pb-4 last:border-0 last:pb-0">
+                      <div className="flex flex-wrap items-start justify-between gap-2">
+                        <div>
+                          <p className="font-medium text-slate-900">{review.organization.name}</p>
+                          {review.context && <p className="text-sm text-slate-600">{review.context}</p>}
+                        </div>
+                        <span aria-label={t("ratingAriaLabel", { rating: review.rating })} className="text-amber-600">
+                          {"★".repeat(review.rating)}
+                          <span className="text-slate-300">{"★".repeat(5 - review.rating)}</span>
+                        </span>
+                      </div>
+                      {review.comment && <p className="mt-2 text-sm text-slate-700">{review.comment}</p>}
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {organization &&
+                (organization.verificationStatus === "VERIFIED" ? (
+                  <div className="mt-6 border-t border-slate-100 pt-6">
+                    <h3 className="text-sm font-semibold text-slate-900">
+                      {ownReview ? t("editYourReview") : t("addYourReview")}
+                    </h3>
+                    <div className="mt-3">
+                      <EmployerReviewForm
+                        technicianId={profile.id}
+                        defaults={
+                          ownReview
+                            ? { rating: ownReview.rating, context: ownReview.context, comment: ownReview.comment }
+                            : undefined
+                        }
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <p className="mt-6 border-t border-slate-100 pt-6 text-xs text-slate-500">
+                    {t("unverifiedOrganizationNotice")}
+                  </p>
+                ))}
+            </Card>
           </div>
 
           <div className="space-y-6">

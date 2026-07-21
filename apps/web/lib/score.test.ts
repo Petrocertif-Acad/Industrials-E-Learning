@@ -20,6 +20,7 @@ interface FixtureOverrides {
   certifications?: unknown[];
   workExperiences?: unknown[];
   trainings?: unknown[];
+  employerReviews?: unknown[];
 }
 
 function buildProfile(overrides: FixtureOverrides = {}) {
@@ -34,6 +35,7 @@ function buildProfile(overrides: FixtureOverrides = {}) {
     certifications: [],
     workExperiences: [],
     trainings: [],
+    employerReviews: [],
     ...overrides,
   };
 }
@@ -92,6 +94,8 @@ describe("calculateTechnicianScore", () => {
           { verificationStatus: "VERIFIED", completionDate: oneYearAgo() },
           { verificationStatus: "VERIFIED", completionDate: oneYearAgo() },
         ],
+        // A perfect average rating maxes the ratio regardless of review count.
+        employerReviews: [{ rating: 5 }, { rating: 5 }],
       })
     );
 
@@ -103,7 +107,8 @@ describe("calculateTechnicianScore", () => {
     expect(result.mobilityScore).toBe(3);
     expect(result.verificationScore).toBe(2);
     expect(result.continuousTrainingScore).toBe(5);
-    expect(result.totalScore).toBe(70); // 25 + 20 + 15 + 3 + 2 + 5; safety/employability are 0 (unavailable)
+    expect(result.employabilityScore).toBe(5);
+    expect(result.totalScore).toBe(75); // 25 + 20 + 15 + 3 + 2 + 5 + 5; safety/practical assessment are 0 (unavailable)
   });
 
   it("excludes expired certifications from the certification score even if marked VERIFIED", async () => {
@@ -158,16 +163,36 @@ describe("calculateTechnicianScore", () => {
     expect(verifiedResult.technicalScore).toBeGreaterThan(declaredResult.technicalScore);
   });
 
-  it("always includes the three unavailable sub-parts at zero with an explicit explanation", async () => {
+  it("always includes the two unavailable sub-parts at zero with an explicit explanation", async () => {
     findUniqueOrThrow.mockResolvedValue(buildProfile());
 
     const result = await calculateTechnicianScore("technician-1");
-    const unavailableKeys = ["practicalAssessment", "safety", "employability"];
+    const unavailableKeys = ["practicalAssessment", "safety"];
     for (const key of unavailableKeys) {
       const item = result.calculationDetails.breakdown.find((entry) => entry.key === key);
       expect(item?.points).toBe(0);
       expect(item?.explanation).toContain("non disponible");
     }
+  });
+
+  it("scores employability as the average review rating out of 5", async () => {
+    findUniqueOrThrow.mockResolvedValue(
+      buildProfile({
+        employerReviews: [{ rating: 4 }, { rating: 2 }],
+      })
+    );
+
+    const result = await calculateTechnicianScore("technician-1");
+    expect(result.employabilityScore).toBe(3); // average rating 3/5 -> 3 points out of 5
+  });
+
+  it("scores employability at zero with no reviews", async () => {
+    findUniqueOrThrow.mockResolvedValue(buildProfile());
+
+    const result = await calculateTechnicianScore("technician-1");
+    expect(result.employabilityScore).toBe(0);
+    const item = result.calculationDetails.breakdown.find((entry) => entry.key === "employability");
+    expect(item?.explanation).not.toContain("non disponible");
   });
 
   it("excludes trainings completed outside the 3-year continuous-training window", async () => {
@@ -223,6 +248,7 @@ describe("calculateTechnicianScore", () => {
         certifications: Array.from({ length: 10 }, () => ({ verificationStatus: "VERIFIED", expiryDate: null })),
         workExperiences: Array.from({ length: 5 }, () => ({ verificationStatus: "VERIFIED" })),
         trainings: Array.from({ length: 10 }, () => ({ verificationStatus: "VERIFIED", completionDate: oneYearAgo() })),
+        employerReviews: Array.from({ length: 10 }, () => ({ rating: 5 })),
       })
     );
 

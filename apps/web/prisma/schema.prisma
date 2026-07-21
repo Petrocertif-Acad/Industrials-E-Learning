@@ -56,6 +56,7 @@ model User {
   auditLogEntries         AuditLog[]           @relation("AuditActor")
   talentPoolEntriesAdded  TalentPoolEntry[]
   passwordResetTokens     PasswordResetToken[]
+  employerReviewsAuthored EmployerReview[]     @relation("EmployerReviewAuthor")
 
   @@index([role])
 }
@@ -235,6 +236,7 @@ model TechnicianProfile {
   workExperiences WorkExperience[]
   trainings       TechnicianTraining[]
   languages       TechnicianLanguage[]
+  employerReviews EmployerReview[]
   documents       Document[]                 @relation("DocumentSubject")
   score           Score?
   scoreHistory    ScoreHistory[]
@@ -477,6 +479,7 @@ model Organization {
 
   members          OrganizationMember[]
   talentPoolEntries TalentPoolEntry[]
+  employerReviews   EmployerReview[]
 }
 
 enum OrganizationRole {
@@ -512,6 +515,32 @@ model TalentPoolEntry {
 
   @@unique([organizationId, technicianId])
   @@index([organizationId])
+  @@index([technicianId])
+}
+
+// ---------------------------------------------------------------------------
+// Avis employeurs (une entreprise vérifiée évalue un technicien) — pas de
+// modèle de mission/engagement dans ce MVP (JobOpportunity est hors
+// périmètre) : la confiance repose sur le statut vérifié de l'organisation
+// plutôt que sur la preuve d'une collaboration réelle. Un seul avis actif par
+// couple organisation/technicien, modifiable par l'auteur plutôt que cumulé.
+// ---------------------------------------------------------------------------
+
+model EmployerReview {
+  id             String            @id @default(uuid())
+  technicianId   String
+  technician     TechnicianProfile @relation(fields: [technicianId], references: [id], onDelete: Cascade)
+  organizationId String
+  organization   Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  authorId       String
+  author         User              @relation("EmployerReviewAuthor", fields: [authorId], references: [id])
+  rating         Int // 1 à 5
+  context        String?
+  comment        String?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  @@unique([organizationId, technicianId])
   @@index([technicianId])
 }
 

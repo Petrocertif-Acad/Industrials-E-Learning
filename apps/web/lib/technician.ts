@@ -19,6 +19,7 @@ export function getTechnicianProfileForDisplay(id: string) {
       certifications: { include: { certification: true }, orderBy: { createdAt: "desc" } },
       workExperiences: { include: { country: true }, orderBy: { startDate: "desc" } },
       trainings: { orderBy: { completionDate: "desc" } },
+      employerReviews: { include: { organization: true }, orderBy: { createdAt: "desc" } },
       languages: true,
     },
   });

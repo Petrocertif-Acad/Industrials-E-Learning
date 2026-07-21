@@ -8,11 +8,11 @@ import { buildProfileCompletenessChecklist } from "@/lib/technician";
 // HSE 10, avis employeurs 5, formation continue 5, disponibilité/mobilité 3,
 // complétude/vérification du profil 2.
 //
-// Le MVP ne modélise pas encore les évaluations pratiques (Assessment) ni les
-// avis employeurs (EmployerReview) : ces sous-parties valent 0 avec un motif
-// explicite plutôt qu'une valeur inventée — jamais de boîte noire (cadrage
-// section 13). La formation continue (TechnicianTraining) est modélisée et
-// contribue au score.
+// Le MVP ne modélise pas encore les évaluations pratiques (Assessment) : cette
+// sous-partie vaut 0 avec un motif explicite plutôt qu'une valeur inventée —
+// jamais de boîte noire (cadrage section 13). La formation continue
+// (TechnicianTraining) et les avis employeurs (EmployerReview) sont
+// modélisés et contribuent au score.
 
 const SKILL_LEVEL_VALUE: Record<string, number> = {
   NOT_ASSESSED: 0,
@@ -91,7 +91,7 @@ const UNAVAILABLE_EXPLANATION = "Fonctionnalité non disponible dans cette versi
 export async function calculateTechnicianScore(technicianId: string): Promise<ScoreCalculationResult> {
   const profile = await prisma.technicianProfile.findUniqueOrThrow({
     where: { id: technicianId },
-    include: { skills: true, certifications: true, workExperiences: true, trainings: true },
+    include: { skills: true, certifications: true, workExperiences: true, trainings: true, employerReviews: true },
   });
 
   // --- Compétences techniques vérifiées (25 pts) ---
@@ -157,9 +157,19 @@ export async function calculateTechnicianScore(technicianId: string): Promise<Sc
   const continuousTrainingRatio = Math.min(1, trainingWeightedSum / CONTINUOUS_TRAINING_TARGET_WEIGHTED_COUNT);
   const continuousTrainingScore = round2(continuousTrainingRatio * 5);
 
+  // --- Avis employeurs (5 pts) ---
+  // Simple moyenne des notes (1 à 5) laissées par des entreprises vérifiées,
+  // ramenée sur 5 points — pas de pondération par ancienneté ou par nombre
+  // d'avis pour rester explicable (cadrage section 13).
+  const employabilityRatio =
+    profile.employerReviews.length > 0
+      ? profile.employerReviews.reduce((acc, review) => acc + review.rating, 0) /
+        (profile.employerReviews.length * 5)
+      : 0;
+  const employabilityScore = round2(employabilityRatio * 5);
+
   // --- Sous-parties non disponibles dans le MVP ---
   const safetyScore = 0;
-  const employabilityScore = 0;
 
   const totalScore = round2(
     technicalScore +
@@ -217,9 +227,12 @@ export async function calculateTechnicianScore(technicianId: string): Promise<Sc
     {
       key: "employability",
       label: "Évaluations des employeurs",
-      points: 0,
+      points: employabilityScore,
       max: 5,
-      explanation: UNAVAILABLE_EXPLANATION,
+      explanation:
+        profile.employerReviews.length > 0
+          ? `${profile.employerReviews.length} avis employeur(s), note moyenne de ${(profile.employerReviews.reduce((acc, review) => acc + review.rating, 0) / profile.employerReviews.length).toFixed(1)}/5.`
+          : "Aucun avis employeur pour le moment. Les avis sont laissés par des entreprises vérifiées ayant collaboré avec vous.",
     },
     {
       key: "continuousTraining",
