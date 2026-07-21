@@ -1,9 +1,11 @@
 import { notFound } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db/prisma";
+import { getOwnOrganization } from "@/lib/organization";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/avatar";
+import { TalentPoolToggleButton } from "@/components/features/organization/talent-pool-toggle-button";
 import {
   DOCUMENT_VERIFICATION_LABELS,
   DOCUMENT_VERIFICATION_TONE,
@@ -56,6 +58,16 @@ export default async function TechnicianProfileViewPage({ params }: TechnicianPr
   }
 
   const fullAccess = isPrivileged || profile.visibility === "PUBLIC_FULL";
+
+  const organization =
+    session?.user?.role === "ORGANIZATION" ? await getOwnOrganization(session.user.id) : null;
+  const isSavedInTalentPool = organization
+    ? Boolean(
+        await prisma.talentPoolEntry.findUnique({
+          where: { organizationId_technicianId: { organizationId: organization.id, technicianId: profile.id } },
+        })
+      )
+    : false;
 
   const verifiedCertifications = profile.certifications.filter((c) => c.verificationStatus === "VERIFIED").length;
   const verifiedExperiences = profile.workExperiences.filter((e) => e.verificationStatus === "VERIFIED").length;
@@ -119,6 +131,20 @@ export default async function TechnicianProfileViewPage({ params }: TechnicianPr
           <p className="mt-1 text-xs text-slate-500">Compétences déclarées</p>
         </Card>
       </div>
+
+      {organization && (
+        <Card className="mt-6 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 className="text-sm font-semibold text-slate-900">Vivier de candidats</h2>
+            <p className="mt-1 text-sm text-slate-600">
+              {isSavedInTalentPool
+                ? "Ce technicien fait partie de votre vivier."
+                : "Enregistrez ce technicien dans votre vivier pour le retrouver facilement."}
+            </p>
+          </div>
+          <TalentPoolToggleButton technicianId={profile.id} isSaved={isSavedInTalentPool} />
+        </Card>
+      )}
 
       {!fullAccess ? (
         <Card className="mt-6 border-amber-200 bg-amber-50">

@@ -54,6 +54,7 @@ model User {
   uploadedDocuments       Document[]           @relation("DocumentOwner")
   verifiedDocuments       Document[]           @relation("DocumentVerifier")
   auditLogEntries         AuditLog[]           @relation("AuditActor")
+  talentPoolEntriesAdded  TalentPoolEntry[]
 
   @@index([role])
 }
@@ -217,6 +218,7 @@ model TechnicianProfile {
   documents       Document[]                 @relation("DocumentSubject")
   score           Score?
   scoreHistory    ScoreHistory[]
+  savedByOrganizations TalentPoolEntry[]
 
   @@index([primaryTradeId])
   @@index([countryId])
@@ -424,7 +426,8 @@ model Organization {
   verificationStatus OrganizationVerificationStatus @default(PENDING)
   createdAt          DateTime                       @default(now())
 
-  members OrganizationMember[]
+  members          OrganizationMember[]
+  talentPoolEntries TalentPoolEntry[]
 }
 
 enum OrganizationRole {
@@ -441,6 +444,26 @@ model OrganizationMember {
   role           OrganizationRole @default(MEMBER)
 
   @@unique([userId, organizationId])
+}
+
+// ---------------------------------------------------------------------------
+// Vivier de candidats (entreprises enregistrant des techniciens à suivre)
+// ---------------------------------------------------------------------------
+
+model TalentPoolEntry {
+  id             String            @id @default(uuid())
+  organizationId String
+  organization   Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  technicianId   String
+  technician     TechnicianProfile @relation(fields: [technicianId], references: [id], onDelete: Cascade)
+  note           String?
+  addedById      String
+  addedBy        User              @relation(fields: [addedById], references: [id])
+  createdAt      DateTime          @default(now())
+
+  @@unique([organizationId, technicianId])
+  @@index([organizationId])
+  @@index([technicianId])
 }
 
 // ---------------------------------------------------------------------------

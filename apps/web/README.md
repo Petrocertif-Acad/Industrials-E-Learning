@@ -193,9 +193,15 @@ Implémenté dans cette phase d'initialisation :
 - [x] Espace entreprise (fondations) : inscription (`/register/organization`),
       profil entreprise modifiable (`/organization/profile`), tableau de bord avec
       statut de vérification (`/organization/dashboard`), navigation dédiée
+- [x] Recherche de techniciens (`/organization/search`) : filtres métier, pays,
+      disponibilité, mobilité, certification, score ATTI minimum ; résultats sous
+      forme de cartes cliquables vers le profil public
+- [x] Vivier de candidats (`/organization/talent-pool`) : enregistrement de
+      techniciens depuis la recherche ou leur profil public, notes internes par
+      candidat
 
 À développer dans les prochains modules (voir le plan de développement du cadrage) :
-moteur de score, recherche de techniciens, passeport PDF, i18n FR/EN.
+moteur de score, passeport PDF, i18n FR/EN.
 
 ## Branding
 

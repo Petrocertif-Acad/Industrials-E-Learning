@@ -1,6 +1,9 @@
 import Link from "next/link";
+import { auth } from "@/auth";
 import { prisma } from "@/lib/db/prisma";
 import { searchTechnicians, type TechnicianSearchFilters } from "@/lib/search";
+import { getOwnOrganization } from "@/lib/organization";
+import { getTalentPoolTechnicianIds } from "@/lib/talent-pool";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/avatar";
@@ -8,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { TalentPoolToggleButton } from "@/components/features/organization/talent-pool-toggle-button";
 import { AVAILABILITY_LABELS, AVAILABILITY_TONE, MOBILITY_LABELS } from "@/lib/availability-labels";
 import { PROFILE_VERIFICATION_LABELS, PROFILE_VERIFICATION_TONE } from "@/lib/verification-labels";
 import type { AvailabilityStatus, MobilityScope } from "@/lib/generated/prisma/enums";
@@ -37,11 +41,15 @@ export default async function OrganizationSearchPage({ searchParams }: Organizat
 
   const hasActiveFilters = Object.values(params).some((value) => Boolean(value));
 
-  const [technicians, trades, countries, certifications] = await Promise.all([
+  const session = await auth();
+  const organization = await getOwnOrganization(session!.user.id);
+
+  const [technicians, trades, countries, certifications, savedTechnicianIds] = await Promise.all([
     searchTechnicians(filters),
     prisma.trade.findMany({ orderBy: { nameFr: "asc" }, select: { id: true, nameFr: true } }),
     prisma.country.findMany({ orderBy: { nameFr: "asc" }, select: { id: true, nameFr: true } }),
     prisma.certification.findMany({ orderBy: { name: "asc" }, select: { id: true, name: true, standardRef: true } }),
+    organization ? getTalentPoolTechnicianIds(organization.id) : Promise.resolve(new Set<string>()),
   ]);
 
   return (
@@ -156,51 +164,59 @@ export default async function OrganizationSearchPage({ searchParams }: Organizat
             ).length;
 
             return (
-              <Link
-                key={technician.id}
-                href={`/technicians/${technician.id}`}
-                className="block rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-600 focus-visible:ring-offset-2"
-              >
-                <Card className="h-full transition-colors hover:border-slate-300 hover:shadow-md">
-                  <div className="flex items-start gap-3">
-                    <Avatar firstName={technician.firstName} lastName={technician.lastName} />
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate font-medium text-slate-900">
-                        {technician.firstName} {technician.lastName}
-                      </p>
-                      <p className="truncate text-sm text-slate-600">{technician.primaryTrade?.nameFr}</p>
-                      <p className="truncate text-xs text-slate-500">
-                        {technician.country?.nameFr}
-                        {technician.city ? ` · ${technician.city}` : ""}
-                      </p>
-                    </div>
-                    <div className="shrink-0 text-right">
-                      <p className="text-lg font-semibold text-slate-900">
-                        {technician.score ? Number(technician.score.totalScore) : "—"}
-                      </p>
-                      <p className="text-xs text-slate-500">Score</p>
-                    </div>
-                  </div>
-
-                  <div className="mt-3 flex flex-wrap gap-1.5">
-                    <Badge tone={PROFILE_VERIFICATION_TONE[technician.verificationStatus]}>
-                      {PROFILE_VERIFICATION_LABELS[technician.verificationStatus]}
-                    </Badge>
-                    <Badge tone={AVAILABILITY_TONE[technician.availability]}>
-                      {AVAILABILITY_LABELS[technician.availability]}
-                    </Badge>
-                    <Badge tone="neutral">{MOBILITY_LABELS[technician.mobilityScope]}</Badge>
-                  </div>
-
-                  {technician.certifications.length > 0 && (
-                    <p className="mt-3 text-xs text-slate-500">
-                      {verifiedCertifications}/{technician.certifications.length} certification
-                      {technician.certifications.length > 1 ? "s" : ""} vérifiée
-                      {verifiedCertifications > 1 ? "s" : ""}
+              <Card key={technician.id} className="flex h-full flex-col transition-colors hover:border-slate-300 hover:shadow-md">
+                <div className="flex items-start gap-3">
+                  <Avatar firstName={technician.firstName} lastName={technician.lastName} />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-medium text-slate-900">
+                      {technician.firstName} {technician.lastName}
                     </p>
-                  )}
-                </Card>
-              </Link>
+                    <p className="truncate text-sm text-slate-600">{technician.primaryTrade?.nameFr}</p>
+                    <p className="truncate text-xs text-slate-500">
+                      {technician.country?.nameFr}
+                      {technician.city ? ` · ${technician.city}` : ""}
+                    </p>
+                  </div>
+                  <div className="shrink-0 text-right">
+                    <p className="text-lg font-semibold text-slate-900">
+                      {technician.score ? Number(technician.score.totalScore) : "—"}
+                    </p>
+                    <p className="text-xs text-slate-500">Score</p>
+                  </div>
+                </div>
+
+                <div className="mt-3 flex flex-wrap gap-1.5">
+                  <Badge tone={PROFILE_VERIFICATION_TONE[technician.verificationStatus]}>
+                    {PROFILE_VERIFICATION_LABELS[technician.verificationStatus]}
+                  </Badge>
+                  <Badge tone={AVAILABILITY_TONE[technician.availability]}>
+                    {AVAILABILITY_LABELS[technician.availability]}
+                  </Badge>
+                  <Badge tone="neutral">{MOBILITY_LABELS[technician.mobilityScope]}</Badge>
+                </div>
+
+                {technician.certifications.length > 0 && (
+                  <p className="mt-3 text-xs text-slate-500">
+                    {verifiedCertifications}/{technician.certifications.length} certification
+                    {technician.certifications.length > 1 ? "s" : ""} vérifiée
+                    {verifiedCertifications > 1 ? "s" : ""}
+                  </p>
+                )}
+
+                <div className="mt-4 flex flex-1 items-end justify-between gap-2">
+                  <Link
+                    href={`/technicians/${technician.id}`}
+                    className="rounded text-sm font-medium text-slate-900 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-600 focus-visible:ring-offset-2"
+                  >
+                    Voir le profil →
+                  </Link>
+                  <TalentPoolToggleButton
+                    technicianId={technician.id}
+                    isSaved={savedTechnicianIds.has(technician.id)}
+                    className="px-3 py-1.5 text-xs"
+                  />
+                </div>
+              </Card>
             );
           })}
         </div>
