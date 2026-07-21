@@ -67,10 +67,24 @@ export default async function OrganizationDashboardPage({ searchParams }: Organi
         </Link>
       </Card>
 
+      <Card>
+        <h2 className="text-sm font-medium text-slate-500">Rechercher des techniciens</h2>
+        <p className="mt-2 text-sm text-slate-600">
+          Filtrez les profils techniciens vérifiés par métier, pays, disponibilité, mobilité,
+          certification ou score ATTI.
+        </p>
+        <Link
+          href="/organization/search"
+          className="mt-3 inline-block rounded text-sm font-medium text-slate-900 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-600 focus-visible:ring-offset-2"
+        >
+          Lancer une recherche →
+        </Link>
+      </Card>
+
       <Card className="border-slate-200 bg-slate-50">
         <p className="text-sm text-slate-600">
-          La recherche de techniciens, les viviers et les missions arrivent dans un prochain
-          module. Votre compte entreprise est prêt à les recevoir.
+          Les viviers de candidats et les missions arrivent dans un prochain module. Votre compte
+          entreprise est prêt à les recevoir.
         </p>
       </Card>
     </div>

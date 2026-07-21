@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils/cn";
 
 const NAV_ITEMS = [
   { href: "/organization/dashboard", label: "Tableau de bord" },
+  { href: "/organization/search", label: "Rechercher des techniciens" },
   { href: "/organization/profile", label: "Profil entreprise" },
 ];
 
