@@ -9,8 +9,8 @@ import { Avatar } from "@/components/ui/avatar";
 import { ScoreMeter } from "@/components/features/technician/score-meter";
 import { ProfileCompleteness } from "@/components/features/technician/profile-completeness";
 import { DashboardStatCard } from "@/components/features/technician/dashboard-stat-card";
-import { PROFILE_VERIFICATION_LABELS, PROFILE_VERIFICATION_TONE } from "@/lib/verification-labels";
-import { AVAILABILITY_LABELS, AVAILABILITY_TONE, MOBILITY_LABELS } from "@/lib/availability-labels";
+import { getProfileVerificationLabels, PROFILE_VERIFICATION_TONE } from "@/lib/verification-labels";
+import { getAvailabilityLabels, AVAILABILITY_TONE, getMobilityLabels } from "@/lib/availability-labels";
 import { buildProfileCompletenessChecklist } from "@/lib/technician";
 import { isExpiringSoonOrExpired, isCertificationCurrentlyValid } from "@/lib/certification-expiry";
 import type { ScoreCalculationDetails } from "@/lib/score";
@@ -26,7 +26,12 @@ export default async function TechnicianDashboardPage({ searchParams }: Technici
   // La couche layout (app/technician/layout.tsx) a déjà vérifié le rôle ;
   // ce composant peut donc supposer une session TECHNICIAN valide.
   const t = await getTranslations("TechnicianDashboard");
+  const tChecklist = await getTranslations("ProfileCompleteness");
+  const tCommon = await getTranslations("Common");
   const locale = await getLocale();
+  const PROFILE_VERIFICATION_LABELS = getProfileVerificationLabels(locale);
+  const AVAILABILITY_LABELS = getAvailabilityLabels(locale);
+  const MOBILITY_LABELS = getMobilityLabels(locale);
   const { updated } = await searchParams;
   const session = await auth();
   const profile = await prisma.technicianProfile.findUnique({
@@ -41,20 +46,23 @@ export default async function TechnicianDashboardPage({ searchParams }: Technici
   });
 
   if (!profile) {
-    return <p className="text-slate-600">Profil introuvable.</p>;
+    return <p className="text-slate-600">{tCommon("profileNotFound")}</p>;
   }
 
   const onboardingComplete = Boolean(profile.primaryTradeId && profile.countryId);
   const certificationsTotal = profile.certifications.length;
   const certificationsVerified = profile.certifications.filter(isCertificationCurrentlyValid).length;
   const hasExpiringCertification = profile.certifications.some((c) => isExpiringSoonOrExpired(c.expiryDate));
-  const checklist = buildProfileCompletenessChecklist({
-    primaryTradeId: profile.primaryTradeId,
-    countryId: profile.countryId,
-    skillsCount: profile._count.skills,
-    certificationsCount: certificationsTotal,
-    workExperiencesCount: profile._count.workExperiences,
-  });
+  const checklist = buildProfileCompletenessChecklist(
+    {
+      primaryTradeId: profile.primaryTradeId,
+      countryId: profile.countryId,
+      skillsCount: profile._count.skills,
+      certificationsCount: certificationsTotal,
+      workExperiencesCount: profile._count.workExperiences,
+    },
+    tChecklist
+  );
 
   return (
     <div className="space-y-6">

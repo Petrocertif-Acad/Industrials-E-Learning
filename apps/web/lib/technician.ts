@@ -65,13 +65,20 @@ export interface ChecklistItem {
   done: boolean;
 }
 
-// Logique partagée entre /technician/profile et le tableau de bord : les deux
-// doivent afficher exactement la même définition de "profil complet".
-export function buildProfileCompletenessChecklist(profile: ProfileCompletenessInput): ChecklistItem[] {
+// Logique partagée entre /technician/profile, le tableau de bord et le moteur
+// de score (lib/score.ts, qui n'a besoin que des booléens `done`, jamais du
+// texte) : tous doivent utiliser exactement la même définition de "profil
+// complet". `t` est le traducteur du namespace "ProfileCompleteness" (voir
+// getTranslations), résolu par l'appelant pour que cette fonction reste
+// synchrone ; optionnel pour les appelants qui n'affichent jamais le libellé.
+export function buildProfileCompletenessChecklist(
+  profile: ProfileCompletenessInput,
+  t: (key: string) => string = (key) => key
+): ChecklistItem[] {
   return [
-    { label: "Métier et pays renseignés", done: Boolean(profile.primaryTradeId && profile.countryId) },
-    { label: "Au moins une compétence déclarée", done: profile.skillsCount > 0 },
-    { label: "Au moins une certification ajoutée", done: profile.certificationsCount > 0 },
-    { label: "Au moins une expérience professionnelle", done: profile.workExperiencesCount > 0 },
+    { label: t("tradeAndCountry"), done: Boolean(profile.primaryTradeId && profile.countryId) },
+    { label: t("hasSkill"), done: profile.skillsCount > 0 },
+    { label: t("hasCertification"), done: profile.certificationsCount > 0 },
+    { label: t("hasExperience"), done: profile.workExperiencesCount > 0 },
   ];
 }

@@ -1,3 +1,4 @@
+import { getTranslations, getLocale } from "next-intl/server";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils/cn";
 import { ScoreBreakdownList } from "@/components/features/technician/score-breakdown-list";
@@ -31,14 +32,16 @@ const TRACK_CLASSES: Record<ScoreTone, string> = {
   danger: "bg-red-100",
 };
 
-export function ScoreMeter({ score, calculatedAt, calculationDetails }: ScoreMeterProps) {
+export async function ScoreMeter({ score, calculatedAt, calculationDetails }: ScoreMeterProps) {
+  const t = await getTranslations("ScoreMeter");
+  const locale = await getLocale();
   const hasScore = score !== null;
   const tone = hasScore ? getScoreTone(score) : null;
   const clampedScore = hasScore ? Math.min(100, Math.max(0, score)) : 0;
 
   return (
     <Card>
-      <h2 className="text-sm font-medium text-slate-500">Score global</h2>
+      <h2 className="text-sm font-medium text-slate-500">{t("title")}</h2>
       <div className="mt-2 flex items-end gap-2">
         <p className="text-4xl font-semibold text-slate-900">{hasScore ? score : "—"}</p>
         <p className="pb-1 text-sm text-slate-500">/ 100</p>
@@ -49,7 +52,7 @@ export function ScoreMeter({ score, calculatedAt, calculationDetails }: ScoreMet
           score" plutôt que "pas encore mesuré". */}
       <div
         role="img"
-        aria-label={hasScore ? `Score global : ${score} sur 100` : "Score global non calculé"}
+        aria-label={hasScore ? t("ariaLabelWithScore", { score: score! }) : t("ariaLabelNotCalculated")}
         className={cn(
           "mt-3 h-2.5 w-full overflow-hidden rounded-full",
           hasScore ? TRACK_CLASSES[tone!] : "bg-slate-100"
@@ -65,15 +68,15 @@ export function ScoreMeter({ score, calculatedAt, calculationDetails }: ScoreMet
 
       <p className="mt-3 text-sm text-slate-600">
         {hasScore && calculatedAt
-          ? `Dernier calcul : ${calculatedAt.toLocaleDateString("fr-FR")}`
-          : "Le score sera calculé une fois votre profil et vos certifications complétés."}
+          ? t("lastCalculation", { date: calculatedAt.toLocaleDateString(locale === "en" ? "en-GB" : "fr-FR") })
+          : t("notCalculatedYet")}
       </p>
 
       {calculationDetails && (
         <details className="group mt-4 border-t border-slate-100 pt-3">
           <summary className="cursor-pointer list-none text-sm font-medium text-slate-700 hover:text-slate-900">
             <span className="inline-flex items-center gap-1.5">
-              Comment ce score est calculé
+              {t("howCalculated")}
               <span aria-hidden className="text-slate-400 transition-transform group-open:rotate-180">
                 ⌄
               </span>

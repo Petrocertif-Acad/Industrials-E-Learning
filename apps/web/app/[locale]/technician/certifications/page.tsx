@@ -1,4 +1,4 @@
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db/prisma";
@@ -6,14 +6,19 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DeleteCertificationButton } from "@/components/features/certification/delete-certification-button";
-import { DOCUMENT_VERIFICATION_LABELS, DOCUMENT_VERIFICATION_TONE } from "@/lib/verification-labels";
+import { getDocumentVerificationLabels, DOCUMENT_VERIFICATION_TONE } from "@/lib/verification-labels";
 import { getExpiryBadge } from "@/lib/certification-expiry";
 
-function formatDate(date: Date) {
+function formatDate(date: Date, locale: string) {
   // Les dates de certification n'ont pas de composante horaire : elles sont
   // stockées à minuit UTC. Formater dans le fuseau du serveur ferait glisser
   // l'affichage d'un jour selon son décalage horaire (ex. UTC-5 en soirée).
-  return date.toLocaleDateString("fr-FR", { year: "numeric", month: "short", day: "numeric", timeZone: "UTC" });
+  return date.toLocaleDateString(locale === "en" ? "en-GB" : "fr-FR", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    timeZone: "UTC",
+  });
 }
 
 interface TechnicianCertificationsPageProps {
@@ -22,6 +27,9 @@ interface TechnicianCertificationsPageProps {
 
 export default async function TechnicianCertificationsPage({ searchParams }: TechnicianCertificationsPageProps) {
   const t = await getTranslations("TechnicianCertificationsPage");
+  const tCommon = await getTranslations("Common");
+  const locale = await getLocale();
+  const DOCUMENT_VERIFICATION_LABELS = getDocumentVerificationLabels(locale);
   const { saved } = await searchParams;
   const session = await auth();
 
@@ -36,7 +44,7 @@ export default async function TechnicianCertificationsPage({ searchParams }: Tec
   });
 
   if (!profile) {
-    return <p className="text-slate-600">Profil introuvable.</p>;
+    return <p className="text-slate-600">{tCommon("profileNotFound")}</p>;
   }
 
   return (
@@ -74,8 +82,8 @@ export default async function TechnicianCertificationsPage({ searchParams }: Tec
                     </h2>
                     <p className="text-sm text-slate-600">{entry.certification.issuingBody}</p>
                     <p className="mt-1 text-sm text-slate-500">
-                      {entry.issueDate ? t("issuedOn", { date: formatDate(entry.issueDate) }) : t("issuedOnMissing")}
-                      {entry.expiryDate ? ` · ${t("expiresOn", { date: formatDate(entry.expiryDate) })}` : ""}
+                      {entry.issueDate ? t("issuedOn", { date: formatDate(entry.issueDate, locale) }) : t("issuedOnMissing")}
+                      {entry.expiryDate ? ` · ${t("expiresOn", { date: formatDate(entry.expiryDate, locale) })}` : ""}
                       {entry.weldingProcess ? ` · ${t("processPrefix", { process: entry.weldingProcess })}` : ""}
                     </p>
                   </div>

@@ -1,13 +1,25 @@
 export type BadgeTone = "neutral" | "success" | "warning" | "danger";
 
 // Statuts d'un document/certification/expérience (DocumentVerificationStatus).
-export const DOCUMENT_VERIFICATION_LABELS: Record<string, string> = {
+const DOCUMENT_VERIFICATION_LABELS_FR: Record<string, string> = {
   DECLARED: "Déclarée",
   UNDER_REVIEW: "En cours de vérification",
   VERIFIED: "Vérifiée",
   REJECTED: "Rejetée",
   EXPIRED: "Expirée",
 };
+
+const DOCUMENT_VERIFICATION_LABELS_EN: Record<string, string> = {
+  DECLARED: "Declared",
+  UNDER_REVIEW: "Under review",
+  VERIFIED: "Verified",
+  REJECTED: "Rejected",
+  EXPIRED: "Expired",
+};
+
+export function getDocumentVerificationLabels(locale: string): Record<string, string> {
+  return locale === "en" ? DOCUMENT_VERIFICATION_LABELS_EN : DOCUMENT_VERIFICATION_LABELS_FR;
+}
 
 export const DOCUMENT_VERIFICATION_TONE: Record<string, BadgeTone> = {
   DECLARED: "neutral",
@@ -18,7 +30,7 @@ export const DOCUMENT_VERIFICATION_TONE: Record<string, BadgeTone> = {
 };
 
 // Statut global d'un profil technicien (ProfileVerificationStatus).
-export const PROFILE_VERIFICATION_LABELS: Record<string, string> = {
+const PROFILE_VERIFICATION_LABELS_FR: Record<string, string> = {
   INCOMPLETE: "Profil incomplet",
   DECLARED: "Profil déclaré",
   IDENTITY_VERIFIED: "Identité vérifiée",
@@ -29,6 +41,22 @@ export const PROFILE_VERIFICATION_LABELS: Record<string, string> = {
   SUSPENDED: "Profil suspendu",
   ARCHIVED: "Profil archivé",
 };
+
+const PROFILE_VERIFICATION_LABELS_EN: Record<string, string> = {
+  INCOMPLETE: "Incomplete profile",
+  DECLARED: "Declared profile",
+  IDENTITY_VERIFIED: "Identity verified",
+  DOCUMENTS_PENDING: "Documents under review",
+  PARTIALLY_VERIFIED: "Partially verified profile",
+  PROFESSIONALLY_VERIFIED: "Professionally verified profile",
+  PREMIUM_VERIFIED: "Premium verified profile",
+  SUSPENDED: "Suspended profile",
+  ARCHIVED: "Archived profile",
+};
+
+export function getProfileVerificationLabels(locale: string): Record<string, string> {
+  return locale === "en" ? PROFILE_VERIFICATION_LABELS_EN : PROFILE_VERIFICATION_LABELS_FR;
+}
 
 export const PROFILE_VERIFICATION_TONE: Record<string, BadgeTone> = {
   INCOMPLETE: "neutral",

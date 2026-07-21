@@ -14,8 +14,8 @@ import { Select } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { TalentPoolToggleButton } from "@/components/features/organization/talent-pool-toggle-button";
-import { AVAILABILITY_LABELS, AVAILABILITY_TONE, MOBILITY_LABELS } from "@/lib/availability-labels";
-import { PROFILE_VERIFICATION_LABELS, PROFILE_VERIFICATION_TONE } from "@/lib/verification-labels";
+import { getAvailabilityLabels, AVAILABILITY_TONE, getMobilityLabels } from "@/lib/availability-labels";
+import { getProfileVerificationLabels, PROFILE_VERIFICATION_TONE } from "@/lib/verification-labels";
 import { isCertificationCurrentlyValid } from "@/lib/certification-expiry";
 import type { AvailabilityStatus, MobilityScope } from "@/lib/generated/prisma/enums";
 
@@ -33,6 +33,9 @@ interface OrganizationSearchPageProps {
 export default async function OrganizationSearchPage({ searchParams }: OrganizationSearchPageProps) {
   const t = await getTranslations("OrganizationSearchPage");
   const locale = await getLocale();
+  const AVAILABILITY_LABELS = getAvailabilityLabels(locale);
+  const MOBILITY_LABELS = getMobilityLabels(locale);
+  const PROFILE_VERIFICATION_LABELS = getProfileVerificationLabels(locale);
   const params = await searchParams;
 
   const filters: TechnicianSearchFilters = {

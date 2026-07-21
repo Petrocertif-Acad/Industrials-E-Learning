@@ -3,9 +3,9 @@ import QRCode from "qrcode";
 import { getTranslations } from "next-intl/server";
 import type { TechnicianProfileForDisplay } from "@/lib/technician";
 import { localizedName } from "@/lib/localized-name";
-import { PROFILE_VERIFICATION_LABELS, DOCUMENT_VERIFICATION_LABELS } from "@/lib/verification-labels";
-import { SKILL_LEVEL_LABELS } from "@/lib/skill-levels";
-import { AVAILABILITY_LABELS, MOBILITY_LABELS } from "@/lib/availability-labels";
+import { getProfileVerificationLabels, getDocumentVerificationLabels } from "@/lib/verification-labels";
+import { getSkillLevelLabels } from "@/lib/skill-levels";
+import { getAvailabilityLabels, getMobilityLabels } from "@/lib/availability-labels";
 import { isCertificationCurrentlyValid } from "@/lib/certification-expiry";
 
 // Passeport numérique de compétences — cadrage section 5. Ne reprend que des
@@ -126,6 +126,11 @@ function PassportDocument({ profile, publicProfileUrl, qrCodeDataUrl, generatedA
   const totalScore = profile.score ? Number(profile.score.totalScore) : null;
   const validCertifications = profile.certifications.filter(isCertificationCurrentlyValid);
   const expiredOrInvalidCertifications = profile.certifications.filter((c) => !isCertificationCurrentlyValid(c));
+  const PROFILE_VERIFICATION_LABELS = getProfileVerificationLabels(locale);
+  const DOCUMENT_VERIFICATION_LABELS = getDocumentVerificationLabels(locale);
+  const SKILL_LEVEL_LABELS = getSkillLevelLabels(locale);
+  const AVAILABILITY_LABELS = getAvailabilityLabels(locale);
+  const MOBILITY_LABELS = getMobilityLabels(locale);
 
   return (
     <Document

@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,7 +11,7 @@ import {
   updateTechnicianCertificationAction,
   type CertificationFormState,
 } from "@/lib/actions/certification";
-import { TRADE_CATEGORY_LABELS_FR } from "@/lib/trade-categories";
+import { getTradeCategoryLabels } from "@/lib/trade-categories";
 import type { TradeCategory } from "@/lib/generated/prisma/enums";
 
 interface CertificationOption {
@@ -64,6 +64,8 @@ export function CertificationForm({
   existingDocumentId,
 }: CertificationFormProps) {
   const t = useTranslations("CertificationForm");
+  const locale = useLocale();
+  const TRADE_CATEGORY_LABELS = getTradeCategoryLabels(locale);
   const action = mode === "edit" ? updateTechnicianCertificationAction : createTechnicianCertificationAction;
   const [state, formAction, pending] = useActionState(action, initialState);
   const grouped = groupByCategory(certifications);
@@ -79,7 +81,7 @@ export function CertificationForm({
             {t("certificationPlaceholder")}
           </option>
           {Array.from(grouped.entries()).map(([category, options]) => (
-            <optgroup key={category} label={TRADE_CATEGORY_LABELS_FR[category]}>
+            <optgroup key={category} label={TRADE_CATEGORY_LABELS[category]}>
               {options.map((cert) => (
                 <option key={cert.id} value={cert.id}>
                   {cert.standardRef ? `${cert.standardRef} — ${cert.name}` : cert.name}

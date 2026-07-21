@@ -9,12 +9,15 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/avatar";
 import { TalentPoolToggleButton } from "@/components/features/organization/talent-pool-toggle-button";
 import { TalentPoolNoteForm } from "@/components/features/organization/talent-pool-note-form";
-import { AVAILABILITY_LABELS, AVAILABILITY_TONE, MOBILITY_LABELS } from "@/lib/availability-labels";
-import { PROFILE_VERIFICATION_LABELS, PROFILE_VERIFICATION_TONE } from "@/lib/verification-labels";
+import { getAvailabilityLabels, AVAILABILITY_TONE, getMobilityLabels } from "@/lib/availability-labels";
+import { getProfileVerificationLabels, PROFILE_VERIFICATION_TONE } from "@/lib/verification-labels";
 
 export default async function TalentPoolPage() {
   const t = await getTranslations("TalentPoolPage");
   const locale = await getLocale();
+  const AVAILABILITY_LABELS = getAvailabilityLabels(locale);
+  const MOBILITY_LABELS = getMobilityLabels(locale);
+  const PROFILE_VERIFICATION_LABELS = getProfileVerificationLabels(locale);
   const session = await auth();
   const organization = await getOwnOrganization(session!.user.id);
 

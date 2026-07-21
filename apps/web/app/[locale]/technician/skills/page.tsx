@@ -7,6 +7,7 @@ import { SkillsForm } from "@/components/features/profile/skills-form";
 
 export default async function TechnicianSkillsPage() {
   const t = await getTranslations("TechnicianSkillsPage");
+  const tCommon = await getTranslations("Common");
   const locale = await getLocale();
   const session = await auth();
 
@@ -22,7 +23,7 @@ export default async function TechnicianSkillsPage() {
   ]);
 
   if (!profile) {
-    return <p className="text-slate-600">Profil introuvable.</p>;
+    return <p className="text-slate-600">{tCommon("profileNotFound")}</p>;
   }
 
   const currentLevels = Object.fromEntries(profile.skills.map((s) => [s.skillId, s.selfLevel]));

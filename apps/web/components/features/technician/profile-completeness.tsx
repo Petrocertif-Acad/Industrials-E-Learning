@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import type { ChecklistItem } from "@/lib/technician";
@@ -7,13 +8,14 @@ interface ProfileCompletenessProps {
   className?: string;
 }
 
-export function ProfileCompleteness({ items, className }: ProfileCompletenessProps) {
+export async function ProfileCompleteness({ items, className }: ProfileCompletenessProps) {
+  const t = await getTranslations("ProfileCompleteness");
   const completedCount = items.filter((item) => item.done).length;
 
   return (
     <Card className={className ?? "border-slate-200 bg-slate-50"}>
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-slate-900">Complétude du profil</h2>
+        <h2 className="text-sm font-semibold text-slate-900">{t("title")}</h2>
         <Badge tone={completedCount === items.length ? "success" : "neutral"}>
           {completedCount}/{items.length}
         </Badge>

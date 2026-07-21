@@ -10,6 +10,8 @@ import { buildProfileCompletenessChecklist } from "@/lib/technician";
 
 export default async function TechnicianProfilePage() {
   const t = await getTranslations("TechnicianProfilePage");
+  const tChecklist = await getTranslations("ProfileCompleteness");
+  const tCommon = await getTranslations("Common");
   const locale = await getLocale();
   const session = await auth();
 
@@ -38,16 +40,19 @@ export default async function TechnicianProfilePage() {
   const countries = countriesData.map((country) => ({ id: country.id, name: localizedName(country, locale) }));
 
   if (!profile) {
-    return <p className="text-slate-600">Profil introuvable.</p>;
+    return <p className="text-slate-600">{tCommon("profileNotFound")}</p>;
   }
 
-  const checklist = buildProfileCompletenessChecklist({
-    primaryTradeId: profile.primaryTradeId,
-    countryId: profile.countryId,
-    skillsCount: profile._count.skills,
-    certificationsCount: profile._count.certifications,
-    workExperiencesCount: profile._count.workExperiences,
-  });
+  const checklist = buildProfileCompletenessChecklist(
+    {
+      primaryTradeId: profile.primaryTradeId,
+      countryId: profile.countryId,
+      skillsCount: profile._count.skills,
+      certificationsCount: profile._count.certifications,
+      workExperiencesCount: profile._count.workExperiences,
+    },
+    tChecklist
+  );
   const isPubliclyViewable = Boolean(profile.primaryTradeId && profile.countryId);
 
   return (

@@ -7,13 +7,17 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DeleteExperienceButton } from "@/components/features/experience/delete-experience-button";
-import { DOCUMENT_VERIFICATION_LABELS, DOCUMENT_VERIFICATION_TONE } from "@/lib/verification-labels";
+import { getDocumentVerificationLabels, DOCUMENT_VERIFICATION_TONE } from "@/lib/verification-labels";
 
-function formatDate(date: Date) {
+function formatDate(date: Date, locale: string) {
   // Les dates de mission n'ont pas de composante horaire : elles sont stockées
   // à minuit UTC. Formater dans le fuseau du serveur ferait glisser
   // l'affichage d'un jour selon son décalage horaire (ex. UTC-5 en soirée).
-  return date.toLocaleDateString("fr-FR", { year: "numeric", month: "short", timeZone: "UTC" });
+  return date.toLocaleDateString(locale === "en" ? "en-GB" : "fr-FR", {
+    year: "numeric",
+    month: "short",
+    timeZone: "UTC",
+  });
 }
 
 interface TechnicianExperiencesPageProps {
@@ -22,7 +26,9 @@ interface TechnicianExperiencesPageProps {
 
 export default async function TechnicianExperiencesPage({ searchParams }: TechnicianExperiencesPageProps) {
   const t = await getTranslations("TechnicianExperiencesPage");
+  const tCommon = await getTranslations("Common");
   const locale = await getLocale();
+  const DOCUMENT_VERIFICATION_LABELS = getDocumentVerificationLabels(locale);
   const { saved } = await searchParams;
   const session = await auth();
 
@@ -37,7 +43,7 @@ export default async function TechnicianExperiencesPage({ searchParams }: Techni
   });
 
   if (!profile) {
-    return <p className="text-slate-600">Profil introuvable.</p>;
+    return <p className="text-slate-600">{tCommon("profileNotFound")}</p>;
   }
 
   return (
@@ -74,8 +80,8 @@ export default async function TechnicianExperiencesPage({ searchParams }: Techni
                   <p className="mt-1 text-sm text-slate-500">
                     {localizedName(experience.country, locale)}
                     {experience.sector ? ` · ${experience.sector}` : ""} ·{" "}
-                    {formatDate(experience.startDate)} —{" "}
-                    {experience.endDate ? formatDate(experience.endDate) : t("ongoing")}
+                    {formatDate(experience.startDate, locale)} —{" "}
+                    {experience.endDate ? formatDate(experience.endDate, locale) : t("ongoing")}
                   </p>
                 </div>
                 <Badge tone={DOCUMENT_VERIFICATION_TONE[experience.verificationStatus]}>

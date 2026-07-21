@@ -1,7 +1,8 @@
 {
   "Common": {
     "homeAriaLabel": "ATTI — Home",
-    "login": "Log in"
+    "login": "Log in",
+    "profileNotFound": "Profile not found."
   },
   "HomePage": {
     "eyebrow": "African Technical Talent Index",
@@ -334,6 +335,21 @@
     "noteLabel": "Note (optional, logged in the audit trail)",
     "approve": "Approve",
     "reject": "Reject"
+  },
+  "ProfileCompleteness": {
+    "title": "Profile completeness",
+    "tradeAndCountry": "Trade and country provided",
+    "hasSkill": "At least one declared skill",
+    "hasCertification": "At least one certification added",
+    "hasExperience": "At least one work experience"
+  },
+  "ScoreMeter": {
+    "title": "Overall score",
+    "ariaLabelWithScore": "Overall score: {score} out of 100",
+    "ariaLabelNotCalculated": "Overall score not calculated",
+    "lastCalculation": "Last calculated: {date}",
+    "notCalculatedYet": "The score will be calculated once your profile and certifications are complete.",
+    "howCalculated": "How this score is calculated"
   },
   "Passport": {
     "title": "Professional passport",

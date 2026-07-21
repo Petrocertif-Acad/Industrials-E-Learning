@@ -233,15 +233,26 @@ Implémenté dans cette phase d'initialisation :
       segment `[locale]`, donc sans contexte de langue automatique) reçoit sa
       langue via `?locale=` sur le lien de téléchargement, résolue avec
       `getTranslations({ locale, ... })` — conçu par next-intl pour les cas
-      hors arbre React (PDF, emails). Reste volontairement en français dans
-      les deux langues (chantier séparé, à traiter d'un coup) : les noms de
-      certifications (champ unique `name`, pas de `nameFr`/`nameEn` — ce sont
-      des désignations techniques normalisées comme "ISO 9606-1"), les
-      libellés d'énumération partagés (niveaux de compétence, statuts de
-      vérification, catégories de métier — `lib/*-labels.ts` et
-      `lib/trade-categories.ts`), le formatage des dates restant
-      (`toLocaleDateString("fr-FR")` dans quelques listes), et les messages
-      d'erreur de validation (Zod).
+      hors arbre React (PDF, emails).
+- [x] Libellés d'énumération partagés et dates localisés : niveaux de
+      compétence, statuts de vérification, disponibilité/mobilité et
+      catégories de métier (`lib/skill-levels.ts`, `lib/verification-labels.ts`,
+      `lib/availability-labels.ts`, `lib/trade-categories.ts`) exposent
+      désormais des fonctions `get*Labels(locale)` au lieu de constantes
+      figées en français, utilisées côté serveur (`getLocale()`) et côté
+      client (`useLocale()`). Toutes les dates affichées suivent la langue
+      active (`en-GB`/`fr-FR`). Cette passe a aussi rattrapé deux composants
+      oubliés lors de la traduction initiale du contenu : `ScoreMeter` et
+      `ProfileCompleteness` affichaient encore leurs libellés en dur.
+      Reste volontairement en français dans les deux langues (chantier
+      séparé) : les noms de certifications (champ unique `name`, pas de
+      `nameFr`/`nameEn` — désignations techniques normalisées comme
+      "ISO 9606-1"), les messages d'erreur de validation (Zod), et le détail
+      du score (`Score.calculationDetails`) — les libellés et explications de
+      chaque sous-score sont générés et persistés en français au moment du
+      calcul (`lib/score.ts`), pas recalculés à l'affichage ; les rendre
+      bilingues demanderait de stocker des clés de traduction plutôt que du
+      texte final, puis de relancer `npm run scores:recalculate`.
 
 À développer dans les prochains modules (voir le plan de développement du cadrage) :
 localisation des données de référence et du formatage des dates, évaluations

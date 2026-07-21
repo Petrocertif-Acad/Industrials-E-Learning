@@ -1,11 +1,11 @@
 "use client";
 
 import { useActionState } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
 import { updateTechnicianSkillsAction, type SkillsFormState } from "@/lib/actions/technician-profile";
-import { SKILL_LEVEL_LABELS } from "@/lib/skill-levels";
+import { getSkillLevelLabels } from "@/lib/skill-levels";
 
 interface SkillOption {
   id: string;
@@ -34,6 +34,8 @@ function groupSkillsByTrade(skills: SkillOption[]) {
 
 export function SkillsForm({ skills, currentLevels }: SkillsFormProps) {
   const t = useTranslations("SkillsForm");
+  const locale = useLocale();
+  const SKILL_LEVEL_LABELS = getSkillLevelLabels(locale);
   const [state, formAction, pending] = useActionState(updateTechnicianSkillsAction, initialState);
   const groupedSkills = groupSkillsByTrade(skills);
 

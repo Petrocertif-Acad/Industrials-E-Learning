@@ -15,23 +15,32 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/avatar";
 import { TalentPoolToggleButton } from "@/components/features/organization/talent-pool-toggle-button";
 import {
-  DOCUMENT_VERIFICATION_LABELS,
+  getDocumentVerificationLabels,
   DOCUMENT_VERIFICATION_TONE,
-  PROFILE_VERIFICATION_LABELS,
+  getProfileVerificationLabels,
   PROFILE_VERIFICATION_TONE,
 } from "@/lib/verification-labels";
-import { SKILL_LEVEL_LABELS } from "@/lib/skill-levels";
-import { AVAILABILITY_LABELS, AVAILABILITY_TONE, MOBILITY_LABELS } from "@/lib/availability-labels";
+import { getSkillLevelLabels } from "@/lib/skill-levels";
+import { getAvailabilityLabels, AVAILABILITY_TONE, getMobilityLabels } from "@/lib/availability-labels";
 import { getExpiryBadge, isCertificationCurrentlyValid } from "@/lib/certification-expiry";
 import { ScoreBreakdownList } from "@/components/features/technician/score-breakdown-list";
 import type { ScoreCalculationDetails } from "@/lib/score";
 
-function formatDate(date: Date) {
-  return date.toLocaleDateString("fr-FR", { year: "numeric", month: "short", day: "numeric", timeZone: "UTC" });
+function formatDate(date: Date, locale: string) {
+  return date.toLocaleDateString(locale === "en" ? "en-GB" : "fr-FR", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    timeZone: "UTC",
+  });
 }
 
-function formatMonthYear(date: Date) {
-  return date.toLocaleDateString("fr-FR", { year: "numeric", month: "short", timeZone: "UTC" });
+function formatMonthYear(date: Date, locale: string) {
+  return date.toLocaleDateString(locale === "en" ? "en-GB" : "fr-FR", {
+    year: "numeric",
+    month: "short",
+    timeZone: "UTC",
+  });
 }
 
 interface TechnicianProfileViewPageProps {
@@ -41,6 +50,11 @@ interface TechnicianProfileViewPageProps {
 export default async function TechnicianProfileViewPage({ params }: TechnicianProfileViewPageProps) {
   const t = await getTranslations("TechnicianProfileViewPage");
   const locale = await getLocale();
+  const DOCUMENT_VERIFICATION_LABELS = getDocumentVerificationLabels(locale);
+  const PROFILE_VERIFICATION_LABELS = getProfileVerificationLabels(locale);
+  const SKILL_LEVEL_LABELS = getSkillLevelLabels(locale);
+  const AVAILABILITY_LABELS = getAvailabilityLabels(locale);
+  const MOBILITY_LABELS = getMobilityLabels(locale);
   const { id } = await params;
   const session = await auth();
 
@@ -205,7 +219,7 @@ export default async function TechnicianProfileViewPage({ params }: TechnicianPr
                             )}
                             {entry.expiryDate && (
                               <p className="mt-1 text-xs text-slate-500">
-                                {t("expiresOn", { date: formatDate(entry.expiryDate) })}
+                                {t("expiresOn", { date: formatDate(entry.expiryDate, locale) })}
                               </p>
                             )}
                           </div>
@@ -236,8 +250,8 @@ export default async function TechnicianProfileViewPage({ params }: TechnicianPr
                             {experience.role} — {experience.employer}
                           </p>
                           <p className="mt-1 text-xs text-slate-500">
-                            {localizedName(experience.country, locale)} · {formatMonthYear(experience.startDate)} —{" "}
-                            {experience.endDate ? formatMonthYear(experience.endDate) : t("ongoing")}
+                            {localizedName(experience.country, locale)} · {formatMonthYear(experience.startDate, locale)} —{" "}
+                            {experience.endDate ? formatMonthYear(experience.endDate, locale) : t("ongoing")}
                           </p>
                         </div>
                         <Badge tone={DOCUMENT_VERIFICATION_TONE[experience.verificationStatus]}>
@@ -292,7 +306,7 @@ export default async function TechnicianProfileViewPage({ params }: TechnicianPr
                 )}
                 <div>
                   <dt className="text-slate-500">{t("lastUpdated")}</dt>
-                  <dd className="mt-1 text-slate-800">{formatDate(profile.updatedAt)}</dd>
+                  <dd className="mt-1 text-slate-800">{formatDate(profile.updatedAt, locale)}</dd>
                 </div>
               </dl>
             </Card>

@@ -1,13 +1,13 @@
 "use client";
 
 import { useActionState } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { updateProfileBasicsAction, type ProfileBasicsFormState } from "@/lib/actions/technician-profile";
-import { TRADE_CATEGORY_LABELS_FR } from "@/lib/trade-categories";
+import { getTradeCategoryLabels } from "@/lib/trade-categories";
 import type { TradeCategory } from "@/lib/generated/prisma/enums";
 
 interface TradeOption {
@@ -50,6 +50,8 @@ function groupTradesByCategory(trades: TradeOption[]) {
 
 export function ProfileBasicsForm({ trades, countries, defaults }: ProfileBasicsFormProps) {
   const t = useTranslations("ProfileBasicsForm");
+  const locale = useLocale();
+  const TRADE_CATEGORY_LABELS = getTradeCategoryLabels(locale);
   const [state, formAction, pending] = useActionState(updateProfileBasicsAction, initialState);
   const groupedTrades = groupTradesByCategory(trades);
 
@@ -65,7 +67,7 @@ export function ProfileBasicsForm({ trades, countries, defaults }: ProfileBasics
               {t("primaryTradePlaceholder")}
             </option>
             {Array.from(groupedTrades.entries()).map(([category, categoryTrades]) => (
-              <optgroup key={category} label={TRADE_CATEGORY_LABELS_FR[category]}>
+              <optgroup key={category} label={TRADE_CATEGORY_LABELS[category]}>
                 {categoryTrades.map((trade) => (
                   <option key={trade.id} value={trade.id}>
                     {trade.name}
@@ -90,7 +92,7 @@ export function ProfileBasicsForm({ trades, countries, defaults }: ProfileBasics
             aria-describedby="secondaryTradeIds-help"
           >
             {Array.from(groupedTrades.entries()).map(([category, categoryTrades]) => (
-              <optgroup key={category} label={TRADE_CATEGORY_LABELS_FR[category]}>
+              <optgroup key={category} label={TRADE_CATEGORY_LABELS[category]}>
                 {categoryTrades.map((trade) => (
                   <option key={trade.id} value={trade.id}>
                     {trade.name}
