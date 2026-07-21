@@ -11,24 +11,7 @@ import {
   PROFILE_VERIFICATION_TONE,
 } from "@/lib/verification-labels";
 import { SKILL_LEVEL_LABELS } from "@/lib/skill-levels";
-
-const AVAILABILITY_LABELS: Record<string, string> = {
-  AVAILABLE: "Disponible",
-  AVAILABLE_SOON: "Disponible prochainement",
-  UNAVAILABLE: "Non disponible",
-};
-
-const AVAILABILITY_TONE: Record<string, "neutral" | "success" | "warning" | "danger"> = {
-  AVAILABLE: "success",
-  AVAILABLE_SOON: "warning",
-  UNAVAILABLE: "neutral",
-};
-
-const MOBILITY_LABELS: Record<string, string> = {
-  LOCAL: "Mobilité locale",
-  NATIONAL: "Mobilité nationale",
-  INTERNATIONAL: "Mobilité internationale",
-};
+import { AVAILABILITY_LABELS, AVAILABILITY_TONE, MOBILITY_LABELS } from "@/lib/availability-labels";
 
 const EXPIRY_WARNING_WINDOW_DAYS = 60;
 
