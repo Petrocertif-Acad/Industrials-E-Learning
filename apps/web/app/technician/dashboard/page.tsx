@@ -3,11 +3,12 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/db/prisma";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
 import { ScoreMeter } from "@/components/features/technician/score-meter";
+import { ProfileCompleteness } from "@/components/features/technician/profile-completeness";
 import { PROFILE_VERIFICATION_LABELS, PROFILE_VERIFICATION_TONE } from "@/lib/verification-labels";
 import { AVAILABILITY_LABELS, AVAILABILITY_TONE, MOBILITY_LABELS } from "@/lib/availability-labels";
+import { buildProfileCompletenessChecklist } from "@/lib/technician";
 
 const SECONDARY_LINK_CLASSNAME =
   "rounded text-sm text-slate-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-600 focus-visible:ring-offset-2";
@@ -36,6 +37,13 @@ export default async function TechnicianDashboardPage({ searchParams }: Technici
   }
 
   const onboardingComplete = Boolean(profile.primaryTradeId && profile.countryId);
+  const checklist = buildProfileCompletenessChecklist({
+    primaryTradeId: profile.primaryTradeId,
+    countryId: profile.countryId,
+    skillsCount: profile._count.skills,
+    certificationsCount: profile._count.certifications,
+    workExperiencesCount: profile._count.workExperiences,
+  });
 
   return (
     <div className="space-y-6">
@@ -84,17 +92,7 @@ export default async function TechnicianDashboardPage({ searchParams }: Technici
         </p>
       )}
 
-      {!onboardingComplete && (
-        <Card className="border-amber-200 bg-amber-50">
-          <p className="text-sm text-amber-900">
-            Votre profil est incomplet. Renseignez votre métier principal, votre pays et vos
-            compétences pour apparaître dans les résultats de recherche des entreprises.
-          </p>
-          <Link href="/technician/profile">
-            <Button className="mt-4">Compléter mon profil</Button>
-          </Link>
-        </Card>
-      )}
+      <ProfileCompleteness items={checklist} />
 
       <div className="grid gap-4 sm:grid-cols-2">
         <ScoreMeter
