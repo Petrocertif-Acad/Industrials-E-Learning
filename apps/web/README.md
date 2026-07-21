@@ -199,9 +199,16 @@ Implémenté dans cette phase d'initialisation :
 - [x] Vivier de candidats (`/organization/talent-pool`) : enregistrement de
       techniciens depuis la recherche ou leur profil public, notes internes par
       candidat
+- [x] Moteur de score ATTI (`lib/score.ts`, cadrage section 6) : note sur 100
+      recalculée automatiquement à chaque mutation (profil, compétences,
+      expériences, certifications, décision de vérification admin), sous-scores
+      et détail explicable (méthode, données prises en compte, sous-parties non
+      disponibles dans ce MVP) affichés sur le tableau de bord technicien et le
+      profil public ; `npm run scores:recalculate` pour recalculer une base
+      existante après une évolution de la méthode
 
 À développer dans les prochains modules (voir le plan de développement du cadrage) :
-moteur de score, passeport PDF, i18n FR/EN.
+passeport PDF, i18n FR/EN, évaluations pratiques, avis employeurs, formation continue.
 
 ## Branding
 

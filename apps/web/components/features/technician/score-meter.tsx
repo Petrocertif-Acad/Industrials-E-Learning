@@ -1,9 +1,12 @@
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils/cn";
+import { ScoreBreakdownList } from "@/components/features/technician/score-breakdown-list";
+import type { ScoreCalculationDetails } from "@/lib/score";
 
 interface ScoreMeterProps {
   score: number | null;
   calculatedAt: Date | null;
+  calculationDetails?: ScoreCalculationDetails | null;
 }
 
 type ScoreTone = "success" | "warning" | "danger";
@@ -28,7 +31,7 @@ const TRACK_CLASSES: Record<ScoreTone, string> = {
   danger: "bg-red-100",
 };
 
-export function ScoreMeter({ score, calculatedAt }: ScoreMeterProps) {
+export function ScoreMeter({ score, calculatedAt, calculationDetails }: ScoreMeterProps) {
   const hasScore = score !== null;
   const tone = hasScore ? getScoreTone(score) : null;
   const clampedScore = hasScore ? Math.min(100, Math.max(0, score)) : 0;
@@ -65,6 +68,25 @@ export function ScoreMeter({ score, calculatedAt }: ScoreMeterProps) {
           ? `Dernier calcul : ${calculatedAt.toLocaleDateString("fr-FR")}`
           : "Le score sera calculé une fois votre profil et vos certifications complétés."}
       </p>
+
+      {calculationDetails && (
+        <details className="group mt-4 border-t border-slate-100 pt-3">
+          <summary className="cursor-pointer list-none text-sm font-medium text-slate-700 hover:text-slate-900">
+            <span className="inline-flex items-center gap-1.5">
+              Comment ce score est calculé
+              <span aria-hidden className="text-slate-400 transition-transform group-open:rotate-180">
+                ⌄
+              </span>
+            </span>
+          </summary>
+          <div className="mt-3">
+            <p className="text-xs text-slate-500">{calculationDetails.method}</p>
+            <div className="mt-3">
+              <ScoreBreakdownList breakdown={calculationDetails.breakdown} />
+            </div>
+          </div>
+        </details>
+      )}
     </Card>
   );
 }

@@ -7,6 +7,7 @@ import { requireUser } from "@/lib/permissions";
 import { getOwnTechnicianProfile } from "@/lib/technician";
 import { technicianCertificationSchema, type TechnicianCertificationInput } from "@/lib/validation/certification";
 import { buildDocumentStorageKey, deleteDocumentObject, uploadDocumentObject, validateDocumentFile } from "@/lib/storage/s3";
+import { recalculateTechnicianScore } from "@/lib/score";
 
 export interface CertificationFormState {
   error?: string;
@@ -122,6 +123,8 @@ export async function createTechnicianCertificationAction(
     },
   });
 
+  await recalculateTechnicianScore(profile.id);
+
   revalidatePath("/technician/certifications");
   revalidatePath("/technician/dashboard");
   redirect("/technician/certifications?saved=1");
@@ -198,6 +201,8 @@ export async function updateTechnicianCertificationAction(
     },
   });
 
+  await recalculateTechnicianScore(profile.id);
+
   revalidatePath("/technician/certifications");
   revalidatePath("/technician/dashboard");
   redirect("/technician/certifications?saved=1");
@@ -238,6 +243,8 @@ export async function deleteTechnicianCertificationAction(formData: FormData): P
       targetId: certificationRecordId,
     },
   });
+
+  await recalculateTechnicianScore(profile.id);
 
   revalidatePath("/technician/certifications");
   revalidatePath("/technician/dashboard");

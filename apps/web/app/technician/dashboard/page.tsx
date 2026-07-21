@@ -10,7 +10,8 @@ import { DashboardStatCard } from "@/components/features/technician/dashboard-st
 import { PROFILE_VERIFICATION_LABELS, PROFILE_VERIFICATION_TONE } from "@/lib/verification-labels";
 import { AVAILABILITY_LABELS, AVAILABILITY_TONE, MOBILITY_LABELS } from "@/lib/availability-labels";
 import { buildProfileCompletenessChecklist } from "@/lib/technician";
-import { isExpiringSoonOrExpired } from "@/lib/certification-expiry";
+import { isExpiringSoonOrExpired, isCertificationCurrentlyValid } from "@/lib/certification-expiry";
+import type { ScoreCalculationDetails } from "@/lib/score";
 
 const SECONDARY_LINK_CLASSNAME =
   "rounded text-sm text-slate-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-600 focus-visible:ring-offset-2";
@@ -41,7 +42,7 @@ export default async function TechnicianDashboardPage({ searchParams }: Technici
 
   const onboardingComplete = Boolean(profile.primaryTradeId && profile.countryId);
   const certificationsTotal = profile.certifications.length;
-  const certificationsVerified = profile.certifications.filter((c) => c.verificationStatus === "VERIFIED").length;
+  const certificationsVerified = profile.certifications.filter(isCertificationCurrentlyValid).length;
   const hasExpiringCertification = profile.certifications.some((c) => isExpiringSoonOrExpired(c.expiryDate));
   const checklist = buildProfileCompletenessChecklist({
     primaryTradeId: profile.primaryTradeId,
@@ -104,6 +105,7 @@ export default async function TechnicianDashboardPage({ searchParams }: Technici
         <ScoreMeter
           score={profile.score ? Number(profile.score.totalScore) : null}
           calculatedAt={profile.score?.calculatedAt ?? null}
+          calculationDetails={profile.score?.calculationDetails as unknown as ScoreCalculationDetails | null | undefined}
         />
 
         <DashboardStatCard

@@ -34,7 +34,7 @@ export async function searchTechnicians(filters: TechnicianSearchFilters) {
       primaryTrade: true,
       country: true,
       score: true,
-      certifications: { select: { verificationStatus: true } },
+      certifications: { select: { verificationStatus: true, expiryDate: true } },
     },
     orderBy: { updatedAt: "desc" },
     take: 40,

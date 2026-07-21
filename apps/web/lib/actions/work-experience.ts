@@ -6,6 +6,7 @@ import { prisma } from "@/lib/db/prisma";
 import { requireUser } from "@/lib/permissions";
 import { getOwnTechnicianProfile } from "@/lib/technician";
 import { workExperienceSchema } from "@/lib/validation/work-experience";
+import { recalculateTechnicianScore } from "@/lib/score";
 
 export interface WorkExperienceFormState {
   error?: string;
@@ -68,6 +69,8 @@ export async function createWorkExperienceAction(
     },
   });
 
+  await recalculateTechnicianScore(profile.id);
+
   revalidatePath("/technician/experiences");
   revalidatePath("/technician/dashboard");
   redirect("/technician/experiences?saved=1");
@@ -104,6 +107,8 @@ export async function updateWorkExperienceAction(
     },
   });
 
+  await recalculateTechnicianScore(profile.id);
+
   revalidatePath("/technician/experiences");
   revalidatePath("/technician/dashboard");
   redirect("/technician/experiences?saved=1");
@@ -128,6 +133,8 @@ export async function deleteWorkExperienceAction(formData: FormData): Promise<vo
       targetId: experienceId,
     },
   });
+
+  await recalculateTechnicianScore(profile.id);
 
   revalidatePath("/technician/experiences");
   revalidatePath("/technician/dashboard");

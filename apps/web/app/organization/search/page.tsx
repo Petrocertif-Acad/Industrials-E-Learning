@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { TalentPoolToggleButton } from "@/components/features/organization/talent-pool-toggle-button";
 import { AVAILABILITY_LABELS, AVAILABILITY_TONE, MOBILITY_LABELS } from "@/lib/availability-labels";
 import { PROFILE_VERIFICATION_LABELS, PROFILE_VERIFICATION_TONE } from "@/lib/verification-labels";
+import { isCertificationCurrentlyValid } from "@/lib/certification-expiry";
 import type { AvailabilityStatus, MobilityScope } from "@/lib/generated/prisma/enums";
 
 interface OrganizationSearchPageProps {
@@ -159,9 +160,7 @@ export default async function OrganizationSearchPage({ searchParams }: Organizat
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {technicians.map((technician) => {
-            const verifiedCertifications = technician.certifications.filter(
-              (c) => c.verificationStatus === "VERIFIED"
-            ).length;
+            const verifiedCertifications = technician.certifications.filter(isCertificationCurrentlyValid).length;
 
             return (
               <Card key={technician.id} className="flex h-full flex-col transition-colors hover:border-slate-300 hover:shadow-md">

@@ -6,6 +6,7 @@ import { prisma } from "@/lib/db/prisma";
 import { requireUser } from "@/lib/permissions";
 import { getOwnTechnicianProfile } from "@/lib/technician";
 import { profileBasicsSchema, technicianSkillsSchema } from "@/lib/validation/technician-profile";
+import { recalculateTechnicianScore } from "@/lib/score";
 
 export interface ProfileBasicsFormState {
   error?: string;
@@ -86,6 +87,8 @@ export async function updateProfileBasicsAction(
     },
   });
 
+  await recalculateTechnicianScore(profile.id);
+
   revalidatePath("/technician/dashboard");
   redirect("/technician/dashboard?updated=1");
 }
@@ -146,6 +149,8 @@ export async function updateTechnicianSkillsAction(
       metadata: { skillCount: selectedSkillIds.length },
     },
   });
+
+  await recalculateTechnicianScore(profile.id);
 
   revalidatePath("/technician/skills");
   revalidatePath("/technician/dashboard");

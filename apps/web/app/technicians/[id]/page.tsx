@@ -14,7 +14,9 @@ import {
 } from "@/lib/verification-labels";
 import { SKILL_LEVEL_LABELS } from "@/lib/skill-levels";
 import { AVAILABILITY_LABELS, AVAILABILITY_TONE, MOBILITY_LABELS } from "@/lib/availability-labels";
-import { getExpiryBadge } from "@/lib/certification-expiry";
+import { getExpiryBadge, isCertificationCurrentlyValid } from "@/lib/certification-expiry";
+import { ScoreBreakdownList } from "@/components/features/technician/score-breakdown-list";
+import type { ScoreCalculationDetails } from "@/lib/score";
 
 function formatDate(date: Date) {
   return date.toLocaleDateString("fr-FR", { year: "numeric", month: "short", day: "numeric", timeZone: "UTC" });
@@ -69,7 +71,7 @@ export default async function TechnicianProfileViewPage({ params }: TechnicianPr
       )
     : false;
 
-  const verifiedCertifications = profile.certifications.filter((c) => c.verificationStatus === "VERIFIED").length;
+  const verifiedCertifications = profile.certifications.filter(isCertificationCurrentlyValid).length;
   const verifiedExperiences = profile.workExperiences.filter((e) => e.verificationStatus === "VERIFIED").length;
 
   return (
@@ -251,6 +253,20 @@ export default async function TechnicianProfileViewPage({ params }: TechnicianPr
           </div>
 
           <div className="space-y-6">
+            {profile.score?.calculationDetails && (
+              <Card>
+                <h2 className="text-sm font-semibold text-slate-900">Détail du score ATTI</h2>
+                <p className="mt-1 text-xs text-slate-500">
+                  {(profile.score.calculationDetails as unknown as ScoreCalculationDetails).method}
+                </p>
+                <div className="mt-4">
+                  <ScoreBreakdownList
+                    breakdown={(profile.score.calculationDetails as unknown as ScoreCalculationDetails).breakdown}
+                  />
+                </div>
+              </Card>
+            )}
+
             <Card>
               <h2 className="text-sm font-semibold text-slate-900">Informations complémentaires</h2>
               <dl className="mt-3 space-y-3 text-sm">

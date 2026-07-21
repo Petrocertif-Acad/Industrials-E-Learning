@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db/prisma";
 import { registerTechnicianSchema } from "@/lib/validation/auth";
+import { recalculateTechnicianScore } from "@/lib/score";
 
 export interface RegisterFormState {
   error?: string;
@@ -50,6 +51,7 @@ export async function registerTechnicianAction(
         },
       },
     },
+    include: { technicianProfile: true },
   });
 
   await prisma.auditLog.create({
@@ -60,6 +62,10 @@ export async function registerTechnicianAction(
       targetId: user.id,
     },
   });
+
+  if (user.technicianProfile) {
+    await recalculateTechnicianScore(user.technicianProfile.id);
+  }
 
   redirect("/login?registered=1");
 }

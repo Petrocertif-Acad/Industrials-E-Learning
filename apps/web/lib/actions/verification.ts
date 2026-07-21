@@ -5,6 +5,7 @@ import { prisma } from "@/lib/db/prisma";
 import { requireRole } from "@/lib/permissions";
 import { UserRole } from "@/lib/generated/prisma/enums";
 import { verificationDecisionSchema, type VerificationDecisionInput } from "@/lib/validation/verification";
+import { recalculateTechnicianScore } from "@/lib/score";
 
 // Chaque bouton "Valider"/"Rejeter" utilise `formAction` pour invoquer une
 // action dédiée (voir ReviewForm dans app/admin/verifications/page.tsx).
@@ -51,9 +52,12 @@ async function reviewTechnicianCertification(formData: FormData, decision: Verif
     },
   });
 
+  await recalculateTechnicianScore(entry.technicianId);
+
   revalidatePath("/admin/verifications");
   revalidatePath("/admin/dashboard");
   revalidatePath("/technician/certifications");
+  revalidatePath("/technician/dashboard");
 }
 
 async function reviewWorkExperience(formData: FormData, decision: VerificationDecisionInput["decision"]) {
@@ -83,9 +87,12 @@ async function reviewWorkExperience(formData: FormData, decision: VerificationDe
     },
   });
 
+  await recalculateTechnicianScore(entry.technicianId);
+
   revalidatePath("/admin/verifications");
   revalidatePath("/admin/dashboard");
   revalidatePath("/technician/experiences");
+  revalidatePath("/technician/dashboard");
 }
 
 export async function verifyTechnicianCertificationAction(formData: FormData): Promise<void> {
