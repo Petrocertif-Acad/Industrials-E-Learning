@@ -8,11 +8,15 @@ import { buildProfileCompletenessChecklist } from "@/lib/technician";
 // HSE 10, avis employeurs 5, formation continue 5, disponibilité/mobilité 3,
 // complétude/vérification du profil 2.
 //
-// Le MVP ne modélise pas encore les évaluations pratiques (Assessment) : cette
-// sous-partie vaut 0 avec un motif explicite plutôt qu'une valeur inventée —
-// jamais de boîte noire (cadrage section 13). La formation continue
-// (TechnicianTraining) et les avis employeurs (EmployerReview) sont
-// modélisés et contribuent au score.
+// Seule la sécurité/conformité HSE (10 pts) reste non disponible dans ce MVP :
+// cette sous-partie vaut 0 avec un motif explicite plutôt qu'une valeur
+// inventée — jamais de boîte noire (cadrage section 13). Les évaluations
+// pratiques (Assessment), la formation continue (TechnicianTraining) et les
+// avis employeurs (EmployerReview) sont modélisés et contribuent au score.
+// Le rôle EVALUATOR existe dans le schéma mais son interface dédiée reste
+// hors périmètre MVP (voir le commentaire sur UserRole) : les résultats
+// d'évaluation pratique sont saisis par un administrateur, pas par un compte
+// évaluateur séparé (voir lib/actions/assessment.ts).
 
 const SKILL_LEVEL_VALUE: Record<string, number> = {
   NOT_ASSESSED: 0,
@@ -91,7 +95,14 @@ const UNAVAILABLE_EXPLANATION = "Fonctionnalité non disponible dans cette versi
 export async function calculateTechnicianScore(technicianId: string): Promise<ScoreCalculationResult> {
   const profile = await prisma.technicianProfile.findUniqueOrThrow({
     where: { id: technicianId },
-    include: { skills: true, certifications: true, workExperiences: true, trainings: true, employerReviews: true },
+    include: {
+      skills: true,
+      certifications: true,
+      workExperiences: true,
+      trainings: true,
+      employerReviews: true,
+      assessments: true,
+    },
   });
 
   // --- Compétences techniques vérifiées (25 pts) ---
@@ -105,7 +116,19 @@ export async function calculateTechnicianScore(technicianId: string): Promise<Sc
     technicalRatio = Math.min(1, sum / profile.skills.length);
   }
   const technicalSkillsPoints = round2(technicalRatio * 25);
-  const technicalScore = technicalSkillsPoints; // + 0 pt d'évaluations pratiques (non disponible)
+
+  // --- Résultats aux évaluations pratiques (15 pts) ---
+  // Moyenne simple des notes enregistrées (0 à 100), ramenée sur 15 points —
+  // aucune pondération par ancienneté ni par évaluateur pour rester
+  // explicable (cadrage section 13).
+  const practicalAssessmentRatio =
+    profile.assessments.length > 0
+      ? profile.assessments.reduce((acc, assessment) => acc + assessment.score, 0) /
+        (profile.assessments.length * 100)
+      : 0;
+  const practicalAssessmentPoints = round2(practicalAssessmentRatio * 15);
+
+  const technicalScore = round2(technicalSkillsPoints + practicalAssessmentPoints);
 
   // --- Certifications et qualifications valides (20 pts) ---
   const now = new Date();
@@ -196,9 +219,12 @@ export async function calculateTechnicianScore(technicianId: string): Promise<Sc
     {
       key: "practicalAssessment",
       label: "Résultats aux évaluations pratiques",
-      points: 0,
+      points: practicalAssessmentPoints,
       max: 15,
-      explanation: UNAVAILABLE_EXPLANATION,
+      explanation:
+        profile.assessments.length > 0
+          ? `${profile.assessments.length} évaluation(s) enregistrée(s), note moyenne de ${Math.round(profile.assessments.reduce((acc, assessment) => acc + assessment.score, 0) / profile.assessments.length)}/100.`
+          : "Aucune évaluation pratique enregistrée pour le moment.",
     },
     {
       key: "certification",

@@ -373,6 +373,22 @@
     "add": "Add to talent pool",
     "remove": "Remove from talent pool"
   },
+  "AssessmentForm": {
+    "title": "Assessment title",
+    "skill": "Assessed skill (optional)",
+    "skillPlaceholder": "No specific skill",
+    "score": "Score (0 to 100)",
+    "evaluatorName": "Evaluator",
+    "assessedAt": "Assessment date",
+    "notes": "Notes (optional)",
+    "document": "Assessment report (optional, PDF/JPG/PNG, 10 MB max)",
+    "submitPending": "Saving…",
+    "submitCreate": "Record result"
+  },
+  "DeleteAssessmentButton": {
+    "confirm": "Delete this assessment and its report, if any?",
+    "delete": "Delete"
+  },
   "EmployerReviewForm": {
     "rating": "Rating",
     "ratingPlaceholder": "Select a rating",
@@ -450,6 +466,10 @@
     "noSkills": "No skills declared.",
     "verifiedSuffix": " (verified)",
     "declaredSuffix": " (declared)",
+    "assessmentsTitle": "Practical assessments",
+    "noAssessments": "No practical assessment recorded.",
+    "assessedBy": "Evaluator: {evaluator}",
+    "assessmentScore": "{score}/100",
     "certificationsTitle": "Valid certifications ({valid}/{total})",
     "noCertifications": "No certification added.",
     "expiresOn": " · expires on {date}",
@@ -483,6 +503,12 @@
     "limitedVisibilityDescription": "This technician hasn't made their detailed skills, certifications and experience public yet. Only the general information above is visible.",
     "skillsTitle": "Skills",
     "skillVerified": "Verified skill",
+    "assessmentsTitle": "Practical assessments",
+    "noAssessments": "No practical assessment recorded.",
+    "assessedBy": "Evaluator: {evaluator}",
+    "assessmentScore": "{score}/100",
+    "recordAssessment": "Record a result",
+    "recordAssessmentHint": "Admin only: record the result of an assessment conducted by a third party.",
     "certificationsTitle": "Certifications",
     "process": "Process: {process}",
     "expiresOn": "Expires on {date}",

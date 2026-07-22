@@ -57,6 +57,7 @@ model User {
   talentPoolEntriesAdded  TalentPoolEntry[]
   passwordResetTokens     PasswordResetToken[]
   employerReviewsAuthored EmployerReview[]     @relation("EmployerReviewAuthor")
+  assessmentsRecorded     Assessment[]         @relation("AssessmentRecorder")
 
   @@index([role])
 }
@@ -139,6 +140,7 @@ model Skill {
   nameEn  String
 
   technicianSkills TechnicianSkill[]
+  assessments      Assessment[]
 
   @@index([tradeId])
 }
@@ -237,6 +239,7 @@ model TechnicianProfile {
   trainings       TechnicianTraining[]
   languages       TechnicianLanguage[]
   employerReviews EmployerReview[]
+  assessments     Assessment[]
   documents       Document[]                 @relation("DocumentSubject")
   score           Score?
   scoreHistory    ScoreHistory[]
@@ -361,6 +364,7 @@ enum DocumentType {
   CERTIFICATION_PROOF
   EXPERIENCE_PROOF
   TRAINING_PROOF
+  ASSESSMENT_REPORT
   PROFILE_PHOTO
   OTHER
 }
@@ -385,6 +389,7 @@ model Document {
   technicianCertification TechnicianCertification?
   workExperience          WorkExperience?
   technicianTraining      TechnicianTraining?
+  assessment              Assessment?
 
   @@index([ownerId])
   @@index([verificationStatus])
@@ -541,6 +546,36 @@ model EmployerReview {
   updatedAt      DateTime          @updatedAt
 
   @@unique([organizationId, technicianId])
+  @@index([technicianId])
+}
+
+// ---------------------------------------------------------------------------
+// Évaluations pratiques — le rôle EVALUATOR existe dans UserRole mais son
+// interface dédiée est explicitement reportée après la V1 (voir le
+// commentaire sur UserRole) : dans ce MVP, un administrateur saisit le
+// résultat d'une évaluation menée par un tiers, au lieu d'exposer un portail
+// évaluateur séparé. Pas de compte EVALUATOR utilisé pour l'instant —
+// `evaluatorName` reste un champ texte libre.
+// ---------------------------------------------------------------------------
+
+model Assessment {
+  id            String            @id @default(uuid())
+  technicianId  String
+  technician    TechnicianProfile @relation(fields: [technicianId], references: [id], onDelete: Cascade)
+  skillId       String?
+  skill         Skill?            @relation(fields: [skillId], references: [id])
+  title         String
+  score         Int // 0 à 100
+  evaluatorName String
+  assessedAt    DateTime
+  notes         String?
+  documentId    String?           @unique
+  document      Document?         @relation(fields: [documentId], references: [id])
+  recordedById  String
+  recordedBy    User              @relation("AssessmentRecorder", fields: [recordedById], references: [id])
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
   @@index([technicianId])
 }
 

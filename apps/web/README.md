@@ -136,12 +136,13 @@ Le schéma Prisma (`prisma/schema.prisma`) couvre le noyau du MVP : comptes et r
 (`User`), profils techniciens, taxonomie métiers/compétences (`Trade`, `Skill`),
 certifications (avec champs spécifiques au soudage), expériences professionnelles,
 formation continue (`TechnicianTraining`), avis employeurs (`EmployerReview`),
-documents, score et historique de score, organisations, et journal d'audit.
+évaluations pratiques (`Assessment`), documents, score et historique de score,
+organisations, et journal d'audit.
 
 Les entités listées dans le cahier des charges complet mais hors périmètre MVP
-(`Assessment`, `JobOpportunity`, `Subscription`, `Payment`, référentiel
-géographique complet Country/Region/City, etc.) seront ajoutées au fil des
-modules correspondants plutôt que d'être stubées par anticipation.
+(`JobOpportunity`, `Subscription`, `Payment`, référentiel géographique complet
+Country/Region/City, etc.) seront ajoutées au fil des modules correspondants
+plutôt que d'être stubées par anticipation.
 
 ## Sécurité
 
@@ -323,13 +324,23 @@ Implémenté dans cette phase d'initialisation :
       moyenne simple des notes, ramenée sur 5 points, sans pondération par
       ancienneté ni par volume pour rester explicable. Visible sur le profil
       public (liste des avis, moyenne dans le bandeau de confiance) et
-      résumé (moyenne + nombre) dans le passeport PDF ; le sous-score
-      "évaluations pratiques" (15 pts) reste seul à 0, `Assessment` n'étant
-      toujours pas modélisé.
+      résumé (moyenne + nombre) dans le passeport PDF.
+- [x] Évaluations pratiques (`Assessment`, sur le profil public technicien) :
+      le rôle `EVALUATOR` existe dans `UserRole` mais le cadrage reporte
+      explicitement son interface dédiée après la V1 (voir le commentaire sur
+      `UserRole` dans `prisma/schema.prisma`) — plutôt que de construire ce
+      portail hors périmètre, un **administrateur** saisit le résultat d'une
+      évaluation menée par un tiers (titre, note sur 100, nom de
+      l'évaluateur en texte libre, compétence liée facultative, rapport
+      optionnel), comme il valide déjà certifications et expériences.
+      Alimente le sous-score "résultats aux évaluations pratiques" (15 pts,
+      cadrage section 6, moyenne simple des notes) qui, avec les compétences
+      vérifiées (25 pts), compose `technicalScore` (40 pts). Seule la
+      sécurité/conformité HSE (10 pts) reste à 0, non disponible dans ce MVP.
 
 À développer dans les prochains modules (voir le plan de développement du cadrage) :
-déploiement automatisé (CD), évaluations pratiques, envoi d'email réel pour
-la réinitialisation de mot de passe.
+déploiement automatisé (CD), envoi d'email réel pour la réinitialisation de
+mot de passe.
 
 ## Branding
 

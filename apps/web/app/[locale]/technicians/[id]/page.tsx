@@ -15,6 +15,8 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/avatar";
 import { TalentPoolToggleButton } from "@/components/features/organization/talent-pool-toggle-button";
 import { EmployerReviewForm } from "@/components/features/organization/employer-review-form";
+import { AssessmentForm } from "@/components/features/admin/assessment-form";
+import { DeleteAssessmentButton } from "@/components/features/admin/delete-assessment-button";
 import {
   getDocumentVerificationLabels,
   DOCUMENT_VERIFICATION_TONE,
@@ -93,6 +95,11 @@ export default async function TechnicianProfileViewPage({ params }: TechnicianPr
   const ownReview = organization
     ? profile.employerReviews.find((review) => review.organizationId === organization.id)
     : undefined;
+  const isAdminViewer = session?.user?.role === "ADMIN";
+  const assessmentSkillOptions = profile.skills.map((entry) => ({
+    id: entry.skillId,
+    name: localizedName(entry.skill, locale),
+  }));
 
   return (
     <div className="mx-auto w-full max-w-5xl px-6 py-10">
@@ -212,6 +219,49 @@ export default async function TechnicianProfileViewPage({ params }: TechnicianPr
                     </li>
                   ))}
                 </ul>
+              </Card>
+            )}
+
+            {(profile.assessments.length > 0 || isAdminViewer) && (
+              <Card>
+                <h2 className="text-lg font-medium text-slate-900">{t("assessmentsTitle")}</h2>
+                {profile.assessments.length === 0 ? (
+                  <p className="mt-2 text-sm text-slate-600">{t("noAssessments")}</p>
+                ) : (
+                  <ul className="mt-4 space-y-4">
+                    {profile.assessments.map((assessment) => (
+                      <li key={assessment.id} className="border-b border-slate-100 pb-4 last:border-0 last:pb-0">
+                        <div className="flex flex-wrap items-start justify-between gap-2">
+                          <div>
+                            <p className="font-medium text-slate-900">{assessment.title}</p>
+                            <p className="text-sm text-slate-600">
+                              {t("assessedBy", { evaluator: assessment.evaluatorName })}
+                              {assessment.skill ? ` · ${localizedName(assessment.skill, locale)}` : ""}
+                            </p>
+                            <p className="mt-1 text-xs text-slate-500">{formatDate(assessment.assessedAt, locale)}</p>
+                            {assessment.notes && <p className="mt-2 text-sm text-slate-700">{assessment.notes}</p>}
+                          </div>
+                          <div className="flex shrink-0 flex-col items-end gap-1.5">
+                            <span className="text-sm font-semibold text-slate-900">
+                              {t("assessmentScore", { score: assessment.score })}
+                            </span>
+                            {isAdminViewer && <DeleteAssessmentButton assessmentId={assessment.id} />}
+                          </div>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+
+                {isAdminViewer && (
+                  <div className="mt-6 border-t border-slate-100 pt-6">
+                    <h3 className="text-sm font-semibold text-slate-900">{t("recordAssessment")}</h3>
+                    <p className="mt-1 text-xs text-slate-500">{t("recordAssessmentHint")}</p>
+                    <div className="mt-3">
+                      <AssessmentForm technicianId={profile.id} skillOptions={assessmentSkillOptions} />
+                    </div>
+                  </div>
+                )}
               </Card>
             )}
 

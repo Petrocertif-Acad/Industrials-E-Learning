@@ -21,6 +21,7 @@ interface FixtureOverrides {
   workExperiences?: unknown[];
   trainings?: unknown[];
   employerReviews?: unknown[];
+  assessments?: unknown[];
 }
 
 function buildProfile(overrides: FixtureOverrides = {}) {
@@ -36,6 +37,7 @@ function buildProfile(overrides: FixtureOverrides = {}) {
     workExperiences: [],
     trainings: [],
     employerReviews: [],
+    assessments: [],
     ...overrides,
   };
 }
@@ -96,19 +98,22 @@ describe("calculateTechnicianScore", () => {
         ],
         // A perfect average rating maxes the ratio regardless of review count.
         employerReviews: [{ rating: 5 }, { rating: 5 }],
+        // Perfect assessment scores max the 15-pt practical-assessment share
+        // of technicalScore (25 skills + 15 assessments = 40).
+        assessments: [{ score: 100 }, { score: 100 }],
       })
     );
 
     const result = await calculateTechnicianScore("technician-1");
 
-    expect(result.technicalScore).toBe(25); // verifiedLevel -> coefficient 1, EXPERT -> 1
+    expect(result.technicalScore).toBe(40); // 25 (skills) + 15 (assessments)
     expect(result.certificationScore).toBe(20);
     expect(result.experienceScore).toBe(15);
     expect(result.mobilityScore).toBe(3);
     expect(result.verificationScore).toBe(2);
     expect(result.continuousTrainingScore).toBe(5);
     expect(result.employabilityScore).toBe(5);
-    expect(result.totalScore).toBe(75); // 25 + 20 + 15 + 3 + 2 + 5 + 5; safety/practical assessment are 0 (unavailable)
+    expect(result.totalScore).toBe(90); // 40 + 20 + 15 + 3 + 2 + 5 + 5; safety is 0 (unavailable)
   });
 
   it("excludes expired certifications from the certification score even if marked VERIFIED", async () => {
@@ -163,16 +168,37 @@ describe("calculateTechnicianScore", () => {
     expect(verifiedResult.technicalScore).toBeGreaterThan(declaredResult.technicalScore);
   });
 
-  it("always includes the two unavailable sub-parts at zero with an explicit explanation", async () => {
+  it("always includes the one unavailable sub-part (safety) at zero with an explicit explanation", async () => {
     findUniqueOrThrow.mockResolvedValue(buildProfile());
 
     const result = await calculateTechnicianScore("technician-1");
-    const unavailableKeys = ["practicalAssessment", "safety"];
-    for (const key of unavailableKeys) {
-      const item = result.calculationDetails.breakdown.find((entry) => entry.key === key);
-      expect(item?.points).toBe(0);
-      expect(item?.explanation).toContain("non disponible");
-    }
+    const item = result.calculationDetails.breakdown.find((entry) => entry.key === "safety");
+    expect(item?.points).toBe(0);
+    expect(item?.explanation).toContain("non disponible");
+  });
+
+  it("scores practical assessments as the average score out of 100, rescaled to 15 points", async () => {
+    findUniqueOrThrow.mockResolvedValue(
+      buildProfile({
+        assessments: [{ score: 80 }, { score: 60 }],
+      })
+    );
+
+    const result = await calculateTechnicianScore("technician-1");
+    // average score 70/100 -> 70% of 15 points = 10.5, folded into technicalScore.
+    expect(result.technicalScore).toBe(10.5);
+    const item = result.calculationDetails.breakdown.find((entry) => entry.key === "practicalAssessment");
+    expect(item?.points).toBe(10.5);
+    expect(item?.explanation).not.toContain("non disponible");
+  });
+
+  it("scores practical assessments at zero with no assessments recorded", async () => {
+    findUniqueOrThrow.mockResolvedValue(buildProfile());
+
+    const result = await calculateTechnicianScore("technician-1");
+    const item = result.calculationDetails.breakdown.find((entry) => entry.key === "practicalAssessment");
+    expect(item?.points).toBe(0);
+    expect(item?.explanation).not.toContain("non disponible");
   });
 
   it("scores employability as the average review rating out of 5", async () => {
@@ -249,6 +275,7 @@ describe("calculateTechnicianScore", () => {
         workExperiences: Array.from({ length: 5 }, () => ({ verificationStatus: "VERIFIED" })),
         trainings: Array.from({ length: 10 }, () => ({ verificationStatus: "VERIFIED", completionDate: oneYearAgo() })),
         employerReviews: Array.from({ length: 10 }, () => ({ rating: 5 })),
+        assessments: Array.from({ length: 10 }, () => ({ score: 100 })),
       })
     );
 

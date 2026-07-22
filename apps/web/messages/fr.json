@@ -373,6 +373,22 @@
     "add": "Ajouter au vivier",
     "remove": "Retirer du vivier"
   },
+  "AssessmentForm": {
+    "title": "Intitulé de l'évaluation",
+    "skill": "Compétence évaluée (facultatif)",
+    "skillPlaceholder": "Aucune compétence spécifique",
+    "score": "Note (0 à 100)",
+    "evaluatorName": "Évaluateur",
+    "assessedAt": "Date de l'évaluation",
+    "notes": "Remarques (facultatif)",
+    "document": "Rapport d'évaluation (facultatif, PDF/JPG/PNG, 10 Mo max)",
+    "submitPending": "Enregistrement…",
+    "submitCreate": "Enregistrer le résultat"
+  },
+  "DeleteAssessmentButton": {
+    "confirm": "Supprimer cette évaluation et son rapport éventuel ?",
+    "delete": "Supprimer"
+  },
   "EmployerReviewForm": {
     "rating": "Note",
     "ratingPlaceholder": "Sélectionnez une note",
@@ -450,6 +466,10 @@
     "noSkills": "Aucune compétence déclarée.",
     "verifiedSuffix": " (vérifiée)",
     "declaredSuffix": " (déclarée)",
+    "assessmentsTitle": "Évaluations pratiques",
+    "noAssessments": "Aucune évaluation pratique enregistrée.",
+    "assessedBy": "Évaluateur : {evaluator}",
+    "assessmentScore": "{score}/100",
     "certificationsTitle": "Certifications valides ({valid}/{total})",
     "noCertifications": "Aucune certification ajoutée.",
     "expiresOn": " · expire le {date}",
@@ -483,6 +503,12 @@
     "limitedVisibilityDescription": "Ce technicien n'a pas encore rendu publiques ses compétences, certifications et expériences détaillées. Seules les informations générales ci-dessus sont visibles.",
     "skillsTitle": "Compétences",
     "skillVerified": "Compétence vérifiée",
+    "assessmentsTitle": "Évaluations pratiques",
+    "noAssessments": "Aucune évaluation pratique enregistrée.",
+    "assessedBy": "Évaluateur : {evaluator}",
+    "assessmentScore": "{score}/100",
+    "recordAssessment": "Enregistrer un résultat",
+    "recordAssessmentHint": "Réservé aux administrateurs : saisissez le résultat d'une évaluation menée par un tiers.",
     "certificationsTitle": "Certifications",
     "process": "Procédé : {process}",
     "expiresOn": "Expire le {date}",

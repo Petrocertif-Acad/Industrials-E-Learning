@@ -204,6 +204,30 @@ function PassportDocument({ profile, publicProfileUrl, qrCodeDataUrl, generatedA
         </View>
 
         <View style={styles.section}>
+          <Text style={styles.sectionTitle}>{t("assessmentsTitle")}</Text>
+          {profile.assessments.length === 0 ? (
+            <Text style={styles.emptyText}>{t("noAssessments")}</Text>
+          ) : (
+            profile.assessments.map((assessment) => (
+              <View key={assessment.id} style={styles.row}>
+                <View>
+                  <Text style={styles.rowLabel}>{assessment.title}</Text>
+                  <Text style={styles.rowMeta}>
+                    {t("assessedBy", { evaluator: assessment.evaluatorName })}
+                    {assessment.skill ? ` — ${localizedName(assessment.skill, locale)}` : ""}
+                  </Text>
+                </View>
+                <Text style={styles.rowMeta}>
+                  {t("assessmentScore", { score: assessment.score })}
+                  {" · "}
+                  {formatDate(assessment.assessedAt, locale)}
+                </Text>
+              </View>
+            ))
+          )}
+        </View>
+
+        <View style={styles.section}>
           <Text style={styles.sectionTitle}>
             {t("certificationsTitle", { valid: validCertifications.length, total: profile.certifications.length })}
           </Text>
